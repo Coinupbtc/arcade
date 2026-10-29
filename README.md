@@ -10,10 +10,9 @@ Fourteen browser games, built off the clock and phone-first. Play them at **[coi
 | **Phone Blackjack** · cards | **Zombie Breach** · FPS survival (Three.js) | **Slice Party** · arcade slicer |
 | **Rocket Run** · endless flyer | **Bubble Bay** · bubble shooter | |
 
-Every game goes through the same [quality checklist](https://coinupbtc.com/arcade/checklist/) before it reaches the
-shelf: boots clean on phone, desktop and landscape with zero console errors, starts by tap, key, click or gamepad,
+Every game is held to the same [quality checklist](https://coinupbtc.com/arcade/checklist/): boots clean on phone, desktop and landscape with zero console errors, starts by tap, key, click or gamepad,
 never scrolls the page, pauses when you leave the tab, every button is at least 44 px, and its own acceptance tests pass.
-Each game page shows which checks it passed and when.
+Each game's card says whether it has passed, and its page shows which checks it passed and when.
 
 ## Layout
 
