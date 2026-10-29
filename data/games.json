@@ -1,17 +1,5 @@
 [
  {
-  "id": "grave-lantern",
-  "title": "Grave Lantern",
-  "genre": "Horde survivor",
-  "engine": "Canvas 2D",
-  "tagline": "Drag anywhere and the knight walks while his sword swings at the nearest skeleton. Hold the crypt for three minutes, then kill the Bone Warden.",
-  "status": "queue",
-  "score": 93,
-  "cats": [
-   "action"
-  ]
- },
- {
   "id": "bone-tide",
   "title": "Bone Tide",
   "genre": "Horde survival",
@@ -133,24 +121,36 @@
   ]
  },
  {
-  "id": "slice-party",
-  "title": "Slice Party",
-  "genre": "Arcade slicer",
-  "engine": "Canvas 2D",
-  "tagline": "Swipe through flying fruit for 60 seconds. Chain slices for combo bonuses and stay clear of the bombs \u2014 five dropped fruit end the run.",
-  "status": "untested",
-  "score": 93,
-  "cats": [
-   "action"
-  ]
- },
- {
   "id": "rocket-run",
   "title": "Rocket Run",
   "genre": "Endless flyer",
   "engine": "Canvas 2D",
   "tagline": "Hold to fly, release to sink. Thread laser gates, clear saw blades and guard bots, and grab coin arcs. The rocket carries three hull points; the third hit ends the run.",
   "status": "pass",
+  "score": 93,
+  "cats": [
+   "action"
+  ]
+ },
+ {
+  "id": "grave-lantern",
+  "title": "Grave Lantern",
+  "genre": "Horde survivor",
+  "engine": "Canvas 2D",
+  "tagline": "Drag anywhere and the knight walks while his sword swings at the nearest skeleton. Hold the crypt for three minutes, then kill the Bone Warden.",
+  "status": "queue",
+  "score": 93,
+  "cats": [
+   "action"
+  ]
+ },
+ {
+  "id": "slice-party",
+  "title": "Slice Party",
+  "genre": "Arcade slicer",
+  "engine": "Canvas 2D",
+  "tagline": "Swipe through flying fruit for 60 seconds. Chain slices for combo bonuses and stay clear of the bombs \u2014 five dropped fruit end the run.",
+  "status": "untested",
   "score": 93,
   "cats": [
    "action"
