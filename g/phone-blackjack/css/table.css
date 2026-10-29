@@ -154,6 +154,13 @@ html, body {
 .hand { margin-bottom: 6px; }
 .hand.active .fan { filter: drop-shadow(0 0 7px rgba(255, 211, 106, 0.55)); }
 .hand-label { font-size: 11px; opacity: 0.75; margin-bottom: 3px; }
+.hand.active .hand-label { color: var(--gold); opacity: 1; }
+/* split: hands sit side by side (two per row on a phone) so a 3rd or 4th hand never hides under the dock */
+#playerWrap.multi {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 10px;
+}
 .idle {
   opacity: 0.5;
   font-size: 12px;
@@ -344,6 +351,8 @@ button { font-family: inherit; }
   .suit { font-size: 16px; }
   .hand { margin-bottom: 2px; }
   .hand-label { font-size: 10px; margin-bottom: 1px; }
+  /* landscape has width, not height: every split hand on one row */
+  #playerWrap.multi { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
   .idle { padding: 4px 0; }
   .dock { flex-direction: row; align-items: center; gap: 8px; padding: 4px 10px 6px; }
   .insure-row { flex: 1 1 100%; }

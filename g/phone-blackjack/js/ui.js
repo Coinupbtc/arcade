@@ -132,6 +132,7 @@
     // player
     var wrap = $("playerWrap");
     wrap.innerHTML = "";
+    wrap.classList.toggle("multi", state.hands.length > 1);
     if (!state.hands.length) {
       wrap.innerHTML = "<div class='hand idle'>No cards yet — Deal.</div>";
       $("playerScore").textContent = "";

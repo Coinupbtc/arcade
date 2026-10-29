@@ -267,11 +267,16 @@
     return h && h.cards.length === 2 && !h.doubled && canAfford(state, h.bet);
   }
 
+  /** 10, J, Q and K are all worth ten, so any two of them are a pair (K-Q splits). */
+  function splitValue(rank) {
+    return (rank === "J" || rank === "Q" || rank === "K") ? "10" : rank;
+  }
+
   function canSplit(state) {
     if (state.phase !== "player") return false;
     var h = activeHand(state);
     if (!h || h.cards.length !== 2) return false;
-    if (h.cards[0].rank !== h.cards[1].rank) return false;
+    if (splitValue(h.cards[0].rank) !== splitValue(h.cards[1].rank)) return false;
     // No re-splitting aces, and no further split after aces were split.
     if (state.splitAces) return false;
     // Cap total split hands at 4.
@@ -351,8 +356,10 @@
       savePersist(state);
       return beginDealer(state);
     }
-    state.msg = "Split — playing hand " + (ai + 1) + ".";
     savePersist(state);
+    // A split hand dealt to 21 has nothing left to decide: move on like hit() does.
+    if (score(h.cards).total >= 21) return advanceOrDealer(state);
+    state.msg = "Split — playing hand " + (ai + 1) + ".";
     return state;
   }
 
