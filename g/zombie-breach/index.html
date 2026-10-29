@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Zombie Breach — hold the compound</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%9F%3C/text%3E%3C/svg%3E">
+<script src="/arcade/_arcade.js" defer></script>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js" } }
+</script>
+<style>
+  html, body { margin:0; padding:0; width:100%; height:100%; height:100dvh; overflow:hidden;
+    background:#05070c; color:#e8edf4; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-text-size-adjust:100%; overscroll-behavior:none; touch-action:manipulation;
+    -webkit-user-select:none; user-select:none; }
+  *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  #game-root{position:fixed; inset:0; background:#05070c;}
+  #game-root canvas{display:block; width:100%; height:100%; touch-action:none;}
+
+  /* ---------- HUD: below the 120x52 arcade pill band ---------- */
+  #hud{position:fixed; left:0; right:0; top:calc(56px + env(safe-area-inset-top,0px)); z-index:14;
+    display:flex; justify-content:space-between; align-items:flex-start; pointer-events:none;
+    padding:0 max(12px, env(safe-area-inset-left,0px)) 0 max(12px, env(safe-area-inset-left,0px));
+    transition:opacity .18s linear;}
+  #hud .col{display:flex; flex-direction:column; gap:5px;}
+  #hud .col.right{align-items:flex-end;}
+  .pill{background:rgba(8,12,18,.72); border:1px solid rgba(255,255,255,.09); border-radius:10px;
+    padding:5px 9px; font-size:12px; font-weight:700; letter-spacing:.05em; color:#e8edf4;
+    white-space:nowrap;}
+  #hp-pill{display:flex; align-items:center; gap:7px; color:#ff8b8b;}
+  #hp-bar{width:74px; height:8px; border-radius:5px; background:rgba(255,255,255,.13); overflow:hidden;}
+  #hp-fill{display:block; height:100%; width:100%; background:linear-gradient(90deg,#ff5f5f,#ff9a6b); transition:width .12s linear;}
+  #hud-wave{color:#7dffa5;}
+  #hud-score{color:#ffd27a;}
+  #hud-ammo{color:#ffe1a8;}
+  #hud-ammo.low{color:#ff8c42;}
+  /* off-crosshair threats: the camera cannot show what is behind you */
+  #threat-strip{display:none; color:#cfe3d6;}
+  #threat-strip.on{display:block;}
+  #threat-strip.behind{color:#ffb3a7; border-color:rgba(255,120,100,.5); animation:zbdanger 1.1s ease-in-out infinite;}
+  @keyframes zbdanger{0%,100%{opacity:1;} 50%{opacity:.62;}}
+  /* kill chain: a draining bar under the number */
+  #chain-pill{display:none; position:relative; overflow:hidden; color:#ffd166; padding-bottom:9px; min-width:96px;}
+  #chain-pill.on{display:block;}
+  #chain-fill{position:absolute; left:0; bottom:0; height:3px; width:100%; background:#ffd166; transition:width .12s linear;}
+  /* the Warden's health: a boss needs a readable number, not just a bigger body */
+  #warden-pill{display:none; position:relative; overflow:hidden; color:#ffb3a7; padding-bottom:9px; min-width:96px;
+    border-color:rgba(255,90,70,.55);}
+  #warden-pill.on{display:block;}
+  #warden-fill{position:absolute; left:0; bottom:0; height:3px; width:100%; background:#ff5c3d; transition:width .12s linear;}
+  /* the wave-clear choice, and the damage it can buy */
+  #supply-pill{display:none; color:#ffd166; border-color:rgba(255,209,102,.5); animation:zbdanger 1.6s ease-in-out infinite;}
+  #supply-pill.on{display:block;}
+  #dmg-pill{display:none; color:#ff9a6b;}
+  #dmg-pill.on{display:block;}
+  /* pointer lock: opt-in, desktop only, clear of the arcade pill */
+  #btn-lock{display:none; position:fixed; left:50%; bottom:calc(16px + env(safe-area-inset-bottom,0px));
+    transform:translateX(-50%); min-height:44px; min-width:44px; padding:0 14px; z-index:16;
+    align-items:center; justify-content:center; border-radius:12px; cursor:pointer;
+    background:rgba(8,12,18,.78); border:1px solid rgba(255,255,255,.2); color:#cfe3d6;
+    font:700 12px/1 system-ui,sans-serif; letter-spacing:.06em;}
+  #btn-lock.on{color:#7dffa5; border-color:rgba(125,255,165,.55);}
+  body[data-dev="keyboard"][data-screen="play"] #btn-lock{display:inline-flex;}
+  body[data-lock="on"] #game-root canvas{cursor:none;}
+  body[data-screen="menu"] #hud, body[data-screen="paused"] #hud, body[data-screen="over"] #hud{opacity:0;}
+
+  /* ---------- crosshair + hitmarker ---------- */
+  #crosshair{position:fixed; left:50%; top:50%; width:26px; height:26px; transform:translate(-50%,-50%);
+    z-index:12; pointer-events:none; opacity:0; transition:opacity .15s linear;}
+  body[data-screen="play"] #crosshair{opacity:1;}
+  #crosshair i{position:absolute; background:#f4fff6; box-shadow:0 0 4px rgba(0,0,0,.8);}
+  #crosshair .d{left:11px; top:11px; width:4px; height:4px; border-radius:50%;}
+  #crosshair .u{left:12px; top:0; width:2px; height:7px;}
+  #crosshair .b{left:12px; bottom:0; width:2px; height:7px;}
+  #crosshair .l{left:0; top:12px; width:7px; height:2px;}
+  #crosshair .r{right:0; top:12px; width:7px; height:2px;}
+  #crosshair.hit i{background:#ff5252;}
+  #crosshair.hit{transform:translate(-50%,-50%) scale(1.25);}
+  #crosshair.locked i{background:#ffd166; box-shadow:0 0 7px rgba(255,209,102,.9);}
+  #crosshair.kill i{background:#ff3b30;}
+
+  /* ---------- damage vignette ---------- */
+  #vignette{position:fixed; inset:0; z-index:9; pointer-events:none; opacity:0;
+    background:radial-gradient(ellipse at center, rgba(255,0,0,0) 42%, rgba(190,10,10,.62) 100%);
+    transition:opacity .09s linear;}
+
+  /* ---------- wave banner ---------- */
+  #banner{position:fixed; left:0; right:0; top:22%; z-index:16; text-align:center; pointer-events:none;
+    font-size:clamp(20px, 6vw, 34px); font-weight:800; letter-spacing:.12em; color:#9dffbe;
+    text-shadow:0 3px 22px rgba(0,255,120,.35); opacity:0; transition:opacity .25s linear;}
+  #banner.show{opacity:1;}
+  #banner em{display:block; font-style:normal; font-size:12px; letter-spacing:.18em; color:#cfe3d6; margin-top:6px;}
+
+  /* ---------- overlays ---------- */
+  .overlay{position:fixed; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center;
+    gap:16px; background:rgba(5,7,12,.82); z-index:40; text-align:center;
+    padding:max(18px, env(safe-area-inset-top,0px)) 20px max(18px, env(safe-area-inset-bottom,0px));}
+  .overlay.on{display:flex;}
+  .overlay .title{font-size:clamp(30px, 8.4vw, 46px); font-weight:900; letter-spacing:.06em; line-height:1.02;
+    color:#eaffef; text-shadow:0 4px 30px rgba(0,220,110,.28);}
+  .overlay .title b{color:#7dffa5;}
+  .overlay .sub{font-size:14px; line-height:1.5; color:#a9b8ca; max-width:330px;}
+  .overlay .best{font-size:12px; letter-spacing:.09em; color:#8b9bb0;}
+  .overlay .goal{font-size:11px; line-height:1.4; letter-spacing:.1em; color:#ffd166; max-width:330px; text-align:center;}
+  .overlay .tip{font-size:11.5px; line-height:1.45; letter-spacing:.04em; color:#9fb0c4; max-width:320px; text-align:center;}
+  .btn{min-width:240px; min-height:56px; font-size:17px; font-weight:800; letter-spacing:.06em;
+    border:none; border-radius:15px; background:linear-gradient(180deg,#34c873,#1c8f4c); color:#04200f;
+    box-shadow:0 5px 0 #0d6334, 0 10px 26px rgba(0,180,90,.22); cursor:pointer;}
+  .btn:active{transform:translateY(3px); box-shadow:0 2px 0 #0d6334;}
+  .btn.secondary{background:linear-gradient(180deg,#3a4252,#282e3c); color:#d7e0ec; box-shadow:0 5px 0 #161b24;}
+  .btn.small{min-height:48px; font-size:15px;}
+  .btn.ai-focus{outline:3px solid #ffd166; outline-offset:3px;}
+  .hint-row{display:flex; flex-wrap:wrap; gap:8px 14px; justify-content:center; max-width:360px;
+    min-height:44px; align-items:center;
+    font-size:11px; letter-spacing:.04em; color:#93a4b8;}
+  .hint-row span{display:inline-flex; align-items:center; gap:5px; white-space:nowrap;}
+  .hint-row img{height:20px; width:auto; opacity:.9;}
+  .verdict-stats{display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
+  .stat{background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:12px;
+    padding:8px 14px; min-width:84px;}
+  .stat b{display:block; font-size:19px; color:#ffefc4; line-height:1.2;}
+  .stat i{display:block; font-style:normal; font-size:10px; letter-spacing:.12em; color:#8b9bb0; margin-top:2px;}
+
+  /* ---------- loading / fatal ---------- */
+  #loading{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:60;
+    background:#05070c; color:#7dffa5; font-size:13px; letter-spacing:.22em;}
+  #fatal{position:fixed; top:60px; left:14px; right:14px; z-index:80; display:none;
+    background:#3d0d16; color:#ffc7c7; padding:12px 14px; border-radius:12px; font-size:12px; white-space:pre-wrap;}
+
+  @media (max-height:500px){
+    .overlay{gap:10px;}
+    .overlay .title{font-size:clamp(24px, 5.4vw, 34px);}
+    .overlay .sub{font-size:12px; max-width:430px;}
+    .btn{min-height:48px; font-size:15px; min-width:210px;}
+    #banner{top:14%; font-size:22px;}
+  }
+  @media (max-width:420px){
+    .hint-row{max-width:330px; font-size:10.5px;}
+  }
+  /* right-side look drag zone (touch only; the script shows it when a finger is the device) */
+  #look-zone{position:fixed; right:0; top:calc(56px + env(safe-area-inset-top,0px)); bottom:0; width:50%;
+    z-index:15; display:none; touch-action:none;}
+
+  /* the template's thumb cluster, re-skinned to this game's red / blue / amber verbs */
+  #arcade-ui .ai-act[data-act="primary"]{background:radial-gradient(circle at 30% 30%,#ff6b5e,#b3231c);
+    color:#fff; font-size:13px; box-shadow:0 0 0 3px rgba(255,120,100,.35), 0 6px 14px rgba(0,0,0,.55);}
+  #arcade-ui .ai-act[data-act="secondary"]{background:radial-gradient(circle at 30% 30%,#bfd0ff,#5a6fc0);
+    color:#0d1330; right:calc(110px + env(safe-area-inset-right,0px)) !important;
+    bottom:calc(18px + env(safe-area-inset-bottom,0px)) !important;}
+  #arcade-ui .ai-act[data-act="reload"]{background:radial-gradient(circle at 30% 30%,#ffe0a0,#c08a2a);
+    color:#33240a; right:calc(18px + env(safe-area-inset-right,0px)) !important;
+    bottom:calc(104px + env(safe-area-inset-bottom,0px)) !important;}
+  /* a verb on cooldown says so on its own button */
+  #arcade-ui .ai-act.cool{opacity:.42; filter:saturate(.45);}
+
+  /* visible move pad: where the thumb goes. The float stick appears on touch. */
+  #move-hint{position:fixed; left:max(20px, env(safe-area-inset-left,0px));
+    bottom:max(28px, env(safe-area-inset-bottom,0px)); width:118px; height:118px; border-radius:50%;
+    border:2px solid rgba(255,255,255,.14); background:rgba(255,255,255,.045); z-index:13;
+    pointer-events:none; display:none; opacity:0; transition:opacity .2s linear;}
+  #move-hint i{position:absolute; left:50%; top:50%; width:44px; height:44px; margin:-22px 0 0 -22px;
+    border-radius:50%; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.24);}
+  #move-hint b{position:absolute; left:0; right:0; bottom:-20px; text-align:center; font-size:9px;
+    letter-spacing:.16em; color:rgba(220,235,255,.45); font-weight:600;}
+  body[data-screen="play"] #move-hint.on{opacity:1;}
+
+  /* kill score pop */
+  #score-pop{position:fixed; left:50%; top:calc(50% - 44px); transform:translate(-50%,0); z-index:13;
+    font-weight:800; font-size:17px; color:#ffe28a; opacity:0; pointer-events:none;
+    text-shadow:0 2px 10px rgba(0,0,0,.9);}
+  #score-pop.pop{animation:zbspop .55s ease-out forwards;}
+  @keyframes zbspop{0%{opacity:1; transform:translate(-50%,0) scale(.9);} 100%{opacity:0; transform:translate(-50%,-34px) scale(1.18);}}
+
+</style>
+</head>
+<body data-screen="menu">
+  <div id="game-root"></div>
+
+  <div id="vignette"></div>
+  <div id="look-zone"></div>
+  <div id="move-hint"><i></i><b>MOVE</b></div>
+  <div id="score-pop"></div>
+
+  <div id="crosshair" aria-hidden="true"><i class="u"></i><i class="b"></i><i class="l"></i><i class="r"></i><i class="d"></i></div>
+
+  <div id="hud">
+    <div class="col">
+      <div class="pill" id="hp-pill">♥ <span id="hp-bar"><span id="hp-fill"></span></span> <span id="hp-num">100</span></div>
+      <div class="pill" id="hud-wave">WAVE 1</div>
+      <div class="pill danger" id="threat-strip"></div>
+      <div class="pill" id="warden-pill"><span id="warden-label">WARDEN</span><i id="warden-fill"></i></div>
+      <div class="pill" id="supply-pill"></div>
+    </div>
+    <div class="col right">
+      <div class="pill" id="hud-score">SCORE 0</div>
+      <div class="pill" id="hud-ammo">12 / 48</div>
+      <div class="pill chain" id="chain-pill"><span id="chain-label"></span><i id="chain-fill"></i></div>
+      <div class="pill" id="dmg-pill"></div>
+    </div>
+  </div>
+
+  <div id="banner"></div>
+
+  <div id="menu-overlay" class="overlay on">
+    <div class="title">ZOMBIE<br><b>BREACH</b></div>
+    <div class="sub">The compound is fenced. The dead are not. Clear each wave, then carry one supply: <b style="color:#7dffa5;font-weight:700">MEDKIT, AMMO, or HOLLOW POINTS for permanent damage.</b> Spitters hold range and lob acid — move when the green ring shows.</div>
+    <button id="btn-start" class="btn" data-menu="start">▶ START</button>
+    <div class="hint-row" id="menu-hints"></div>
+    <div class="goal" id="menu-goal">SPITTERS FROM WAVE 3 — MOVE WHEN THE GREEN RING SHOWS. THE WARDEN WALKS AT WAVE 5.</div>
+    <div class="best" id="menu-best">BEST 0</div>
+  </div>
+
+  <div id="pause-overlay" class="overlay">
+    <div class="title" style="font-size:clamp(26px,6vw,36px)">PAUSED</div>
+    <button id="btn-resume" class="btn" data-menu="resume">▶ RESUME</button>
+    <button id="btn-quit" class="btn secondary small" data-menu="quit">QUIT TO MENU</button>
+  </div>
+
+  <div id="verdict-overlay" class="overlay">
+    <div class="title" style="font-size:clamp(26px,7vw,40px); color:#ff7d7d">YOU DIED</div>
+    <div class="verdict-stats">
+      <div class="stat"><b id="v-wave">0</b><i>WAVE</i></div>
+      <div class="stat"><b id="v-kills">0</b><i>KILLS</i></div>
+      <div class="stat"><b id="v-score">0</b><i>SCORE</i></div>
+    </div>
+    <div class="best" id="v-best">BEST 0</div>
+    <div class="tip" id="v-tip"></div>
+    <button id="btn-again" class="btn" data-menu="again">↻ PLAY AGAIN</button>
+    <button id="btn-menu" class="btn secondary small" data-menu="menu">MENU</button>
+  </div>
+
+  <button id="btn-lock" type="button" aria-label="Lock the mouse for free look">🖱 LOCK</button>
+
+  <div id="loading">LOADING ZOMBIE BREACH…</div>
+  <div id="fatal"></div>
+
+  <script src="arcade-input.js"></script>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

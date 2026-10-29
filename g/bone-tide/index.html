@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#07080f">
+<title>Bone Tide</title>
+<link rel="icon" href="assets/ui/icon.png">
+<link rel="apple-touch-icon" href="assets/ui/icon.png">
+<link rel="stylesheet" href="style.css?v=17">
+</head>
+<body>
+<div id="game"></div>
+<div id="hurt"></div>
+
+<div id="hud">
+  <div class="tl">
+    <div class="bar hp"><i id="hpfill"></i><span>HP <b id="hptext">100</b></span></div>
+    <div class="bar rage"><i id="ragefill"></i><span>WHIRLWIND</span></div>
+  </div>
+  <div class="tc"><div id="wave"></div><div id="combo"></div>
+    <div id="boss"><label>THE BONE KING</label><div class="bar"><i id="bossfill"></i></div></div>
+  </div>
+  <div class="tr"><div id="score">0</div><button id="pausebtn" aria-label="Pause"><img src="assets/ui/pause.png" alt=""></button></div>
+</div>
+<div id="banner"></div>
+
+<div id="hint" aria-hidden="true">
+  <span class="kb"><img src="assets/ui/prompts/mouse_move.png" alt=""><i>AIM</i>
+    <img src="assets/ui/prompts/mouse_left.png" alt=""><img src="assets/ui/prompts/keyboard_j.png" alt=""><i>CHOP</i>
+    <img src="assets/ui/prompts/keyboard_k.png" alt=""><i>DASH</i>
+    <img src="assets/ui/prompts/keyboard_l.png" alt=""><i>SPIN</i>
+    <img src="assets/ui/prompts/keyboard_escape.png" alt=""><i>PAUSE</i></span>
+  <span class="pd"><img src="assets/ui/prompts/xbox_button_a.png" alt=""><i>CHOP</i>
+    <img src="assets/ui/prompts/xbox_button_b.png" alt=""><i>DASH</i>
+    <img src="assets/ui/prompts/xbox_button_x.png" alt=""><i>SPIN</i>
+    <img src="assets/ui/prompts/xbox_button_start.png" alt=""><i>PAUSE</i></span>
+  <span class="tp"><img src="assets/ui/prompts/touch_hand_open.png" alt=""><i>DRAG: MOVE</i>
+    <img src="assets/ui/prompts/touch_tap.png" alt=""><i>TAP: CHOP, DASH, SPIN</i></span>
+</div>
+
+<div id="stickzone"></div>
+<div id="stickpad"><img src="assets/ui/stick_pad.png" alt=""><img id="sticknub" src="assets/ui/stick_nub.png" alt=""></div>
+<div id="btns">
+  <button class="act spin" data-act="spin"><img src="assets/sprites/rune.png" alt=""><span>SPIN</span></button>
+  <button class="act dash" data-act="dash"><img src="assets/ui/icon_arrow_curved.png" alt=""><span>DASH</span></button>
+  <button class="act attack" data-act="attack"><img src="assets/ui/icon_sword.png" alt=""><span>CHOP</span></button>
+</div>
+
+<div id="loading"><h1>BONE TIDE</h1><div class="lb"><i id="loadbar"></i></div><p>raising the dead…</p></div>
+
+<div id="title" class="panel">
+  <h1>BONE<br>TIDE</h1>
+  <p class="sub">Five waves of the risen dead. One barbarian. One axe.</p>
+  <button id="play" class="big">PLAY</button>
+  <div class="diff" id="diff" role="group" aria-label="Difficulty">
+    <button data-diff="tide">HIGH TIDE</button>
+    <button data-diff="deep">DEEP TIDE</button>
+  </div>
+  <p id="diffnote" class="diffnote"></p>
+  <button id="howbtn">HOW IT WAS MADE</button>
+  <p class="keys">
+    <span class="kb"><img src="assets/ui/prompts/keyboard_arrows.png" alt=""><i>MOVE</i>
+      <img src="assets/ui/prompts/mouse_move.png" alt=""><i>AIM</i>
+      <img src="assets/ui/prompts/mouse_left.png" alt=""><i>CHOP</i>
+      <img src="assets/ui/prompts/keyboard_k.png" alt=""><i>DASH</i>
+      <img src="assets/ui/prompts/keyboard_l.png" alt=""><i>SPIN</i>
+      <img src="assets/ui/prompts/keyboard_escape.png" alt=""><i>PAUSE</i></span>
+    <span class="tp"><img src="assets/ui/prompts/touch_hand_open.png" alt=""><i>LEFT THUMB: MOVE</i>
+      <img src="assets/ui/prompts/touch_tap.png" alt=""><i>RIGHT: CHOP, DASH, SPIN</i></span>
+    <span class="pd"><img src="assets/ui/prompts/controller_xboxseries.png" alt=""><i>STICK: MOVE</i>
+      <img src="assets/ui/prompts/xbox_button_a.png" alt=""><i>CHOP</i>
+      <img src="assets/ui/prompts/xbox_button_b.png" alt=""><i>DASH</i>
+      <img src="assets/ui/prompts/xbox_button_x.png" alt=""><i>SPIN</i>
+      <img src="assets/ui/prompts/xbox_button_start.png" alt=""><i>PAUSE</i></span></p>
+  <p id="best"></p>
+</div>
+
+<div id="made" class="panel">
+  <h2>HOW IT WAS MADE</h2>
+  <p class="sub">Built in about an hour on this house's machines. The sprites are rendered from free (CC0) 3D models. The items, ground, music and sound effects were generated from text prompts for this game.</p>
+  <div class="tools" id="toolgrid"></div>
+  <button id="madeback">BACK</button>
+</div>
+
+<div id="pause" class="panel"><h2>PAUSED</h2>
+  <p class="keys">
+    <span class="kb"><img src="assets/ui/prompts/keyboard_arrows.png" alt=""><i>MOVE</i>
+      <img src="assets/ui/prompts/keyboard_j.png" alt=""><i>CHOP</i>
+      <img src="assets/ui/prompts/keyboard_k.png" alt=""><i>DASH</i>
+      <img src="assets/ui/prompts/keyboard_l.png" alt=""><i>SPIN</i></span>
+    <span class="pd"><img src="assets/ui/prompts/xbox_button_a.png" alt=""><i>CHOP</i>
+      <img src="assets/ui/prompts/xbox_button_b.png" alt=""><i>DASH</i>
+      <img src="assets/ui/prompts/xbox_button_x.png" alt=""><i>SPIN</i></span>
+    <span class="tp"><img src="assets/ui/prompts/touch_hand_open.png" alt=""><i>DRAG TO MOVE</i>
+      <img src="assets/ui/prompts/touch_tap.png" alt=""><i>TAP BUTTONS TO ACT</i></span></p>
+  <button id="resume" class="big">RESUME</button><button id="quit">QUIT TO TITLE</button></div>
+
+<div id="over" class="panel"><h2 id="overtitle">VICTORY</h2><p id="oversub" class="sub"></p><p id="overstats"></p>
+  <button id="again" class="big">PLAY AGAIN</button><button id="retry">RETRY WAVE 2</button><button id="menu">TITLE</button></div>
+
+<script src="lib/phaser.min.js"></script>
+<script src="src/data.js?v=17"></script>
+<script src="src/made.js?v=17"></script>
+<script src="src/boot.js?v=17"></script>
+<script src="src/world.js?v=17"></script>
+<script src="src/actors.js?v=17"></script>
+<script src="src/combat.js?v=17"></script>
+<script src="src/play.js?v=17"></script>
+<script src="src/loop.js?v=17"></script>
+<script src="src/input.js?v=17"></script>
+<script src="src/ui.js?v=17"></script>
+<script>
+  BT.UI.init(); BT.Input.init(); BT.Made.render();
+  // Proof hook for the arcade gate and web-game-proof: state, player, score, start().
+  window.__game = {
+    get state() { const s = BT.State.status; return s === "playing" ? "play" : s === "paused" ? "paused" : (s === "won" || s === "lost") ? "over" : "menu"; },
+    get player() { const sc = BT.game && BT.game.scene && BT.game.scene.getScene("play"); return sc && sc.hero ? { x: sc.hero.x, y: sc.hero.y } : null; },
+    get score() { return BT.State.score; },
+    // Always numeric: pointer aim when the mouse has moved, otherwise the hero's facing direction.
+    get aim() { const sc = BT.game && BT.game.scene && BT.game.scene.getScene("play"); if (!sc || !sc.hero) return null;
+      const a = BT.Input.aimDir(sc, sc.hero);
+      if (a) return { x: a.x, y: a.y, wx: a.wx, wy: a.wy };
+      const ang = BT.Actors.dirAngle(sc.hero.dir || "S");
+      return { x: Math.cos(ang), y: Math.sin(ang), wx: null, wy: null }; },
+    get aimPointer() { return BT.Input.mode === "mouse"; },
+    get chops() { return BT.State.chops; },
+    get dashes() { return BT.State.dashes; },
+    get spins() { return BT.State.spins; },
+    get chopdir() { return { x: BT.State.chopDirX, y: BT.State.chopDirY }; },
+    get difficulty() { return BT.State.diff; },
+    get practice() { return !!BT.State.practice; },
+    get startWave() { return BT.State.startWave; },
+    get state_() { return BT.State.status; },
+    get wave() { return BT.State.wave; },
+    get hp() { return BT.State.hp; },
+    get rage() { return BT.State.rage; },
+    start() { BT.UI.start(1); },   // the same function the PLAY button calls; queues while the scene loads
+    startWave(n) { BT.UI.start(n); },
+    setDifficulty(k) { BT.UI.setDiff(k); },
+    pause() { BT.UI.togglePause(); }
+  };
+  document.fonts.load("20px BTTitle").finally(() => {
+    BT.game = new Phaser.Game({
+      type: Phaser.AUTO, parent: "game", backgroundColor: "#07080f",
+      scale: { mode: Phaser.Scale.RESIZE, width: innerWidth, height: innerHeight },
+      render: { antialias: true, roundPixels: false },
+      audio: { disableWebAudio: false },
+      scene: [BT.BootScene, BT.PlayScene]
+    });
+  });
+</script>
+<script>if(location.pathname.indexOf("/g/")>=0){var s=document.createElement("script");s.src="/arcade/_arcade.js";s.defer=1;document.head.appendChild(s);}</script>
+</body>
+</html>

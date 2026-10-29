@@ -1,0 +1,264 @@
+:root{
+  --bg:#07090f;
+  --ink:#e9f2ff;
+  --dim:#7d8aa6;
+  --line:rgba(150,190,255,.16);
+  --l0:#3ff0ff;
+  --l1:#ff4fd8;
+  --l2:#ffc24d;
+  --l3:#57ffa8;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);
+  font-family:"SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  overscroll-behavior:none;touch-action:none;user-select:none;-webkit-user-select:none}
+body{position:fixed;inset:0;overflow:hidden}
+
+#stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+
+/* ---------- HUD ---------- */
+#hud{position:absolute;inset:0;pointer-events:none;
+  padding:calc(env(safe-area-inset-top,0px) + 58px) calc(env(safe-area-inset-right,0px) + 12px) 0 calc(env(safe-area-inset-left,0px) + 12px)}
+#hud.hidden{display:none}
+.hud-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding-right:56px}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat.mid{align-items:center}
+.stat.right{align-items:flex-end}
+.stat .k{font-size:10px;letter-spacing:.18em;color:var(--dim);font-weight:600}
+.stat b{font-size:20px;font-variant-numeric:tabular-nums;letter-spacing:.02em;font-weight:700}
+#progress{height:3px;margin-top:8px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden}
+#progress i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--l0),var(--l1),var(--l2));transition:width .12s linear}
+
+/* ---------- flow (the fail meter) ---------- */
+#flow-wrap{display:flex;align-items:center;gap:8px;margin-top:8px}
+#flow-wrap .k{font-size:9px;letter-spacing:.2em;color:var(--dim);font-weight:600}
+#flow{flex:1 1 auto;height:7px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;
+  border:1px solid rgba(150,190,255,.10)}
+#flow i{display:block;height:100%;width:100%;border-radius:4px;
+  background:linear-gradient(90deg,#ff4d6d,#ffc24d 42%,#57ffa8);
+  transition:width .12s linear, background .2s linear}
+#flow.low i{background:linear-gradient(90deg,#ff2040,#ff6b8a)}
+#flow.hit{box-shadow:0 0 14px rgba(87,255,168,.55)}
+#hud-hint{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);
+  text-align:center;font-size:11px;letter-spacing:.14em;color:rgba(185,198,222,.72);
+  opacity:0;transition:opacity .4s ease}
+#hud-hint.on{opacity:1}
+#hud-hint img{height:17px;vertical-align:-3px;margin:0 2px}
+#hud-track{margin-top:7px;text-align:center;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim)}
+
+#btn-pause{position:absolute;top:calc(env(safe-area-inset-top,0px) + 46px);right:calc(env(safe-area-inset-right,0px) + 14px);
+  width:44px;height:44px;border-radius:22px;border:1px solid var(--line);background:rgba(10,14,24,.55);
+  color:var(--dim);font-size:13px;letter-spacing:.06em;line-height:1;pointer-events:auto;cursor:pointer;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#btn-pause:active{color:var(--ink);transform:scale(.94)}
+
+#settings{display:flex;gap:8px;justify-content:center;margin:0 0 12px}
+.chip{min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);
+  background:rgba(255,255,255,.03);color:var(--dim);font:inherit;font-size:10px;
+  letter-spacing:.16em;cursor:pointer}
+.chip b{color:var(--ink);font-weight:700;margin-left:4px}
+.chip:active{transform:scale(.97);border-color:rgba(150,200,255,.4)}
+/* A keyboard or pad can land on a setting chip, so the focus must be visible. */
+.chip.focus{outline:2px solid rgba(150,220,255,.9);outline-offset:2px;color:var(--ink);
+  box-shadow:0 0 18px rgba(79,208,255,.30);background:rgba(120,200,255,.10)}
+.chip.bump{animation:chipbump .28s ease}
+@keyframes chipbump{0%{transform:scale(.96)}55%{transform:scale(1.06)}100%{transform:scale(1)}}
+.pause-note{font-size:12px;color:var(--dim);letter-spacing:.06em;margin:0 0 6px}
+
+/* ---------- judgement ---------- */
+#judge-layer{position:absolute;inset:0;pointer-events:none;display:flex;align-items:flex-end;justify-content:center;padding-bottom:24vh}
+#judge-text{font-size:28px;font-weight:900;letter-spacing:.2em;opacity:0;transform:translateY(6px) scale(.9);
+  padding:4px 16px;border-radius:999px;background:rgba(0,0,0,.42);text-shadow:0 0 22px currentColor}
+#judge-text.pop{animation:pop .42s cubic-bezier(.2,.9,.2,1) forwards}
+@keyframes pop{0%{opacity:0;transform:translateY(10px) scale(.85)}
+  18%{opacity:1;transform:translateY(0) scale(1.06)}
+  100%{opacity:0;transform:translateY(-14px) scale(.98)}}
+
+#countdown{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:64px;font-weight:800;letter-spacing:.04em;color:var(--ink);opacity:0;pointer-events:none}
+
+/* ---------- overlays ---------- */
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:calc(env(safe-area-inset-top,0px) + 18px) 18px calc(env(safe-area-inset-bottom,0px) + 18px);
+  background:radial-gradient(120% 90% at 50% 0%,rgba(20,30,54,.82),rgba(5,7,12,.94));
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);overflow-y:auto;touch-action:pan-y}
+.overlay.hidden{display:none}
+.menu-inner{width:100%;max-width:520px;text-align:center}
+h1{font-size:44px;line-height:1;margin:0 0 6px;letter-spacing:.22em;font-weight:800;
+  background:linear-gradient(180deg,#fff,#8fb6ff 70%,#5b7dff);-webkit-background-clip:text;background-clip:text;color:transparent}
+h1 span{display:block;font-size:11px;letter-spacing:.34em;color:var(--dim);margin-top:10px;
+  -webkit-text-fill-color:var(--dim);font-weight:600}
+.lede{font-size:14px;line-height:1.5;color:#b9c6de;margin:14px 0 18px}
+h2{font-size:24px;letter-spacing:.14em;margin:0 0 16px;text-transform:uppercase}
+
+#tracks{display:flex;flex-direction:column;gap:7px}
+.count{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin:0 0 10px}
+.tier{flex:0 0 auto;font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:4px 8px;border-radius:999px;border:1px solid var(--line);color:var(--dim);white-space:nowrap}
+.tier-drift{color:#6fd0e8;border-color:rgba(111,208,232,.4)}
+.tier-gentle{color:#3ff0ff;border-color:rgba(63,240,255,.35)}
+.tier-steady{color:#b8ff8f;border-color:rgba(184,255,143,.35)}
+.tier-moving{color:#ff4fd8;border-color:rgba(255,79,216,.35)}
+.tier-pressure{color:#ff5c6e;border-color:rgba(255,92,110,.4)}
+.track{display:flex;align-items:center;gap:10px;text-align:left;width:100%;min-width:0;
+  padding:7px 14px;min-height:48px;border-radius:16px;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));
+  border:1px solid var(--line);color:var(--ink);font:inherit;
+  transition:transform .12s ease,border-color .12s ease,background .12s ease}
+.track:active{transform:scale(.985)}
+.track .dot{width:12px;height:12px;border-radius:6px;flex:0 0 auto;box-shadow:0 0 14px currentColor}
+.track .name{flex:1 1 auto;min-width:0}
+.track .name b{display:block;font-size:16px;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track .name span{display:block;font-size:11px;color:var(--dim);letter-spacing:.06em;margin-top:3px}
+.track .best{font-size:11px;color:var(--dim);text-align:right;letter-spacing:.06em}
+.track .best b{display:block;font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums}
+
+.foot{font-size:11px;color:var(--dim);letter-spacing:.06em;margin-top:16px}
+.big{width:100%;min-height:52px;border-radius:16px;border:0;cursor:pointer;
+  font:inherit;font-weight:700;letter-spacing:.16em;font-size:14px;color:#06121a;
+  background:linear-gradient(180deg,#9ff6ff,#4fd0ff);margin-top:8px}
+.big:active{transform:scale(.985)}
+.ghost.wide{width:100%;min-height:48px;margin-top:10px;border-radius:16px;
+  background:transparent;border:1px solid var(--line);color:var(--dim);font:inherit;font-size:13px;
+  letter-spacing:.14em;cursor:pointer}
+
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 8px}
+.res-grid>div{padding:14px 10px;border-radius:14px;border:1px solid var(--line);
+  background:rgba(255,255,255,.03)}
+.res-grid .k{display:block;font-size:10px;letter-spacing:.18em;color:var(--dim);margin-bottom:6px}
+.res-grid b{font-size:24px;font-variant-numeric:tabular-nums}
+#res-grade{color:#9ff6ff}
+.res-note{font-size:13px;color:#b9c6de;line-height:1.45;margin:12px 0 4px;min-height:20px}
+
+/* landscape: keep the menu compact so nothing scrolls away */
+@media (orientation:landscape) and (max-height:520px){
+  h1{font-size:30px}
+  .lede{display:none}
+  .menu-inner{max-width:640px}
+  #tracks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .track{flex-direction:column;align-items:flex-start;padding:10px;min-height:56px}
+  .track .name span{display:none}
+  .track .best{text-align:left}
+  .foot{display:none}
+  .res-grid b{font-size:20px}
+}
+
+/* ---------- control hints (Kenney CC0 prompts) ---------- */
+.hints{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px;
+  margin:0 0 14px;font-size:11px;letter-spacing:.10em;color:#b9c6de}
+.hints span{display:inline-flex;align-items:center;gap:5px}
+.hints img{height:20px;width:auto;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.hints b{color:var(--ink);font-weight:700;letter-spacing:.06em}
+body.dev-touch .hints .k-only,
+body.dev-keyboard .hints .t-only,
+body.dev-pad .hints .k-only{display:none}
+
+/* ---------- the floating start button: one tap starts a run ---------- */
+/* The list scrolls inside a capped column, so the PLAY bar never hides a track row. */
+#menu{align-items:flex-start}
+#menu .menu-inner{display:flex;flex-direction:column;max-height:calc(100% - 104px);padding-bottom:0}
+#tracks{overflow-y:auto;flex:1 1 auto;min-height:0;overscroll-behavior:contain;touch-action:pan-y;padding-bottom:10px}
+.big.play{position:absolute;left:50%;transform:translateX(-50%);
+  bottom:calc(env(safe-area-inset-bottom,0px) + 24px);
+  width:min(520px, calc(100% - 32px));min-height:64px;margin:0;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 10px 34px rgba(79,208,255,.28)}
+.big.play small{font-size:10px;letter-spacing:.16em;opacity:.72;font-weight:600}
+.big.play:active{transform:translateX(-50%) scale(.985)}
+
+.track.focus{border-color:rgba(150,220,255,.65);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.035));
+  box-shadow:0 0 0 1px rgba(150,220,255,.25), 0 6px 22px rgba(60,140,255,.18)}
+.track .keys{flex:0 0 auto;font-size:10px;letter-spacing:.12em;color:var(--dim)}
+
+/* ---------- results ---------- */
+.res-head{display:flex;align-items:center;gap:14px;justify-content:center;margin:0 0 14px}
+.res-head h2{margin:0;text-align:left}
+.medal{width:58px;height:58px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:800;letter-spacing:.02em;color:#06121a;
+  background:linear-gradient(180deg,#9ff6ff,#4fd0ff);box-shadow:0 0 22px rgba(79,208,255,.45)}
+.medal.g-S{background:linear-gradient(180deg,#fff6c9,#ffc24d);box-shadow:0 0 26px rgba(255,194,77,.55)}
+.medal.g-A{background:linear-gradient(180deg,#c9ffb0,#57ffa8);box-shadow:0 0 22px rgba(87,255,168,.45)}
+.medal.g-B{background:linear-gradient(180deg,#cfe3ff,#8fb6ff)}
+.medal.g-C{background:linear-gradient(180deg,#e6d2ff,#b48bff)}
+.medal.g-D{background:linear-gradient(180deg,#ffc9d4,#ff6b8a)}
+.res-reason{font-size:12px;color:var(--dim);margin:4px 0 0;letter-spacing:.05em;text-align:left}
+
+@media (orientation:landscape) and (max-height:520px){
+  h1{font-size:26px;margin-bottom:2px}
+  h1 span{font-size:9px;margin-top:6px}
+  .lede{display:none}
+  .hints{margin:0 0 8px;font-size:10px;gap:4px 10px}
+  .hints img{height:16px}
+  .menu-inner{max-width:720px}
+  #menu .menu-inner{max-height:calc(100% - 66px)}
+  #tracks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+  .track{flex-direction:column;align-items:flex-start;padding:8px 10px;min-height:52px;gap:2px}
+  .track .name b{font-size:12px}
+  .track .name span{display:none}
+  .track .best{display:none}
+  .track .keys{display:none}
+  .track .tier{font-size:8px;padding:2px 6px}
+  .foot{display:none}
+  #settings{margin:0 0 8px}
+  .chip{min-height:44px;padding:0 12px}
+  .big.play{min-height:56px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);max-width:640px}
+  .res-grid b{font-size:20px}
+  .res-head{margin-bottom:8px}
+  .medal{width:46px;height:46px;font-size:20px}
+}
+
+/* small screens: the list gets the space, the lede stays short */
+@media (max-width:520px){
+  h1{font-size:36px}
+  .lede{font-size:13px;line-height:1.45;margin:10px 0 12px}
+  .count{display:none}
+  .hints{margin:0 0 12px}
+}
+/* desktop: two columns so all eight tracks fit without scrolling */
+@media (min-width:700px) and (min-height:560px){
+  #tracks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start}
+  .track .name span{display:none}
+  .count{margin:0 0 8px}
+}
+
+/* ---------- round 2 polish ---------- */
+/* The pause circle sits at the top-right; keep the COMBO number out from under it. */
+.stat.right{padding-right:2px}
+
+/* A pad or keyboard can highlight pause/results buttons, so focus must be visible. */
+.big.focus,.ghost.wide.focus{outline:2px solid rgba(150,220,255,.9);outline-offset:2px;
+  box-shadow:0 0 20px rgba(79,208,255,.35)}
+
+/* Best-score medal on a track row: a reason to come back. */
+.medal-chip{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;
+  border-radius:6px;margin-left:6px;font-size:9px;font-weight:800;font-style:normal;letter-spacing:0;
+  color:#06121a;background:#8fb6ff;vertical-align:2px}
+.medal-chip.g-S{background:linear-gradient(180deg,#fff6c9,#ffc24d)}
+.medal-chip.g-A{background:linear-gradient(180deg,#c9ffb0,#57ffa8)}
+.medal-chip.g-B{background:linear-gradient(180deg,#cfe3ff,#8fb6ff)}
+.medal-chip.g-C{background:linear-gradient(180deg,#e6d2ff,#b48bff)}
+.medal-chip.g-D{background:linear-gradient(180deg,#ffc9d4,#ff6b8a)}
+/* Cleared once: a check mark on the row, the visible "you did this" list. */
+.clear-mark{display:inline-block;margin-left:5px;font-size:11px;font-style:normal;color:#57ffa8;
+  text-shadow:0 0 10px rgba(87,255,168,.6)}
+/* The clear line sits beside the live accuracy number. */
+.stat .k i{font-style:normal;color:#8fa0c0;font-size:9px;letter-spacing:.10em;margin-left:3px}
+.res-goal{font-size:11px;letter-spacing:.14em;color:#9ff6ff;margin:2px 0 10px;text-transform:uppercase}
+
+/* Choosing a track repaints the PLAY bar: pulse it so the next tap is obvious. */
+.big.play.pulse{animation:playpulse .55s ease}
+@keyframes playpulse{0%{box-shadow:0 0 0 6px rgba(159,246,255,.35),0 10px 34px rgba(79,208,255,.28)}
+  100%{box-shadow:0 0 0 0 rgba(159,246,255,0),0 10px 34px rgba(79,208,255,.28)}}
+
+/* Landscape: the HUD was eating the approach. Compact the top strip, keep 44 px pause. */
+@media (orientation:landscape) and (max-height:520px){
+  #hud{padding-top:calc(env(safe-area-inset-top,0px) + 44px)}
+  .hud-row{padding-right:54px}
+  .stat b{font-size:16px}
+  .stat .k{font-size:9px;letter-spacing:.14em}
+  #progress{margin-top:5px}
+  #flow-wrap{margin-top:5px}
+  #flow{height:6px}
+  #hud-track{margin-top:4px;font-size:9px;letter-spacing:.2em}
+  #btn-pause{top:calc(env(safe-area-inset-top,0px) + 34px)}
+}

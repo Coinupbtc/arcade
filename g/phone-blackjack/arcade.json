@@ -1,0 +1,175 @@
+{
+  "id": "phone-blackjack",
+  "title": "Phone Blackjack",
+  "tagline": "Six decks, one thumb: hit, stand, double or split against the dealer.",
+  "description": "A real blackjack table in your hand: six decks, dealer stands on soft 17, blackjack pays 3:2, insurance on an Ace, and up to four hands after a split. Bet $5, $10 or $25 from a $100 bankroll, then play the hand. The dealer's hole card flips over one card at a time, so every round is something to watch, and your bankroll, win count and best bank are kept between visits. Run out of chips and you buy back in for $100.",
+  "genre": "Card / casino",
+  "tags": ["cards", "blackjack", "casino", "single-player"],
+  "orientation": "any",
+  "realtime": false,
+  "session": "2 min",
+  "controls": {
+    "desktop": [
+      ["Enter / Space", "Deal"],
+      ["H", "Hit"],
+      ["S", "Stand"],
+      ["D", "Double"],
+      ["P", "Split"],
+      ["1 2 3 / ← →", "Bet $5 $10 $25"],
+      ["R", "Reset · $100"],
+      ["M", "Sound on / off"]
+    ],
+    "touch": [
+      ["Tap", "Chip, Deal, Hit, Stand, Double, Split"],
+      ["Tap Insure", "Take insurance on an Ace"],
+      ["Tap ♪", "Sound on / off"],
+      ["Tap Reset", "Fresh $100"]
+    ],
+    "gamepad": [
+      ["A / Start", "Deal · hit"],
+      ["B", "Stand · decline insurance"],
+      ["X", "Double · take insurance"],
+      ["Y", "Split"],
+      ["DPad ← →", "Bet size"],
+      ["Back", "Reset"]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Enter",
+      "click": [0.3332, 0.9150],
+      "tap": { "portrait": [0.1179, 0.9336], "landscape": [0.3282, 0.9128] }
+    },
+    "keyboard": [
+      {
+        "name": "R resets to a $100 bank",
+        "steps": [{ "do": "key", "key": "KeyR", "ms": 90 }, { "do": "wait", "ms": 300 }],
+        "expect": ["bank == 100", "state == \"menu\""]
+      },
+      {
+        "name": "Enter deals two cards each",
+        "steps": [{ "do": "key", "key": "Enter", "ms": 90 }, { "do": "wait", "ms": 400 }],
+        "expect": ["state == \"play\"", "hands.0.cards.length == 2", "dealer.length == 2"]
+      },
+      {
+        "name": "H hits the hand",
+        "steps": [{ "do": "key", "key": "KeyH", "ms": 90 }, { "do": "wait", "ms": 400 }],
+        "expect": ["hands.0.cards.length == 3"]
+      },
+      {
+        "name": "S stands and the dealer busts",
+        "steps": [
+          { "do": "key", "key": "KeyR", "ms": 90 }, { "do": "wait", "ms": 300 },
+          { "do": "key", "key": "Enter", "ms": 90 }, { "do": "wait", "ms": 400 },
+          { "do": "key", "key": "KeyS", "ms": 90 }, { "do": "wait", "ms": 2400 }
+        ],
+        "expect": ["state == \"menu\"", "bank up 5"]
+      },
+      {
+        "name": "D doubles the bet",
+        "steps": [
+          { "do": "key", "key": "KeyR", "ms": 90 }, { "do": "wait", "ms": 300 },
+          { "do": "key", "key": "Enter", "ms": 90 }, { "do": "wait", "ms": 400 },
+          { "do": "key", "key": "KeyD", "ms": 90 }, { "do": "wait", "ms": 2400 }
+        ],
+        "expect": ["hands.0.bet == 10"]
+      },
+      {
+        "name": "3 picks the $25 chip",
+        "steps": [
+          { "do": "key", "key": "KeyR", "ms": 90 }, { "do": "wait", "ms": 300 },
+          { "do": "key", "key": "Digit3", "ms": 90 }, { "do": "wait", "ms": 200 }
+        ],
+        "expect": ["bet == 25"]
+      }
+    ],
+    "mouse": [
+      {
+        "name": "click Reset",
+        "steps": [{ "do": "click", "at": [0.6820, 0.0938] }, { "do": "wait", "ms": 300 }],
+        "expect": ["bank == 100", "state == \"menu\""]
+      },
+      {
+        "name": "click Deal starts the hand",
+        "steps": [{ "do": "click", "at": [0.3332, 0.9150] }, { "do": "wait", "ms": 400 }],
+        "expect": ["state == \"play\"", "hands.0.cards.length == 2"]
+      },
+      {
+        "name": "click Stand resolves it",
+        "steps": [{ "do": "click", "at": [0.5004, 0.9150] }, { "do": "wait", "ms": 2400 }],
+        "expect": ["state == \"menu\"", "bank up 5"]
+      }
+    ],
+    "touch": [
+      {
+        "name": "tap Reset clears the table",
+        "steps": [
+          { "do": "tap", "at": { "portrait": [0.8897, 0.1339], "landscape": [0.9514, 0.0718] } },
+          { "do": "wait", "ms": 300 }
+        ],
+        "expect": ["bank == 100", "state == \"menu\"", "dealer.length == 0"]
+      },
+      {
+        "name": "tap Deal starts the hand",
+        "steps": [
+          { "do": "tap", "at": { "portrait": [0.1179, 0.9336], "landscape": [0.3282, 0.9128] } },
+          { "do": "wait", "ms": 450 }
+        ],
+        "expect": ["state == \"play\"", "hands.0.cards.length == 2"]
+      },
+      {
+        "name": "tap Stand resolves it",
+        "steps": [
+          { "do": "tap", "at": { "portrait": [0.5000, 0.9336], "landscape": [0.6232, 0.9128] } },
+          { "do": "wait", "ms": 2400 }
+        ],
+        "expect": ["state == \"menu\"", "bank up 5"]
+      },
+      {
+        "name": "tap Reset then the $25 chip",
+        "steps": [
+          { "do": "tap", "at": { "portrait": [0.8897, 0.1339], "landscape": [0.9514, 0.0718] } },
+          { "do": "wait", "ms": 300 },
+          { "do": "tap", "at": { "portrait": [0.6962, 0.8661], "landscape": [0.1564, 0.9128] } },
+          { "do": "wait", "ms": 250 }
+        ],
+        "expect": ["bank == 100", "bet == 25"]
+      },
+      {
+        "name": "tap Deal at $25",
+        "steps": [
+          { "do": "tap", "at": { "portrait": [0.1179, 0.9336], "landscape": [0.3282, 0.9128] } },
+          { "do": "wait", "ms": 500 }
+        ],
+        "expect": ["state == \"play\"", "hands.0.bet == 25"]
+      }
+    ],
+    "gamepad": [
+      {
+        "name": "Back resets the table",
+        "steps": [{ "do": "pad", "buttons": ["BACK"], "ms": 140 }, { "do": "wait", "ms": 300 }],
+        "expect": ["bank == 100", "state == \"menu\""]
+      },
+      {
+        "name": "A deals",
+        "steps": [{ "do": "pad", "buttons": ["A"], "ms": 160 }, { "do": "wait", "ms": 450 }],
+        "expect": ["state == \"play\"", "dealer.length == 2"]
+      },
+      {
+        "name": "B stands",
+        "steps": [{ "do": "pad", "buttons": ["B"], "ms": 160 }, { "do": "wait", "ms": 2400 }],
+        "expect": ["state == \"menu\"", "bank up 5"]
+      },
+      {
+        "name": "Back, A then X doubles",
+        "steps": [
+          { "do": "pad", "buttons": ["BACK"], "ms": 140 }, { "do": "wait", "ms": 300 },
+          { "do": "pad", "buttons": ["A"], "ms": 160 }, { "do": "wait", "ms": 450 },
+          { "do": "pad", "buttons": ["X"], "ms": 160 }, { "do": "wait", "ms": 2400 }
+        ],
+        "expect": ["hands.0.bet == 10"]
+      }
+    ]
+  },
+  "na": {}
+}

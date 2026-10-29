@@ -1,0 +1,459 @@
+{
+  "id": "gloamkeep",
+  "title": "Gloamkeep",
+  "tagline": "Build lantern towers on the moor, flare the keep's light, hold the causeway.",
+  "description": "A small pixel tower defence on a black peat moor. Tap a tower button, then tap a tile beside the causeway. Every tower has two fire modes, so one lantern can bolt a single foe or flare a crowd. Kills in a row heat the keep: the lantern gauge fills, and a hot keep recharges FLARE faster. In a wave, tap FLARE to mark every foe: a marked foe loses its armour, and an unmarked Gloam Sovereign shrugs off most damage, so save it for the armoured push. Between waves spend embers on towers or four upgrade levels. The last waves bring flying shades, knights, brutes and two Sovereigns. If the light hits zero the keep goes dark.",
+  "genre": "Tower defence",
+  "tags": [
+    "strategy",
+    "defence",
+    "pixel"
+  ],
+  "orientation": "any",
+  "realtime": true,
+  "session": "8 min",
+  "controls": {
+    "desktop": [
+      [
+        "W A S D / Arrows",
+        "Move the tile cursor"
+      ],
+      [
+        "Enter",
+        "Build at the cursor, inspect a tower"
+      ],
+      [
+        "Space",
+        "Send the next wave early, or flare the lantern while a wave runs"
+      ],
+      [
+        "1 2 3 4",
+        "Pick Ember / Cinder / Frost / Arc"
+      ],
+      [
+        "LMB",
+        "Tap a tile or a button"
+      ],
+      [
+        "RMB / Backspace",
+        "Cancel the armed build, close the sheet"
+      ],
+      [
+        "X / Shift",
+        "Switch the tower's fire mode"
+      ],
+      [
+        "E",
+        "Upgrade the selected tower"
+      ],
+      [
+        "T",
+        "Cycle target priority"
+      ],
+      [
+        "F",
+        "Speed 1x / 2x"
+      ],
+      [
+        "Esc / P",
+        "Pause"
+      ]
+    ],
+    "touch": [
+      [
+        "Tap",
+        "Pick a tower or tap a moor tile to build"
+      ],
+      [
+        "Tap tower",
+        "Open its sheet: mode, upgrade, sell"
+      ],
+      [
+        "Tap FLARE",
+        "In a wave: mark every foe (strips armour)"
+      ],
+      [
+        "Button",
+        "Pause, top right"
+      ]
+    ],
+    "gamepad": [
+      [
+        "LT / RT",
+        "Pick the previous / next tower"
+      ],
+      [
+        "LS / DPad",
+        "Move the tile cursor"
+      ],
+      [
+        "A",
+        "Build at the cursor, inspect a tower"
+      ],
+      [
+        "RB",
+        "Send the next wave early, or flare the lantern while a wave runs"
+      ],
+      [
+        "B",
+        "Cancel the armed build, close the sheet"
+      ],
+      [
+        "X",
+        "Switch fire mode"
+      ],
+      [
+        "Y",
+        "Upgrade"
+      ],
+      [
+        "LB",
+        "Cycle target priority"
+      ],
+      [
+        "BACK",
+        "Speed 1x / 2x"
+      ],
+      [
+        "Start",
+        "Pause"
+      ]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Enter",
+      "click": [
+        0.5,
+        0.5975
+      ],
+      "tap": {
+        "portrait": [
+          0.5,
+          0.596
+        ],
+        "landscape": [
+          0.5,
+          0.637
+        ]
+      }
+    },
+    "pause": {
+      "key": "Escape",
+      "tap": {
+        "portrait": [
+          0.95,
+          0.05
+        ],
+        "landscape": [
+          0.95,
+          0.08
+        ]
+      },
+      "resume_tap": {
+        "portrait": [
+          0.95,
+          0.05
+        ],
+        "landscape": [
+          0.95,
+          0.08
+        ]
+      }
+    },
+    "keyboard": [
+      {
+        "name": "arrows move the tile cursor",
+        "steps": [
+          {
+            "do": "key",
+            "key": "ArrowRight",
+            "ms": 260
+          }
+        ],
+        "expect": [
+          "player.x up 1"
+        ]
+      },
+      {
+        "name": "key 1 arms the Ember Lantern",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Digit1",
+            "ms": 80
+          }
+        ],
+        "expect": [
+          "buildMode == \"lantern\""
+        ]
+      },
+      {
+        "name": "Enter builds at the cursor",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Enter",
+            "ms": 80
+          }
+        ],
+        "expect": [
+          "towers up 1"
+        ]
+      },
+      {
+        "name": "Space flares in a wave with the cursor on a tower",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 11000
+          },
+          {
+            "do": "key",
+            "key": "Space",
+            "ms": 80
+          }
+        ],
+        "expect": [
+          "flareCd up 1",
+          "selectedLevel == 0"
+        ]
+      },
+      {
+        "name": "Enter on a built tower selects it",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Enter",
+            "ms": 80
+          }
+        ],
+        "expect": [
+          "selectedLevel == 1"
+        ]
+      },
+      {
+        "name": "X swaps the fire mode",
+        "steps": [
+          {
+            "do": "key",
+            "key": "KeyX",
+            "ms": 80
+          }
+        ],
+        "expect": [
+          "fireMode == \"b\""
+        ]
+      },
+      {
+        "name": "E upgrades the selected tower",
+        "steps": [
+          {
+            "do": "key",
+            "key": "KeyE",
+            "ms": 80
+          }
+        ],
+        "expect": [
+          "selectedLevel up 1"
+        ]
+      }
+    ],
+    "mouse": [
+      {
+        "name": "click a tile to build (mouse only: shop slot, then tile)",
+        "steps": [
+          {
+            "do": "click",
+            "at": [
+              0.302890625,
+              0.649375
+            ]
+          },
+          {
+            "do": "click",
+            "at": [
+              0.934375,
+              0.169
+            ]
+          },
+          {
+            "do": "mousemove",
+            "at": [
+              0.302890625,
+              0.649375
+            ]
+          },
+          {
+            "do": "click",
+            "at": [
+              0.302890625,
+              0.649375
+            ]
+          },
+          {
+            "do": "wait",
+            "ms": 250
+          }
+        ],
+        "expect": [
+          "buildMode == \"lantern\"",
+          "towers up 1"
+        ]
+      },
+      {
+        "name": "click the built tower to inspect it",
+        "steps": [
+          {
+            "do": "click",
+            "at": [
+              0.302890625,
+              0.649375
+            ]
+          },
+          {
+            "do": "wait",
+            "ms": 250
+          }
+        ],
+        "expect": [
+          "selectedLevel == 1"
+        ]
+      }
+    ],
+    "touch": [
+      {
+        "name": "tap the shop to arm a tower",
+        "steps": [
+          {
+            "do": "tap",
+            "at": {
+              "portrait": [
+                0.1123,
+                0.9526
+              ],
+              "landscape": [
+                0.9153,
+                0.2415
+              ]
+            }
+          }
+        ],
+        "expect": [
+          "buildMode == \"lantern\""
+        ]
+      },
+      {
+        "name": "tap a moor tile to build",
+        "steps": [
+          {
+            "do": "tap",
+            "at": {
+              "portrait": [
+                0.125,
+                0.1768
+              ],
+              "landscape": [
+                0.3251,
+                0.2417
+              ]
+            }
+          }
+        ],
+        "expect": [
+          "towers up 1"
+        ]
+      },
+      {
+        "name": "tap the tower, then UPGRADE",
+        "steps": [
+          {
+            "do": "tap",
+            "at": {
+              "portrait": [
+                0.125,
+                0.1768
+              ],
+              "landscape": [
+                0.3251,
+                0.2417
+              ]
+            }
+          },
+          {
+            "do": "tap",
+            "at": {
+              "portrait": [
+                0.3096,
+                0.9621
+              ],
+              "landscape": [
+                0.91,
+                0.6308
+              ]
+            }
+          }
+        ],
+        "expect": [
+          "selectedLevel up 1"
+        ]
+      }
+    ],
+    "gamepad": [
+      {
+        "name": "left stick moves the tile cursor",
+        "steps": [
+          {
+            "do": "pad",
+            "axes": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "ms": 260
+          }
+        ],
+        "expect": [
+          "player.x up 1"
+        ]
+      },
+      {
+        "name": "LT arms the next tower and A builds it",
+        "steps": [
+          {
+            "do": "pad",
+            "buttons": [
+              "LT"
+            ],
+            "ms": 140
+          },
+          {
+            "do": "pad",
+            "axes": [
+              0,
+              1,
+              0,
+              0
+            ],
+            "ms": 260
+          },
+          {
+            "do": "pad",
+            "buttons": [
+              "A"
+            ],
+            "ms": 160
+          },
+          {
+            "do": "wait",
+            "ms": 250
+          }
+        ],
+        "expect": [
+          "towers up 1"
+        ]
+      }
+    ]
+  }
+}

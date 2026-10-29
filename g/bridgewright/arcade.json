@@ -1,0 +1,211 @@
+{
+  "id": "bridgewright",
+  "title": "Bridgewright",
+  "tagline": "Drag bolts into space to build any span, then press RUN and watch what holds.",
+  "description": "You get a canyon and free beams. Drag from a bolt to another bolt, or into empty space, and a joint snaps onto the grid. PLAY opens the first span straight away: lay a road deck, then press RUN. Nine rigs cross one at a time until a member snaps or the deck drops. The deck shows the failing member, the load it took and how far it sagged. BRACE drops a starter king post: short spans hold it, long spans need a deeper truss that you build by hand. Every scenario asks for a load tier, and medals reward the top rig inside a lean beam par. SCENARIOS opens the other seven spans. No budget: build anything.",
+  "genre": "Bridge physics simulator",
+  "tags": ["physics", "building", "sandbox", "simulator"],
+  "orientation": "any",
+  "realtime": true,
+  "session": "2 min",
+  "controls": {
+    "desktop": [
+      ["Mouse", "Drag a bolt to build a beam"],
+      ["Arrows / W A S D", "Move the build cursor"],
+      ["Space", "Build from the cursor"],
+      ["E then Space", "Erase the beam under the cursor"],
+      ["1 2 3", "Wood / steel / carbon"],
+      ["F", "Lay the road deck"],
+      ["G", "Add a starter king post"],
+      ["Z / Y", "Undo / redo"],
+      ["Enter / R", "Run / stop the ladder"],
+      ["Esc / P", "Pause"],
+      ["R", "Retest after a verdict"],
+      ["Wheel / + -", "Zoom"]
+    ],
+    "touch": [
+      ["Tap", "PLAY on the title, then build"],
+      ["Drag", "Build a beam, bolt to bolt or into space"],
+      ["Tap", "Chips pick wood / steel / carbon"],
+      ["Tap", "ERASE, then tap a beam to remove it"],
+      ["Tap", "DECK lays the road, RUN sends the rigs"],
+      ["Tap", "BRACE adds a starter king post"],
+      ["Tap", "1x / 2x / 4x sets the run speed, live"],
+      ["Tap", "Pause, top right"],
+      ["Tap", "RETEST on the result card"],
+      ["Double Tap", "Reset the view"],
+      ["Pinch", "Zoom"]
+    ],
+    "gamepad": [
+      ["LS / DPad", "Move the build cursor, one cell per press"],
+      ["RS", "Jump to the nearest bolt"],
+      ["A", "Build from the cursor"],
+      ["LT then A", "Erase the beam under the cursor"],
+      ["X", "Starter king post"],
+      ["Y", "Deck"],
+      ["LB / RB", "Undo / redo"],
+      ["RT", "Run / stop"],
+      ["Back", "Cycle wood / steel / carbon"],
+      ["Start", "Pause"],
+      ["B", "Scenarios"]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Enter",
+      "click": [0.5, 0.75],
+      "tap": { "portrait": [0.5, 0.75], "landscape": [0.5, 0.75] }
+    },
+    "setup": [
+      { "do": "click", "at": [0.5, 0.62] },
+      { "do": "wait", "ms": 350 }
+    ],
+    "pause": {
+      "key": "Escape",
+      "tap": { "portrait": [0.913, 0.04], "landscape": [0.96, 0.087] },
+      "resume_tap": null
+    },
+    "keyboard": [
+      {
+        "name": "arrow moves the build cursor",
+        "steps": [{ "do": "key", "key": "ArrowRight", "ms": 90 }],
+        "expect": ["cursor.x up 10"]
+      },
+      {
+        "name": "Home snaps to a bolt, Space builds a beam",
+        "steps": [
+          { "do": "key", "key": "Home", "ms": 90 },
+          { "do": "wait", "ms": 150 },
+          { "do": "key", "key": "Space", "ms": 90 },
+          { "do": "wait", "ms": 150 },
+          { "do": "keys", "seq": ["ArrowRight", "ArrowRight", "ArrowRight"], "gap": 140 },
+          { "do": "wait", "ms": 150 },
+          { "do": "key", "key": "Space", "ms": 90 }
+        ],
+        "expect": ["beamCount up 1"]
+      },
+      {
+        "name": "E then Space erases the beam under the cursor, E turns erase off",
+        "steps": [
+          { "do": "key", "key": "Home", "ms": 90 },
+          { "do": "wait", "ms": 150 },
+          { "do": "key", "key": "KeyE", "ms": 90 },
+          { "do": "wait", "ms": 150 },
+          { "do": "key", "key": "Space", "ms": 90 },
+          { "do": "wait", "ms": 250 },
+          { "do": "key", "key": "KeyE", "ms": 90 }
+        ],
+        "expect": ["beamCount down 1"]
+      },
+      {
+        "name": "Enter runs the ladder, Enter stops it",
+        "steps": [
+          { "do": "key", "key": "Enter", "ms": 90 },
+          { "do": "wait", "ms": 450 },
+          { "do": "key", "key": "Enter", "ms": 90 }
+        ],
+        "expect": ["screen == \"build\""]
+      }
+    ],
+    "mouse": [
+      {
+        "name": "mouse drag builds a beam",
+        "steps": [
+          { "do": "mousedrag", "from": [0.22, 0.5305], "to": [0.35, 0.42], "ms": 600 }
+        ],
+        "expect": ["beamCount up 1"]
+      }
+    ],
+    "touch": [
+      {
+        "name": "drag a bolt into space",
+        "steps": [
+          {
+            "do": "drag",
+            "from": { "portrait": [0.18, 0.5104], "landscape": [0.2403, 0.5403] },
+            "to": [0.3, 0.42],
+            "ms": 600
+          }
+        ],
+        "expect": ["beamCount up 1"]
+      },
+      {
+        "name": "tap DECK lays the road",
+        "steps": [
+          { "do": "tap", "at": { "portrait": [0.4513, 0.9668], "landscape": [0.2085, 0.9282] } },
+          { "do": "wait", "ms": 400 }
+        ],
+        "expect": ["beamCount up 1"]
+      },
+      {
+        "name": "tap RUN, the 2x chip works live, tap STOP returns to build",
+        "steps": [
+          { "do": "tap", "at": { "portrait": [0.8077, 0.9668], "landscape": [0.6457, 0.9282] } },
+          { "do": "wait", "ms": 250 },
+          { "do": "tap", "at": { "portrait": [0.6513, 0.1031], "landscape": [0.8389, 0.0795] } },
+          { "do": "wait", "ms": 250 },
+          { "do": "tap", "at": { "portrait": [0.8077, 0.9668], "landscape": [0.6457, 0.9282] } }
+        ],
+        "expect": ["runSpeed == 4"]
+      },
+      {
+        "name": "tap STEEL picks the material",
+        "steps": [
+          { "do": "tap", "at": { "portrait": [0.5, 0.899], "landscape": [0.4929, 0.0795] } },
+          { "do": "wait", "ms": 250 }
+        ],
+        "expect": ["mat == \"steel\""]
+      }
+    ],
+    "gamepad": [
+      {
+        "name": "left stick moves the build cursor",
+        "steps": [{ "do": "pad", "axes": [1, 0, 0, 0], "ms": 500 }],
+        "expect": ["cursor.x up 10"]
+      },
+      {
+        "name": "RS jumps to a bolt, A builds, stick moves, A places",
+        "steps": [
+          { "do": "pad", "buttons": ["RS"], "ms": 160 },
+          { "do": "wait", "ms": 150 },
+          { "do": "pad", "buttons": ["A"], "ms": 160 },
+          { "do": "wait", "ms": 150 },
+          { "do": "pad", "axes": [0, -1, 0, 0], "ms": 400 },
+          { "do": "wait", "ms": 150 },
+          { "do": "pad", "buttons": ["A"], "ms": 160 }
+        ],
+        "expect": ["beamCount up 1"]
+      },
+      {
+        "name": "X adds the starter king post",
+        "steps": [
+          { "do": "pad", "buttons": ["X"], "ms": 160 },
+          { "do": "wait", "ms": 350 }
+        ],
+        "expect": ["beamCount up 1"]
+      },
+      {
+        "name": "Back cycles the material",
+        "steps": [
+          { "do": "pad", "buttons": ["BACK"], "ms": 160 },
+          { "do": "wait", "ms": 200 }
+        ],
+        "expect": ["mat == \"steel\""]
+      },
+      {
+        "name": "LT erase removes the beam under the cursor, LT again turns it off",
+        "steps": [
+          { "do": "pad", "buttons": ["RS"], "ms": 160 },
+          { "do": "wait", "ms": 150 },
+          { "do": "pad", "buttons": ["LT"], "ms": 160 },
+          { "do": "wait", "ms": 150 },
+          { "do": "pad", "buttons": ["A"], "ms": 160 },
+          { "do": "wait", "ms": 250 },
+          { "do": "pad", "buttons": ["LT"], "ms": 160 }
+        ],
+        "expect": ["beamCount down 1"]
+      }
+    ]
+  },
+  "na": {}
+}

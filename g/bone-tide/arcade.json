@@ -1,0 +1,75 @@
+{
+  "id": "bone-tide",
+  "title": "Bone Tide",
+  "tagline": "Five waves of the dead, then the Bone King rises. Chop, dash, whirlwind.",
+  "description": "You are a barbarian alone in a moonlit graveyard. Skeletons claw out of the graves in five waves, and mages throw fire from the back. Chop the nearest ones with your axe, dash through a crowd to escape a hit, and fill your rage bar to spend it on a whirlwind that clears everything around you. Break enough bones and the Bone King walks out of the crypt for a final, harder fight. Pick HIGH TIDE for a fair run, or DEEP TIDE for a third more dead. A run ends when the last wave falls or when the tide takes you. Die on wave 4 and you can retry that wave to practise it. One tap starts again.",
+  "genre": "Horde survivor",
+  "tags": ["action", "survival", "horror", "horde"],
+  "orientation": "any",
+  "realtime": true,
+  "session": "3–5 min",
+  "controls": {
+    "desktop": [
+      ["W A S D / Arrows", "Move"],
+      ["Mouse", "Aim the axe (a ring shows where it lands, walking or standing)"],
+      ["LMB / J / Space", "Chop (hold to keep chopping)"],
+      ["K / Shift", "Dash"],
+      ["L / E", "Whirlwind when rage is full"],
+      ["Esc / P", "Pause"],
+      ["Enter / Space", "Start, and press the focused menu button"],
+      ["Arrows", "Move the menu focus"],
+      ["R", "Restart after a run ends"]
+    ],
+    "touch": [
+      ["Drag left thumb", "Move"],
+      ["Tap CHOP", "Chop (hold to keep chopping)"],
+      ["Tap DASH", "Dash"],
+      ["Tap SPIN", "Whirlwind when rage is full"],
+      ["Tap ⏸", "Pause"],
+      ["Tap", "Start, pick HIGH TIDE or DEEP TIDE, and choose menu buttons"],
+      ["Tap RETRY WAVE", "Practise the wave you died on"]
+    ],
+    "gamepad": [
+      ["LS / DPad", "Move (also moves the menu focus)"],
+      ["A", "Chop, and confirm in menus"],
+      ["B", "Dash, and back out of menus"],
+      ["X / Y / RB", "Whirlwind when rage is full"],
+      ["Start", "Pause, or start from the title"]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Enter",
+      "click": [0.5, 0.5302],
+      "tap": { "portrait": [0.5, 0.4565], "landscape": [0.5, 0.4477] },
+      "pad": "A"
+    },
+    "pause": {
+      "key": "Escape",
+      "tap": { "portrait": [0.9128, 0.0948], "landscape": [0.9597, 0.2051] },
+      "resume_tap": { "portrait": [0.5, 0.516], "landscape": [0.5, 0.569] }
+    },
+    "keyboard": [
+      { "name": "walk right", "steps": [{ "do": "key", "key": "ArrowRight", "ms": 700 }], "expect": ["player.x up 10"] },
+      { "name": "walk up", "steps": [{ "do": "key", "key": "w", "ms": 500 }], "expect": ["player.y down 10"] },
+      { "name": "chop", "steps": [{ "do": "key", "key": "Space", "ms": 120 }], "expect": ["chops up 1"], "settle": 350 },
+      { "name": "dash", "steps": [{ "do": "key", "key": "Shift", "ms": 160 }], "expect": ["dashes up 1"], "settle": 350 }
+    ],
+    "mouse": [
+      { "name": "aim right", "steps": [{ "do": "mousemove", "at": [0.72, 0.5] }], "expect": ["aim.x up 0.1"], "settle": 250 },
+      { "name": "click chops", "steps": [{ "do": "click", "at": [0.62, 0.5] }], "expect": ["chops up 1"], "settle": 350 },
+      { "name": "chop goes where the ring is", "steps": [{ "do": "mousemove", "at": [0.9, 0.5] }, { "do": "click", "at": [0.9, 0.5] }],
+        "expect": ["chopdir.x == 1"], "settle": 350 }
+    ],
+    "touch": [
+      { "name": "drag right", "steps": [{ "do": "drag", "from": [0.25, 0.72], "to": [0.45, 0.72], "ms": 700 }], "expect": ["player.x up 10"] },
+      { "name": "tap CHOP", "steps": [{ "do": "tap", "at": { "portrait": [0.8385, 0.923], "landscape": [0.9254, 0.8333] } }], "expect": ["chops up 1"], "settle": 350 }
+    ],
+    "gamepad": [
+      { "name": "stick right", "steps": [{ "do": "pad", "axes": [1, 0], "ms": 700 }], "expect": ["player.x up 10"] },
+      { "name": "A chops", "steps": [{ "do": "pad", "buttons": ["A"], "ms": 200 }], "expect": ["chops up 1"], "settle": 350 },
+      { "name": "dpad left", "steps": [{ "do": "pad", "buttons": ["LEFT"], "ms": 400 }], "expect": ["player.x down 10"] }
+    ]
+  },
+  "na": {}
+}

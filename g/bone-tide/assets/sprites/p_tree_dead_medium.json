@@ -1,0 +1,59 @@
+{
+ "frames": {
+  "static_S_000": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 224,
+    "h": 224
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 224,
+    "h": 224
+   },
+   "sourceSize": {
+    "w": 224,
+    "h": 224
+   }
+  }
+ },
+ "animations": {
+  "static_S": {
+   "frames": [
+    "static_S_000"
+   ],
+   "fps": 12,
+   "loop": false
+  }
+ },
+ "meta": {
+  "image": "p_tree_dead_medium.png",
+  "size": {
+   "w": 224,
+   "h": 224
+  },
+  "format": "RGBA8888",
+  "scale": "1",
+  "cell": 224,
+  "pivot": {
+   "x": 87.9,
+   "y": 214.4
+  },
+  "dirs": [
+   "S"
+  ],
+  "pixel_art": false,
+  "source": "kenney/kaykit-halloween/addons/kaykit_halloween_bits/Assets/gltf/tree_dead_medium.gltf",
+  "elevation": 30,
+  "ortho": 3.894,
+  "target": [
+   0.4189,
+   1.52
+  ],
+  "world_per_px": 0.01738
+ }
+}

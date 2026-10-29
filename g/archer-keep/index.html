@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0e1526">
+<title>Archer Keep — Siege War</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css?v=15">
+</head>
+<body>
+<div id="app" class="app-shell">
+  <canvas id="cv" width="390" height="844" aria-label="Archer Keep battleground"></canvas>
+
+  <!-- HUD (playing) -->
+  <div id="hud" class="hidden">
+    <div id="hud-top">
+      <div id="stat-row">
+        <div class="stat-block left">
+          <span class="stat-name">CASTLE <small>HP</small></span>
+          <div class="hp-bar"><div id="hp-castle" class="hp-fill castle"></div></div>
+          <span id="hp-castle-num" class="hp-num">400</span>
+        </div>
+        <div id="round-wrap"><span id="round-num">WAVE 1</span></div>
+        <div class="stat-block right">
+          <span class="stat-name">ARCHER <small>HP</small></span>
+          <div class="hp-bar"><div id="hp-archer" class="hp-fill archer"></div></div>
+          <span id="hp-archer-num" class="hp-num">100</span>
+        </div>
+      </div>
+      <div id="sub-row">
+        <span id="coins">🪙 0</span>
+        <span id="left"></span>
+        <span id="combo"></span>
+      </div>
+    </div>
+
+    <div id="round-banner" class="hidden"></div>
+
+    <div id="hud-bottom">
+      <div id="arrow-row"></div>
+      <div id="fire-wrap">
+        <div id="draw-wrap"><div id="draw-bar"><div id="draw-fill"></div></div>
+          <span id="draw-num">25%</span></div>
+      </div>
+      <div id="hint-row"></div>
+      <button id="btn-sally" class="sally-btn touch-target">⚔ SALLY</button>
+    </div>
+  </div>
+
+  <!-- Pause (one owner: Esc / P / pad Start / the ⏸ pill) -->
+  <div id="pause" class="hidden">
+    <h2>PAUSED</h2>
+    <p class="tag">The orcs hold their line.</p>
+    <button id="pause-resume" class="touch-target primary">RESUME</button>
+    <p class="hint">Esc / P / Start resumes · or tap RESUME</p>
+  </div>
+
+  <!-- Shop (between waves ONLY — no mid-wave upgrades) -->
+  <div id="shop" class="hidden">
+    <div class="shop-card-wrap">
+      <h2 id="shop-round">WAVE 1 CLEARED</h2>
+      <div id="shop-coins">🪙 0</div>
+      <p id="shop-brief" class="shop-brief"></p>
+      <div id="shop-offers"></div>
+      <p id="shop-hint" class="shop-hint"></p>
+      <button id="shop-continue" class="touch-target primary">NEXT WAVE →</button>
+    </div>
+  </div>
+
+  <!-- Menu -->
+  <div id="menu">
+    <h1>ARCHER<span> KEEP</span></h1>
+    <p class="tag">Press, drag toward the orc you want, then hold. Release to loose.<br>
+    The bow arcs the arrow onto that target. A longer hold flies faster and flatter.<br>
+    Headshots hit 1.8×. Warbands march in from the east — the run ends when the gate falls.</p>
+    <button id="btn-play" class="touch-target primary" data-menu="play">DEFEND</button>
+    <p class="starthint">Tap anywhere · Enter · pad A</p>
+    <div id="menu-hints" class="hint-row"></div>
+    <p class="hint" id="menu-best"></p>
+    <p class="hint" id="build-badge">BUILD M12 — aim assist on pad and keys, gentler first waves, live shop coach</p>
+  </div>
+
+  <!-- Verdict -->
+  <div id="verdict" class="hidden">
+    <h2 id="verdict-title">THE KEEP FELL</h2>
+    <p id="verdict-sub"></p>
+    <button id="btn-retry" class="touch-target primary" data-menu="retry">REBUILD &amp; RETRY</button>
+  </div>
+
+  <div id="coach" class="hidden"></div>
+  <div id="toast" class="hidden"></div>
+  <div id="fatal" class="hidden"><h2>Startup error</h2><pre id="fatal-msg"></pre></div>
+</div>
+
+<script>
+window.__errs = [];
+window.addEventListener('error', function(e){
+  window.__errs.push(String(e.message||e));
+  var f = document.getElementById('fatal'), m = document.getElementById('fatal-msg');
+  if (f && m && f.classList.contains('hidden')) {
+    f.classList.remove('hidden'); m.textContent = String(e.message||e);
+  }
+});
+</script>
+<script src="sw-clear.js?v=15"></script>
+<script src="vendor/arcade-input.js?v=15"></script>
+<script src="src/config.js?v=15"></script>
+<script src="src/utils.js?v=15"></script>
+<script src="src/audio.js?v=15"></script>
+<script src="src/camera.js?v=15"></script>
+<script src="src/world.js?v=15"></script>
+<script src="src/fx.js?v=15"></script>
+<script src="src/bow.js?v=15"></script>
+<script src="src/knights.js?v=15"></script>
+<script src="src/garrison.js?v=15"></script>
+<script src="src/cauldron.js?v=15"></script>
+<script src="src/enemies.js?v=15"></script>
+<script src="src/aim.js?v=15"></script>
+<script src="src/minimap.js?v=15"></script>
+<script src="src/curves.js?v=15"></script>
+<script src="src/shop.js?v=15"></script>
+<script src="src/input.js?v=15"></script>
+<script src="src/controls.js?v=15"></script>
+<script src="src/ui.js?v=15"></script>
+<script src="src/game.js?v=15"></script>
+<script>if(location.pathname.indexOf("/g/")>=0){var s=document.createElement("script");s.src="/arcade/_arcade.js";s.defer=1;document.head.appendChild(s);}</script>
+</body>
+</html>

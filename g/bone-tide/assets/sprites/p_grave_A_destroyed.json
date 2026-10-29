@@ -1,0 +1,59 @@
+{
+ "frames": {
+  "static_S_000": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 112
+   }
+  }
+ },
+ "animations": {
+  "static_S": {
+   "frames": [
+    "static_S_000"
+   ],
+   "fps": 12,
+   "loop": false
+  }
+ },
+ "meta": {
+  "image": "p_grave_A_destroyed.png",
+  "size": {
+   "w": 112,
+   "h": 112
+  },
+  "format": "RGBA8888",
+  "scale": "1",
+  "cell": 112,
+  "pivot": {
+   "x": 54.2,
+   "y": 97.8
+  },
+  "dirs": [
+   "S"
+  ],
+  "pixel_art": false,
+  "source": "kenney/kaykit-halloween/addons/kaykit_halloween_bits/Assets/gltf/grave_A_destroyed.gltf",
+  "elevation": 30,
+  "ortho": 2.4307,
+  "target": [
+   0.0387,
+   0.9075
+  ],
+  "world_per_px": 0.0217
+ }
+}

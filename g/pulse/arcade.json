@@ -1,0 +1,300 @@
+{
+  "id": "pulse",
+  "title": "PULSE",
+  "tagline": "Four lanes, one thumb. The chart is the music — no song files.",
+  "description": "A four-lane rhythm game with no song files: every track is synthesised in your browser, and the falling notes come from the same event list that plays the audio, so a note cannot drift from the beat. Tap a lane when a bar crosses the line; timing decides perfect/good/ok/miss and an unbroken chain raises the multiplier. Long bars are holds: stay down to the tail for 150 points, a perfect note of accuracy and a FLOW refill. Every miss drains FLOW and at zero the run ends; if your played accuracy stays under the 60% clear line, the run ends too, so mashing cannot reach the end. Eight tracks rise from drift to pressure, each with a saved best, a medal and a clear mark.",
+  "genre": "Rhythm",
+  "tags": [
+    "rhythm",
+    "music",
+    "timing",
+    "arcade"
+  ],
+  "orientation": "any",
+  "realtime": true,
+  "session": "1–2 min",
+  "controls": {
+    "desktop": [
+      [
+        "D F J K / Arrows",
+        "Tap the lane"
+      ],
+      [
+        "LMB",
+        "Tap the lane under the pointer"
+      ],
+      [
+        "Enter / Space",
+        "Start the chosen track"
+      ],
+      [
+        "Arrows / W S",
+        "Choose a track, or a button on pause and results"
+      ],
+      [
+        "A D / Arrow Left Right",
+        "Change SPEED or OFFSET when its chip is focused"
+      ],
+      [
+        "Esc / P",
+        "Pause and resume"
+      ]
+    ],
+    "touch": [
+      [
+        "Tap",
+        "Tap a lane (each column is a quarter of the screen)"
+      ],
+      [
+        "Hold",
+        "Hold a long bar to its tail"
+      ],
+      [
+        "Tap a track",
+        "Choose it — PLAY (bottom bar) starts it"
+      ],
+      [
+        "Tap SPEED / OFFSET",
+        "Cycle speed, or tap calibration offset"
+      ],
+      [
+        "Tap ⏸",
+        "Pause, then RESUME"
+      ]
+    ],
+    "gamepad": [
+      [
+        "A B X Y / DPad",
+        "Tap the lane"
+      ],
+      [
+        "A / Start",
+        "Start the chosen track"
+      ],
+      [
+        "DPad / LS up-down",
+        "Choose a track, or a button on pause and results"
+      ],
+      [
+        "DPad ◀ ▶ / LS ◀ ▶",
+        "Change SPEED or OFFSET when its chip is focused"
+      ],
+      [
+        "Start",
+        "Pause and resume"
+      ],
+      [
+        "B",
+        "Back to the track list from pause or results (lane 2 while playing)"
+      ]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Enter",
+      "click": [
+        0.5,
+        0.93
+      ],
+      "tap": {
+        "portrait": [
+          0.5,
+          0.9336
+        ],
+        "landscape": [
+          0.5,
+          0.9026
+        ]
+      },
+      "pad": "A"
+    },
+    "pause": {
+      "key": "Escape",
+      "tap": {
+        "portrait": [
+          0.9077,
+          0.0806
+        ],
+        "landscape": [
+          0.9573,
+          0.1744
+        ]
+      },
+      "resume_tap": {
+        "portrait": [
+          0.5,
+          0.4739
+        ],
+        "landscape": [
+          0.5,
+          0.3436
+        ]
+      }
+    },
+    "setup": [
+      {
+        "do": "wait",
+        "ms": 700
+      }
+    ],
+    "keyboard": [
+      {
+        "name": "D taps lane 0",
+        "steps": [
+          {
+            "do": "key",
+            "key": "KeyD",
+            "ms": 70
+          }
+        ],
+        "expect": [
+          "taps up 1",
+          "lastLane == 0",
+          "laneTaps.0 up 1"
+        ]
+      },
+      {
+        "name": "K taps lane 3",
+        "steps": [
+          {
+            "do": "key",
+            "key": "KeyK",
+            "ms": 70
+          }
+        ],
+        "expect": [
+          "lastLane == 3",
+          "laneTaps.3 up 1"
+        ]
+      },
+      {
+        "name": "ArrowLeft taps lane 0",
+        "steps": [
+          {
+            "do": "key",
+            "key": "ArrowLeft",
+            "ms": 70
+          }
+        ],
+        "expect": [
+          "lastLane == 0",
+          "taps up 1"
+        ]
+      },
+      {
+        "name": "ArrowRight taps lane 3",
+        "steps": [
+          {
+            "do": "key",
+            "key": "ArrowRight",
+            "ms": 70
+          }
+        ],
+        "expect": [
+          "lastLane == 3"
+        ]
+      }
+    ],
+    "mouse": [
+      {
+        "name": "click lane 0",
+        "steps": [
+          {
+            "do": "click",
+            "at": [
+              0.13,
+              0.6
+            ]
+          }
+        ],
+        "expect": [
+          "taps up 1",
+          "lastLane == 0"
+        ]
+      },
+      {
+        "name": "click lane 3",
+        "steps": [
+          {
+            "do": "click",
+            "at": [
+              0.88,
+              0.6
+            ]
+          }
+        ],
+        "expect": [
+          "lastLane == 3"
+        ]
+      }
+    ],
+    "touch": [
+      {
+        "name": "tap lane 0",
+        "steps": [
+          {
+            "do": "tap",
+            "at": [
+              0.13,
+              0.6
+            ]
+          }
+        ],
+        "expect": [
+          "taps up 1",
+          "lastLane == 0"
+        ]
+      },
+      {
+        "name": "tap lane 2",
+        "steps": [
+          {
+            "do": "tap",
+            "at": [
+              0.63,
+              0.6
+            ]
+          }
+        ],
+        "expect": [
+          "lastLane == 2"
+        ]
+      }
+    ],
+    "gamepad": [
+      {
+        "name": "D-pad left taps lane 0",
+        "steps": [
+          {
+            "do": "pad",
+            "buttons": [
+              "LEFT"
+            ],
+            "ms": 140
+          }
+        ],
+        "expect": [
+          "taps up 1",
+          "lastLane == 0"
+        ]
+      },
+      {
+        "name": "Y taps lane 3",
+        "steps": [
+          {
+            "do": "pad",
+            "buttons": [
+              "Y"
+            ],
+            "ms": 140
+          }
+        ],
+        "expect": [
+          "lastLane == 3",
+          "laneTaps.3 up 1"
+        ]
+      }
+    ]
+  },
+  "na": {}
+}

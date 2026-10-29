@@ -1,0 +1,59 @@
+{
+ "frames": {
+  "static_S_000": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 80,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 80,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 80,
+    "h": 80
+   }
+  }
+ },
+ "animations": {
+  "static_S": {
+   "frames": [
+    "static_S_000"
+   ],
+   "fps": 12,
+   "loop": false
+  }
+ },
+ "meta": {
+  "image": "p_gravemarker_A.png",
+  "size": {
+   "w": 80,
+   "h": 80
+  },
+  "format": "RGBA8888",
+  "scale": "1",
+  "cell": 80,
+  "pivot": {
+   "x": 42.1,
+   "y": 76.6
+  },
+  "dirs": [
+   "S"
+  ],
+  "pixel_art": false,
+  "source": "kenney/kaykit-halloween/addons/kaykit_halloween_bits/Assets/gltf/gravemarker_A.gltf",
+  "elevation": 30,
+  "ortho": 1.1763,
+  "target": [
+   -0.0308,
+   0.5379
+  ],
+  "world_per_px": 0.0147
+ }
+}

@@ -1,0 +1,1 @@
+{"name": "The Arcade", "short_name": "Arcade", "start_url": "/", "display": "standalone", "background_color": "#0c0d11", "theme_color": "#0c0d11", "icons": [{"src": "/arcade/icon-512.png", "sizes": "512x512", "type": "image/png"}]}

@@ -1,0 +1,10 @@
+{
+  "name": "pulse",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Four-lane rhythm game. Music and chart generated from the same seeded event list.",
+  "scripts": {
+    "test": "node test/acceptance.js"
+  }
+}

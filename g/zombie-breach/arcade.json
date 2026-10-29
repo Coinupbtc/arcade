@@ -1,0 +1,109 @@
+{
+  "id": "zombie-breach",
+  "title": "Zombie Breach",
+  "tagline": "Last survivor in a fenced compound. Clear endless waves of the dead.",
+  "description": "You are the last survivor in a fenced compound at night. The dead come in waves, and every wave is a little faster and tougher than the one before. Move with the left side, look with the right side (or your mouse), and hold FIRE to shoot. Kills in quick succession build a chain, and at x3 your rounds pierce. Every cleared wave drops three supplies and you can carry one: MEDKIT, AMMO, or HOLLOW POINTS for permanent damage. From wave 3, spitters hold range and lob acid — move when the green ring shows. Every fifth wave the Warden walks in: a plated brute that ignores the shockwave. At zero health your run ends.",
+  "genre": "Wave shooter",
+  "tags": ["action", "survival", "fps"],
+  "orientation": "any",
+  "realtime": true,
+  "session": "3-6 min",
+  "controls": {
+    "desktop": [
+      ["W A S D / Arrows", "Move"],
+      ["Mouse", "Look"],
+      ["Q / E", "Turn"],
+      ["L", "Lock mouse (Esc releases)"],
+      ["LMB / Space", "Fire"],
+      ["Shift / RMB", "Jump and shove (2.2 s cooldown)"],
+      ["R", "Reload"],
+      ["Esc / P", "Pause"]
+    ],
+    "touch": [
+      ["Drag left side", "Move"],
+      ["Drag right side", "Look"],
+      ["FIRE button", "Shoot"],
+      ["JUMP button", "Jump and shove (2.2 s cooldown)"],
+      ["RELOAD button", "Reload"],
+      ["Pause button", "Pause"]
+    ],
+    "gamepad": [
+      ["LS", "Move"],
+      ["RS", "Look"],
+      ["A", "Fire"],
+      ["X", "Jump and shove (2.2 s cooldown)"],
+      ["Y", "Reload"],
+      ["Start", "Pause"]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Enter",
+      "click": [0.5, 0.5491],
+      "tap": { "portrait": [0.5, 0.5282], "landscape": [0.5, 0.5117] }
+    },
+    "pause": {
+      "key": "Escape",
+      "tap": { "portrait": [0.9128, 0.0403], "landscape": [0.9597, 0.0872] }
+    },
+    "keyboard": [
+      {
+        "name": "walk right",
+        "steps": [{ "do": "key", "key": "ArrowRight", "ms": 700 }],
+        "expect": ["player.x up 2"]
+      },
+      {
+        "name": "fire",
+        "steps": [{ "do": "key", "key": "Space", "ms": 500 }],
+        "expect": ["mag down 1"]
+      },
+      {
+        "name": "E turns right",
+        "steps": [{ "do": "key", "key": "KeyE", "ms": 620 }],
+        "expect": ["yaw changes"]
+      },
+      {
+        "name": "Q turns back left",
+        "steps": [{ "do": "key", "key": "KeyQ", "ms": 620 }],
+        "expect": ["yaw changes"]
+      }
+    ],
+    "mouse": [
+      {
+        "name": "mouse look",
+        "steps": [{ "do": "mousedrag", "from": [0.5, 0.4], "to": [0.72, 0.4], "ms": 600 }],
+        "expect": ["yaw changes"]
+      }
+    ],
+    "touch": [
+      {
+        "name": "thumb stick right",
+        "steps": [{ "do": "drag", "from": [0.22, 0.78], "to": [0.36, 0.78], "ms": 700 }],
+        "expect": ["player.x up 2"]
+      },
+      {
+        "name": "right-side look",
+        "steps": [{ "do": "drag", "from": [0.72, 0.44], "to": [0.88, 0.44], "ms": 600 }],
+        "expect": ["yaw changes"]
+      },
+      {
+        "name": "FIRE button",
+        "steps": [{ "do": "hold", "at": { "portrait": [0.8538, 0.9324], "landscape": [0.9325, 0.8538] }, "ms": 400 }],
+        "expect": ["mag down 1"]
+      }
+    ],
+    "gamepad": [
+      {
+        "name": "left stick right",
+        "steps": [{ "do": "pad", "axes": [1, 0, 0, 0], "ms": 700 }],
+        "expect": ["player.x up 2"]
+      },
+      {
+        "name": "right stick look",
+        "steps": [{ "do": "pad", "axes": [0, 0, 0.9, 0], "ms": 600 }],
+        "expect": ["yaw changes"]
+      }
+    ]
+  },
+  "na": {}
+}

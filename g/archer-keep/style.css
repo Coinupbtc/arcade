@@ -1,0 +1,225 @@
+/* Archer Keep — phone-first (390x844 portrait reference) */
+@import url("iphone-frame.css");
+
+:root{
+  --ink:#0e1526; --panel:rgba(10,16,30,.72); --accent:#ffd54f;
+  --gold:#ffd54f; --blue:#4fc3f7; --red:#ef5350;
+}
+html,body{ background:var(--ink); color:#e8eefc;
+  font-family:-apple-system,"SF Pro Text",Inter,system-ui,sans-serif; }
+#app{ position:fixed; inset:0; height:100dvh; overflow:hidden; }
+#cv{ position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none; }
+.hidden{ display:none !important; }
+button{ font-family:inherit; }
+
+/* ---------- HUD top ----------
+   Arcade rule: the top-left 120x52 px corner belongs to the ◀ ARCADE pill, and the top-right
+   48 px is the pause pill (arcade-input). The stat row starts below the pill band in portrait
+   and beside it in landscape. */
+#hud-top{ position:absolute; left:max(10px,env(safe-area-inset-left));
+  right:calc(66px + env(safe-area-inset-right));
+  top:calc(62px + env(safe-area-inset-top)); display:flex; flex-direction:column; gap:4px;
+  pointer-events:none; }
+@media (orientation: landscape) and (min-aspect-ratio: 1/1){
+  #hud-top{ top:calc(10px + env(safe-area-inset-top));
+    left:calc(130px + env(safe-area-inset-left)); }
+}
+#hud-top *{ pointer-events:none; }
+#stat-row{ display:flex; align-items:center; gap:8px;
+  background:rgba(10,16,30,.84); border-radius:12px; padding:7px 10px; }
+.stat-block{ display:flex; align-items:center; gap:6px; flex:1; min-width:0; }
+.stat-block.right{ flex-direction:row-reverse; }
+.stat-name{ font-size:9px; font-weight:800; letter-spacing:.1em; color:#aab8d8; }
+.stat-name small{ opacity:.6; font-weight:600; }
+.hp-bar{ flex:1; height:11px; background:#233048; border-radius:6px; overflow:hidden; }
+.hp-fill{ height:100%; width:100%; border-radius:6px; transition:width .3s ease; }
+.hp-fill.castle{ background:linear-gradient(90deg,#90a4ae,#cfd8dc); }
+.hp-fill.archer{ background:linear-gradient(90deg,#2196f3,#4fc3f7); }
+.hp-num{ font-size:10px; font-weight:700; width:28px; text-align:center; }
+#round-wrap{ min-width:74px; text-align:center; }
+#round-num{ font-size:10px; font-weight:800; letter-spacing:.1em; color:var(--accent); }
+#sub-row{ display:flex; align-items:center; gap:10px; justify-content:center;
+  font-size:11px; font-weight:800; margin-top:2px; }
+#coins{ background:var(--panel); border-radius:8px; padding:3px 10px; color:var(--gold); }
+#left{ background:var(--panel); border-radius:8px; padding:3px 10px; color:#ffb74d; }
+#left.clear{ opacity:.3; }
+#combo{ color:#ff8a65; }
+
+#round-banner{ position:absolute; top:32%; left:0; right:0; text-align:center;
+  font-size:26px; font-weight:900; letter-spacing:.08em; color:#fff;
+  text-shadow:0 2px 12px rgba(0,0,0,.6); pointer-events:none; }
+#round-banner.pop{ animation:bannerpop .5s cubic-bezier(.2,1.6,.4,1) 1; }
+@keyframes bannerpop{ 0%{ transform:scale(.6); opacity:0; } 100%{ transform:scale(1); opacity:1; } }
+
+/* ---------- HUD bottom ---------- */
+#hud-bottom{ position:absolute; left:max(12px,env(safe-area-inset-left));
+  right:max(12px,env(safe-area-inset-right));
+  bottom:max(12px,env(safe-area-inset-bottom));
+  display:flex; align-items:flex-end; gap:10px; pointer-events:none; }
+#hud-bottom .ammo-chip{ pointer-events:auto; }
+#arrow-row{ display:flex; gap:5px; flex-wrap:wrap; max-width:230px; }
+.ammo-chip{ min-width:44px; height:44px; padding:0 5px; border-radius:10px;
+  background:var(--panel); border:2px solid transparent; color:#cfe0ff;
+  font-size:9px; font-weight:800; letter-spacing:.04em; display:flex;
+  flex-direction:column; align-items:center; justify-content:center; gap:1px; }
+.ammo-chip .ai{ font-size:14px; }
+.ammo-chip.sel{ border-color:var(--accent); background:rgba(255,213,79,.16); }
+.ammo-chip.locked{ opacity:.3; }
+#fire-wrap{ flex:1; display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+#draw-wrap{ display:flex; align-items:center; gap:6px; background:var(--panel);
+  padding:5px 8px; border-radius:8px; }
+#draw-bar{ width:64px; height:9px; background:#233048; border-radius:5px; overflow:hidden; }
+#draw-fill{ height:100%; width:25%; background:linear-gradient(90deg,#43a047,#ffd54f); border-radius:5px; }
+#draw-num{ font-size:10px; font-weight:800; }
+#draw-num.nocking{ color:#ffb74d; letter-spacing:.06em; }
+#fire-hint{ font-size:8.5px; color:rgba(232,238,252,.55); letter-spacing:.04em; max-width:130px; text-align:right; }
+/* Portrait bottom strip: five 44 px ammo chips + draw meter + SALLY + device hints cannot share
+   one 390 px row (the hints wrapped into a vertical column at the edge). Two rows + one hint row. */
+@media (orientation: portrait) and (max-aspect-ratio: 1/1){
+  #hud-bottom{ flex-wrap:wrap; align-items:center; gap:8px; }
+  #arrow-row{ order:1; flex:1 1 100%; max-width:none; justify-content:center; }
+  #fire-wrap{ order:2; flex:1 1 auto; align-items:center; }
+  #hint-row{ order:3; flex:1 1 100%; justify-content:center; }
+  #btn-sally{ order:2; }
+  #draw-wrap{ padding:4px 10px; }
+  #draw-bar{ width:96px; }
+}
+
+/* ---------- SALLY button ---------- */
+.sally-btn{ min-width:64px; min-height:52px; border-radius:12px; pointer-events:auto;
+  background:linear-gradient(180deg,#4a86c9,#2e5a8f); color:#fff; border:2px solid rgba(255,255,255,.25);
+  font-size:10px; font-weight:900; letter-spacing:.06em; }
+.sally-btn.ready{ box-shadow:0 0 10px rgba(100,181,246,.7); border-color:#64b5f6; }
+/* M12: an empty garrison reads as "NO KNIGHTS" and is visibly inert (but still answers a press). */
+.sally-btn:not(.ready){ background:linear-gradient(180deg,#33415c,#222d42); color:#8fa3c9;
+  border-color:rgba(255,255,255,.10); box-shadow:none; }
+
+/* ---------- Shop: header pinned, offer list scrolls, NEXT WAVE always reachable ---------- */
+#shop{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:rgba(10,14,24,.72); backdrop-filter:blur(4px); z-index:6; padding:20px; }
+.shop-card-wrap{ width:100%; max-width:340px; max-height:calc(100% - 40px); overflow:hidden;
+  -webkit-overflow-scrolling:touch;
+  background:linear-gradient(180deg,#24365c,#0e1526);
+  border:1px solid rgba(255,213,79,.25); border-radius:18px; padding:18px 16px;
+  display:flex; flex-direction:column; gap:8px; text-align:center; }
+#shop-round{ font-size:18px; font-weight:900; letter-spacing:.08em; margin:0; color:#fff; }
+#shop-coins{ font-size:14px; font-weight:800; color:var(--gold); }
+/* Only the cards scroll: a 13-card list used to push NEXT WAVE off the phone screen, so the
+   between-wave loop had a dead end you had to hunt for. */
+#shop-offers{ display:flex; flex-direction:column; gap:7px; flex:1 1 auto; min-height:0;
+  overflow-y:auto; -webkit-overflow-scrolling:touch; padding-right:2px; padding-bottom:2px;
+  touch-action:pan-y; overscroll-behavior:contain; }  /* a thumb swipe scrolls the list (10-26 retest) */
+/* M12 OVERFLOW FIX: the cards were flex items with default shrink, so an overflowing list squeezed
+   every card below its content height and the text of one card landed on the next (the playtester
+   saw "Now: HUNTING BOW" printed over the Pierce card). Cards keep their own height, the list scrolls. */
+.shop-card{ flex:0 0 auto; border-radius:12px; border:1.5px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06); color:#e8eefc; padding:9px 11px;
+  display:flex; flex-direction:column; gap:3px; text-align:left; overflow:hidden; }
+.shop-card .sc-head{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+.shop-card .sc-name{ font-size:12.5px; font-weight:900; letter-spacing:.03em; color:#fff; }
+.shop-card .sc-cost{ font-size:12px; font-weight:900; color:var(--gold); white-space:nowrap; }
+.shop-card .sc-desc{ font-size:10px; line-height:1.25; color:#aab8d8;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.shop-card.poor{ opacity:.55; }
+.shop-card .sc-need{ font-size:9.5px; font-weight:800; color:#ff8a65; }
+.shop-card .sc-sub{ font-size:9px; color:#8fd3ff; }
+.shop-card .sc-badge{ align-self:flex-start; font-size:8px; font-weight:900; letter-spacing:.1em;
+  color:#0e1526; background:var(--accent); border-radius:6px; padding:2px 7px; margin-bottom:1px; }
+.shop-card .sc-buy{ margin-top:5px; font-size:10px; font-weight:900; letter-spacing:.06em;
+  color:#0e1526; background:var(--accent); border-radius:8px; padding:7px 6px; text-align:center; }
+.shop-card.rec{ border-color:rgba(255,213,79,.85); }
+.shop-brief{ font-size:10.5px; line-height:1.3; color:#cfe0ff; margin:0; }
+.soldier-pick{ display:flex; flex-wrap:wrap; gap:4px; margin-top:-2px; flex:0 0 auto; justify-content:center; }
+.sp-type{ font-size:9px; font-weight:800; padding:6px 8px; border-radius:8px;
+  background:rgba(255,255,255,.08); border:1.5px solid transparent; color:#cfe0ff; min-height:44px; min-width:44px; }
+.sp-type.sel{ border-color:var(--accent); background:rgba(255,213,79,.16); color:#fff; }
+/* Shop is a focus menu now: pad/keyboard focus must be unmistakable (the template adds a class). */
+#shop .ai-focus{ background:rgba(255,213,79,.16); border-color:var(--accent);
+  box-shadow:0 0 0 2px rgba(255,213,79,.55), 0 0 14px rgba(255,213,79,.25); }
+.shop-hint{ font-size:10px; color:#8fa3c9; margin:2px 0 0; }
+#shop-continue{ margin-top:4px; }
+
+/* ---------- Menu / verdict ---------- */
+#menu,#verdict{ position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:16px; text-align:center;
+  background:radial-gradient(120% 90% at 50% 10%, #24365c 0%, #0e1526 70%);
+  padding:24px; z-index:5; }
+#menu h1{ font-size:46px; font-weight:900; letter-spacing:.06em; margin:0; }
+#menu h1 span{ color:var(--accent); }
+#menu .tag,#verdict-sub{ font-size:13px; line-height:1.5; color:#aab8d8; margin:0; }
+#menu .hint{ font-size:11px; color:#5f6f92; margin:6px 0 0; max-width:280px; }
+#verdict h2{ font-size:34px; font-weight:900; margin:0; letter-spacing:.05em; }
+#verdict-sub b{ color:#fff; }
+#verdict-sub .best{ color:#ffd54f; font-weight:900; letter-spacing:.04em; }
+#verdict-sub .again{ color:#8fa3c9; font-size:11px; }
+.primary{ min-width:180px; min-height:56px; border:none; border-radius:14px;
+  background:linear-gradient(180deg,#ffd54f,#ffb300); color:#212121; font-size:17px;
+  font-weight:900; letter-spacing:.08em; box-shadow:0 4px 14px rgba(255,179,0,.4); }
+
+/* ---------- toast / fatal ---------- */
+#toast{ position:absolute; left:50%; transform:translateX(-50%);
+  top:max(120px,calc(env(safe-area-inset-top) + 120px)); background:var(--panel);
+  padding:8px 14px; border-radius:10px; font-size:12px; font-weight:700;
+  pointer-events:none; z-index:7; }
+/* ---------- First-run coach: one line that teaches the drag, until the first arrow leaves ---------- */
+#coach{ position:absolute; left:50%; transform:translateX(-50%);
+  bottom:max(150px, calc(env(safe-area-inset-bottom) + 150px));
+  max-width:calc(100% - 40px); background:rgba(12,20,38,.92); border:1px solid rgba(143,211,255,.55);
+  border-radius:12px; padding:9px 14px; z-index:8; pointer-events:none;
+  font-size:12px; font-weight:800; letter-spacing:.03em; color:#dceaff; text-align:center;
+  box-shadow:0 0 18px rgba(143,211,255,.25); }
+#coach b{ color:#ffd54f; }
+#coach.pulse{ animation:coachpulse 1.6s ease-in-out infinite; }
+@keyframes coachpulse{ 0%,100%{ box-shadow:0 0 10px rgba(143,211,255,.2); } 50%{ box-shadow:0 0 24px rgba(143,211,255,.55); } }
+body.paused #coach{ display:none; }
+@media (orientation: landscape) and (max-height: 500px){
+  #coach{ bottom:max(84px, calc(env(safe-area-inset-bottom) + 84px)); font-size:11px; padding:7px 12px; }
+}
+
+#fatal{ position:absolute; inset:0; z-index:9; background:#0e1526; display:flex;
+  flex-direction:column; align-items:center; justify-content:center; gap:10px; }
+#fatal pre{ color:#ff8a80; font-size:12px; padding:0 20px; white-space:pre-wrap; }
+
+/* ---------- Device-aware hint row (Kenney CC0 input prompts) ---------- */
+.hint-row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:flex-end;
+  pointer-events:none; }
+#menu-hints{ justify-content:center; margin-top:2px; }
+.ai-prompt{ display:inline-flex; align-items:center; gap:4px; background:var(--panel);
+  border-radius:7px; padding:3px 7px; }
+.ai-prompt img{ width:18px; height:18px; image-rendering:auto; }
+.ai-prompt i{ font-style:normal; font-size:8.5px; font-weight:800; letter-spacing:.04em; color:#cfe0ff; }
+@media (orientation: landscape) and (max-height: 500px){
+  .ai-prompt img{ width:15px; height:15px; }
+  .ai-prompt i{ font-size:7.5px; }
+}
+.starthint{ font-size:11px; color:#8fa3c9; margin:2px 0 0; letter-spacing:.04em; }
+
+/* ---------- Pause overlay: the resume button is a ≥44 px target; live controls go away ----------
+   Round-1 tester class: a pause overlay that leaves the touch buttons visible and live behind it.
+   While paused the whole bottom control strip is hidden and the HP row dims to 45%. */
+body.paused #hud-bottom{ display:none !important; }
+body.paused #hud-top{ opacity:.45; }
+#pause{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:14px; text-align:center;
+  background:rgba(8,12,22,.72); backdrop-filter:blur(3px); pointer-events:none; }
+#pause h2{ font-size:30px; font-weight:900; letter-spacing:.12em; margin:0; color:#ffd54f; }
+#pause .tag{ font-size:12px; color:#aab8d8; margin:0; }
+#pause .hint{ font-size:10px; color:#6d7fa3; margin:0; }
+#pause-resume{ pointer-events:auto; }
+
+/* ---------- Shop polish: every tap target is ≥44 px ---------- */
+.sp-type{ min-height:44px; padding:8px 9px; font-size:9.5px; }
+
+/* Keep the bottom row from overflowing a 390 px phone: icons only, labels on the menu */
+@media (max-width: 480px){
+  #hint-row .ai-prompt i{ display:none; }
+  #menu-hints .ai-prompt i{ display:inline; }
+  #fire-wrap{ min-width:0; }
+  .hint-row{ gap:4px; }
+}
+
+/* Landscape has the width for one row of arrow chips; keep all five reachable */
+@media (orientation: landscape) and (min-aspect-ratio: 1/1){
+  #arrow-row{ max-width:none; flex-wrap:nowrap; }
+  #hud-bottom{ gap:8px; }
+}

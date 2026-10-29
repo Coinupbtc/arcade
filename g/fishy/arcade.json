@@ -1,0 +1,380 @@
+{
+  "id": "fishy",
+  "title": "Fishy",
+  "tagline": "Eat smaller fish, dodge bigger ones, grow into the pond's apex.",
+  "description": "You are a small orange fish in a busy pond. Smaller fish are food: swim into them and you grow. Bigger fish eat you, and every fish is drawn at its true size, so the pond tells you what is safe the moment you look at it. A burst of speed gets you out of trouble or onto a meal, but it has to recharge. Schools sweep in, a hunter starts stalking you, and the pond gets meaner every half minute. Reach apex size and the pond is yours; clear it to unlock a deeper, harder pond.",
+  "genre": "Eat-or-be-eaten arcade",
+  "tags": [
+    "arcade",
+    "survival",
+    "animal",
+    "grow"
+  ],
+  "orientation": "any",
+  "realtime": true,
+  "session": "2\u20133 min",
+  "controls": {
+    "desktop": [
+      [
+        "W A S D / Arrows",
+        "Swim"
+      ],
+      [
+        "Mouse drag",
+        "Swim with the mouse"
+      ],
+      [
+        "Space / Enter / LMB",
+        "Burst of speed"
+      ],
+      [
+        "Esc / P",
+        "Pause"
+      ],
+      [
+        "Enter / Space",
+        "Start \u00b7 dive again"
+      ]
+    ],
+    "touch": [
+      [
+        "Drag",
+        "Swim"
+      ],
+      [
+        "BURST button",
+        "Burst of speed"
+      ],
+      [
+        "Tap \u23f8",
+        "Pause / resume"
+      ],
+      [
+        "Tap",
+        "Start \u00b7 dive again"
+      ]
+    ],
+    "gamepad": [
+      [
+        "LS / DPad",
+        "Swim"
+      ],
+      [
+        "A",
+        "Burst \u00b7 confirm"
+      ],
+      [
+        "Start",
+        "Pause"
+      ],
+      [
+        "B",
+        "Back to the title"
+      ]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Enter",
+      "click": [
+        0.5,
+        0.574
+      ],
+      "tap": {
+        "portrait": [
+          0.5,
+          0.572
+        ],
+        "landscape": [
+          0.5,
+          0.579
+        ]
+      }
+    },
+    "pause": {
+      "key": "Escape",
+      "tap": {
+        "portrait": [
+          0.913,
+          0.04
+        ],
+        "landscape": [
+          0.96,
+          0.087
+        ]
+      },
+      "resume_tap": {
+        "portrait": [
+          0.913,
+          0.04
+        ],
+        "landscape": [
+          0.96,
+          0.087
+        ]
+      }
+    },
+    "keyboard": [
+      {
+        "name": "ArrowRight swims east",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 300
+          },
+          {
+            "do": "key",
+            "key": "ArrowRight",
+            "ms": 700
+          }
+        ],
+        "expect": [
+          "player.x up 50"
+        ]
+      },
+      {
+        "name": "KeyA swims west",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 1300
+          },
+          {
+            "do": "key",
+            "key": "KeyA",
+            "ms": 900
+          }
+        ],
+        "expect": [
+          "player.x down 40"
+        ]
+      },
+      {
+        "name": "ArrowDown swims south",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 1300
+          },
+          {
+            "do": "key",
+            "key": "ArrowDown",
+            "ms": 450
+          }
+        ],
+        "expect": [
+          "player.y up 40"
+        ]
+      },
+      {
+        "name": "Space bursts",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 1300
+          },
+          {
+            "do": "key",
+            "key": "Space",
+            "ms": 120
+          },
+          {
+            "do": "wait",
+            "ms": 120
+          }
+        ],
+        "expect": [
+          "speed up 2"
+        ]
+      }
+    ],
+    "mouse": [
+      {
+        "name": "mouse drag swims east",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 1300
+          },
+          {
+            "do": "mousedrag",
+            "from": [
+              0.5,
+              0.66
+            ],
+            "to": [
+              0.72,
+              0.66
+            ],
+            "ms": 800
+          }
+        ],
+        "expect": [
+          "player.x up 50"
+        ]
+      }
+    ],
+    "touch": [
+      {
+        "name": "drag right swims east",
+        "steps": [
+          {
+            "do": "tap",
+            "at": {
+              "portrait": [
+                0.5,
+                0.5
+              ],
+              "landscape": [
+                0.5,
+                0.5
+              ]
+            }
+          },
+          {
+            "do": "drag",
+            "from": {
+              "portrait": [
+                0.45,
+                0.62
+              ],
+              "landscape": [
+                0.45,
+                0.62
+              ]
+            },
+            "to": {
+              "portrait": [
+                0.72,
+                0.62
+              ],
+              "landscape": [
+                0.72,
+                0.62
+              ]
+            },
+            "ms": 500
+          }
+        ],
+        "expect": [
+          "player.x up 25"
+        ]
+      },
+      {
+        "name": "drag up swims north",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 900
+          },
+          {
+            "do": "drag",
+            "from": {
+              "portrait": [
+                0.4,
+                0.62
+              ],
+              "landscape": [
+                0.4,
+                0.62
+              ]
+            },
+            "to": {
+              "portrait": [
+                0.4,
+                0.38
+              ],
+              "landscape": [
+                0.4,
+                0.38
+              ]
+            },
+            "ms": 500
+          }
+        ],
+        "expect": [
+          "player.y down 25"
+        ]
+      }
+    ],
+    "gamepad": [
+      {
+        "name": "left stick east",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 400
+          },
+          {
+            "do": "pad",
+            "axes": [
+              0.9,
+              0,
+              0,
+              0
+            ],
+            "ms": 900
+          }
+        ],
+        "expect": [
+          "player.x up 50"
+        ]
+      },
+      {
+        "name": "DPad up lifts the fish",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 300
+          },
+          {
+            "do": "pad",
+            "axes": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "buttons": [
+              "UP"
+            ],
+            "ms": 700
+          }
+        ],
+        "expect": [
+          "player.y down 20"
+        ]
+      },
+      {
+        "name": "A bursts",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 1300
+          },
+          {
+            "do": "pad",
+            "axes": [
+              0.9,
+              0,
+              0,
+              0
+            ],
+            "buttons": [
+              "A"
+            ],
+            "ms": 120
+          },
+          {
+            "do": "wait",
+            "ms": 120
+          }
+        ],
+        "expect": [
+          "speed up 2"
+        ]
+      }
+    ]
+  },
+  "na": {}
+}

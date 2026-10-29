@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#07090f">
+<title>PULSE</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2307090f'/%3E%3Crect x='6' y='12' width='5' height='12' rx='2.5' fill='%233ff0ff'/%3E%3Crect x='13' y='6' width='5' height='18' rx='2.5' fill='%23ff4fd8'/%3E%3Crect x='20' y='15' width='5' height='9' rx='2.5' fill='%23ffc24d'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css?v=5">
+</head>
+<body>
+<canvas id="stage"></canvas>
+
+<div id="hud" class="hidden">
+  <div class="hud-row">
+    <div class="stat"><span class="k">SCORE</span><b id="hud-score">0</b></div>
+    <div class="stat mid"><span class="k">ACC <i id="hud-acc-line">clear 60%</i></span><b id="hud-acc">100%</b></div>
+    <div class="stat right"><span class="k">COMBO</span><b id="hud-combo">0</b></div>
+  </div>
+  <div id="progress"><i id="progress-fill"></i></div>
+  <div id="flow-wrap">
+    <span class="k">FLOW</span>
+    <div id="flow"><i id="flow-fill"></i></div>
+  </div>
+  <div id="hud-track">—</div>
+  <div id="hud-hint"></div>
+  <button id="btn-pause" class="ghost" aria-label="pause">❚❚</button>
+</div>
+
+<div id="judge-layer"><div id="judge-text"></div></div>
+<div id="countdown"></div>
+
+<div class="overlay" id="menu">
+  <div class="menu-inner">
+    <h1>PULSE<span>four lanes · one thumb</span></h1>
+    <p class="lede">Tap a lane when a bar crosses the line. The chart is the music — every note you hear
+      is a note you see. Misses drain FLOW, and at zero the run ends.</p>
+    <div id="hints" class="hints"></div>
+    <div id="settings">
+      <button id="btn-speed" class="chip">SPEED <b>normal</b></button>
+      <button id="btn-offset" class="chip">OFFSET <b>0 ms</b></button>
+    </div>
+    <p id="menu-count" class="count"></p>
+    <div id="tracks"></div>
+  </div>
+  <button class="big play" id="btn-play">▶ PLAY</button>
+</div>
+
+<div class="overlay hidden" id="results">
+  <div class="menu-inner">
+    <div class="res-head">
+      <div class="medal" id="res-medal">B</div>
+      <div>
+        <h2 id="res-title">cleared</h2>
+        <p class="res-reason" id="res-reason"></p>
+      </div>
+    </div>
+    <div class="res-grid">
+      <div><span class="k">SCORE</span><b id="res-score">0</b></div>
+      <div><span class="k">ACCURACY</span><b id="res-acc">0%</b></div>
+      <div><span class="k">BEST COMBO</span><b id="res-combo">0</b></div>
+      <div><span class="k">BEST SCORE</span><b id="res-best">—</b></div>
+    </div>
+    <div class="res-note" id="res-note"></div>
+    <p class="res-goal" id="res-goal"></p>
+    <button class="big" id="btn-again">PLAY AGAIN</button>
+    <button class="ghost wide" id="btn-next">NEXT</button>
+    <button class="ghost wide" id="btn-menu">CHOOSE TRACK</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="pause">
+  <div class="menu-inner">
+    <h2>paused</h2>
+    <p class="pause-note" id="pause-note"></p>
+    <button class="big" id="btn-resume">RESUME</button>
+    <button class="ghost wide" id="btn-restart">RESTART</button>
+    <button class="ghost wide" id="btn-quit2">QUIT TO TRACKS</button>
+  </div>
+</div>
+
+<script type="module" src="js/game.js?v=5"></script>
+<script>if(location.pathname.indexOf("/g/")>=0){var s=document.createElement("script");s.src="/arcade/_arcade.js";s.defer=1;document.head.appendChild(s);}</script>
+</body>
+</html>

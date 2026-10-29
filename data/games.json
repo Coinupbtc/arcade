@@ -1,0 +1,171 @@
+[
+ {
+  "id": "grave-lantern",
+  "title": "Grave Lantern",
+  "genre": "Horde survivor",
+  "engine": "Canvas 2D",
+  "tagline": "Drag anywhere and the knight walks while his sword swings at the nearest skeleton. Hold the crypt for three minutes, then kill the Bone Warden.",
+  "status": "queue",
+  "score": 93,
+  "cats": [
+   "action"
+  ]
+ },
+ {
+  "id": "bone-tide",
+  "title": "Bone Tide",
+  "genre": "Horde survival",
+  "engine": "Phaser 4",
+  "tagline": "A barbarian holds a moonlit graveyard for five waves of skeletons, then the Bone King walks out of the crypt. Chop, dash, and spend rage on a whirlwind.",
+  "status": "pass",
+  "score": 100,
+  "cats": [
+   "action"
+  ]
+ },
+ {
+  "id": "bridgewright",
+  "title": "Bridgewright",
+  "genre": "Physics puzzle",
+  "engine": "Canvas + Matter.js",
+  "tagline": "Drag bolts into space to build any span, then press RUN. Nine vehicles cross in order; the deck shows you where it fails.",
+  "status": "pass",
+  "score": 97,
+  "cats": [
+   "puzzle"
+  ]
+ },
+ {
+  "id": "gloamkeep",
+  "title": "Gloamkeep",
+  "genre": "Tower defense",
+  "engine": "Canvas 2D",
+  "tagline": "Tap a tower, then tap a moor tile to build. Embers buy towers and upgrades; if the lantern dies, the moor goes dark.",
+  "status": "pass",
+  "score": 97,
+  "cats": [
+   "strategy"
+  ]
+ },
+ {
+  "id": "archer-keep",
+  "title": "Archer Keep",
+  "genre": "Castle defense",
+  "engine": "Canvas 2D",
+  "tagline": "Drag back to draw the bow and release to fire. Hold your keep against 2,600 orcs, sally out with knights, and break the orc keep.",
+  "status": "pass",
+  "score": 97,
+  "cats": [
+   "strategy"
+  ]
+ },
+ {
+  "id": "fishy",
+  "title": "Fishy",
+  "genre": "Eat-or-be-eaten",
+  "engine": "Canvas 2D",
+  "tagline": "Steer a fish with drag or the keyboard. Eat anything smaller, run from anything bigger, and grow until the pond is yours.",
+  "status": "pass",
+  "score": 97,
+  "cats": [
+   "action"
+  ]
+ },
+ {
+  "id": "pulse",
+  "title": "PULSE",
+  "genre": "Rhythm",
+  "engine": "Canvas 2D",
+  "tagline": "Four lanes, one thumb. Notes come from the same seed as the music, so they cannot drift \u2014 no song files.",
+  "status": "pass",
+  "score": 97,
+  "cats": [
+   "music"
+  ]
+ },
+ {
+  "id": "orbital-decay",
+  "title": "Orbital Decay",
+  "genre": "Survival",
+  "engine": "Canvas 2D",
+  "tagline": "Burn the thrusters and set the craft down before fuel and hull run out. Every descent is a new orbit.",
+  "status": "pass",
+  "score": 97,
+  "cats": [
+   "action"
+  ]
+ },
+ {
+  "id": "tank-duel",
+  "title": "Tank Duel",
+  "genre": "Artillery",
+  "engine": "Canvas 2D",
+  "tagline": "Drag in the lower band to set angle and power, then fire. Turn-based artillery with wind, ammo types and destructible ground.",
+  "status": "pass",
+  "score": 96,
+  "cats": [
+   "strategy"
+  ]
+ },
+ {
+  "id": "phone-blackjack",
+  "title": "Phone Blackjack",
+  "genre": "Cards",
+  "engine": "DOM/CSS",
+  "tagline": "Bet, then hit, stand, double or split against the dealer. $100 bankroll, one thumb, six decks.",
+  "status": "pass",
+  "score": 100,
+  "cats": [
+   "cards"
+  ]
+ },
+ {
+  "id": "zombie-breach",
+  "title": "Zombie Breach",
+  "genre": "FPS survival",
+  "engine": "Three.js",
+  "tagline": "Last survivor in a fenced compound. Three lanes of zombies, one weapon, endless waves \u2014 drag the left pad to move, the right side to look.",
+  "status": "pass",
+  "score": 100,
+  "cats": [
+   "action",
+   "3d"
+  ]
+ },
+ {
+  "id": "slice-party",
+  "title": "Slice Party",
+  "genre": "Arcade slicer",
+  "engine": "Canvas 2D",
+  "tagline": "Swipe through flying fruit for 60 seconds. Chain slices for combo bonuses and stay clear of the bombs \u2014 five dropped fruit end the run.",
+  "status": "untested",
+  "score": 93,
+  "cats": [
+   "action"
+  ]
+ },
+ {
+  "id": "rocket-run",
+  "title": "Rocket Run",
+  "genre": "Endless flyer",
+  "engine": "Canvas 2D",
+  "tagline": "Hold to fly, release to sink. Thread laser gates, clear saw blades and guard bots, and grab coin arcs. The rocket carries three hull points; the third hit ends the run.",
+  "status": "pass",
+  "score": 93,
+  "cats": [
+   "action"
+  ]
+ },
+ {
+  "id": "bubble-bay",
+  "title": "Bubble Bay",
+  "genre": "Bubble shooter",
+  "engine": "Canvas 2D",
+  "tagline": "Drag to aim and release to fire. Match three to pop, cut a cluster loose to drop it, and keep the wall above the danger line as the ceiling falls.",
+  "status": "untested",
+  "score": 93,
+  "cats": [
+   "action"
+  ]
+ }
+]

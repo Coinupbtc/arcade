@@ -1,0 +1,154 @@
+/**
+ * iPhone frame of reference — shared base styles
+ * Canonical SOP: ~/Documents/Obsidian/wiki/workflow/iphone-frame-of-reference.md
+ *
+ * Import or copy into phone-facing HTML/PWA/games.
+ * Default design frame: portrait 390×844; landscape 844×390.
+ */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Full-bleed app shell with safe areas */
+.iphone-app,
+.apollo-root,
+.app-shell {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  padding:
+    max(0px, env(safe-area-inset-top, 0px))
+    max(0px, env(safe-area-inset-right, 0px))
+    max(0px, env(safe-area-inset-bottom, 0px))
+    max(0px, env(safe-area-inset-left, 0px));
+}
+
+/* Content that should scroll (tools/dashboards) — single scroll owner */
+.iphone-scroll {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Fixed chrome helpers */
+.iphone-top {
+  top: max(12px, env(safe-area-inset-top, 0px));
+}
+.iphone-bottom {
+  bottom: max(12px, env(safe-area-inset-bottom, 0px));
+}
+.iphone-left {
+  left: max(12px, env(safe-area-inset-left, 0px));
+}
+.iphone-right {
+  right: max(12px, env(safe-area-inset-right, 0px));
+}
+
+/* Touch targets */
+.touch-target,
+.iphone-btn,
+button.primary {
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 16px; /* avoid iOS input zoom */
+}
+.touch-target.large,
+.iphone-btn.large {
+  min-width: 56px;
+  min-height: 56px;
+}
+
+/* Press feedback when there is no hover */
+@media (hover: none) {
+  .touch-target:active,
+  .iphone-btn:active,
+  button:active {
+    opacity: 0.85;
+    transform: scale(0.98);
+  }
+}
+
+/* Portrait: force single column under phone width */
+@media (orientation: portrait) and (max-width: 480px) {
+  .iphone-hud,
+  .hud-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+  }
+  .iphone-hud > *,
+  .hud-row > * {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    max-width: 100%;
+  }
+  /* Primary actions sit in thumb zone */
+  .iphone-actions {
+    position: fixed;
+    left: max(12px, env(safe-area-inset-left, 0px));
+    right: max(12px, env(safe-area-inset-right, 0px));
+    bottom: max(16px, env(safe-area-inset-bottom, 0px));
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .iphone-actions > * { pointer-events: auto; }
+}
+
+/* Landscape: protect side notches; dual-stick friendly */
+@media (orientation: landscape) and (max-height: 500px) {
+  .touch-l,
+  .iphone-stick-l {
+    left: max(16px, env(safe-area-inset-left, 0px));
+    bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  }
+  .touch-r,
+  .iphone-stick-r {
+    right: max(16px, env(safe-area-inset-right, 0px));
+    bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  }
+  .iphone-hud-top {
+    top: max(8px, env(safe-area-inset-top, 0px));
+    left: max(8px, env(safe-area-inset-left, 0px));
+    right: max(8px, env(safe-area-inset-right, 0px));
+  }
+  /* Prefer compact horizontal chrome, not tall portrait stacks */
+  .iphone-hud {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-height: 30vh;
+    overflow: hidden;
+  }
+}
+
+/* Utility: never use hover-only visibility for critical controls */
+@media (hover: none) {
+  .hover-only { display: none !important; }
+  .touch-only { display: initial; }
+}
+@media (hover: hover) {
+  .touch-only { display: none; }
+}

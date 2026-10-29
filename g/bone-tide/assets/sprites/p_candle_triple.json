@@ -1,0 +1,59 @@
+{
+ "frames": {
+  "static_S_000": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 56,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 56,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 56,
+    "h": 56
+   }
+  }
+ },
+ "animations": {
+  "static_S": {
+   "frames": [
+    "static_S_000"
+   ],
+   "fps": 12,
+   "loop": false
+  }
+ },
+ "meta": {
+  "image": "p_candle_triple.png",
+  "size": {
+   "w": 56,
+   "h": 56
+  },
+  "format": "RGBA8888",
+  "scale": "1",
+  "cell": 56,
+  "pivot": {
+   "x": 23.1,
+   "y": 47.9
+  },
+  "dirs": [
+   "S"
+  ],
+  "pixel_art": false,
+  "source": "kenney/kaykit-halloween/addons/kaykit_halloween_bits/Assets/gltf/candle_triple.gltf",
+  "elevation": 30,
+  "ortho": 0.8547,
+  "target": [
+   0.0751,
+   0.3033
+  ],
+  "world_per_px": 0.01526
+ }
+}

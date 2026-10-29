@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Fishy — eat, grow, become the apex</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b2033'/%3E%3Cpath d='M12 32c8-10 22-12 32-6l8-6v24l-8-6c-10 6-24 4-32-6z' fill='%23e8a33d'/%3E%3C/svg%3E">
+<style>
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#63b2e4;
+    -webkit-user-select:none;user-select:none;touch-action:none;overscroll-behavior:none;}
+  canvas{display:block;position:fixed;inset:0;width:100vw;height:100vh;}
+  #safeprobe{position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="safeprobe"></div>
+<script>var cv = document.getElementById('c'), ctx = cv.getContext('2d');</script>
+<script src="arcade-input.js"></script>
+<script src="game/core.js"></script>
+<script src="game/world.js"></script>
+<script src="game/render.js"></script>
+<script src="game/main.js"></script>
+<script>if(location.pathname.indexOf("/g/")>=0){var s=document.createElement("script");s.src="/arcade/_arcade.js";s.defer=1;document.head.appendChild(s);}</script>
+</body>
+</html>

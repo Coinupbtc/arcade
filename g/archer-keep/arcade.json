@@ -1,0 +1,109 @@
+{
+  "id": "archer-keep",
+  "title": "Archer Keep",
+  "tagline": "Draw the bow, loose the arrow, hold your keep against the orc horde.",
+  "description": "You are the archer on the wall of a stone keep. Orc warbands march in from the east and you must break them before they break your gate. Drag toward the orc you want, hold to draw, then release: a longer hold flies flatter and faster, and a hit in the head does 1.8× damage. Each wave brings a new enemy, from fast screechers to armoured brutes, flying dragons and an orc warlord. Between waves you spend coin on walls, a cauldron of boiling oil, knight recruits, better bows and new arrows: pierce, fire, frost and bomb. Every run starts with an empty purse, and the shop names the one upgrade that wave needs. A run ends when the gate or your archer falls, and the verdict names what broke it.",
+  "genre": "Bow defence",
+  "tags": ["action", "defence", "archery"],
+  "orientation": "any",
+  "realtime": true,
+  "session": "3-4 min",
+  "controls": {
+    "desktop": [
+      ["Mouse", "Aim by dragging, hold to draw"],
+      ["Release", "Loose the arrow"],
+      ["Space", "Hold to draw, release to loose"],
+      ["W A S D / Arrows", "Pan the field and raise or lower the aim"],
+      ["Q E", "Previous / next arrow type"],
+      ["F", "Sally the knights"],
+      ["Arrows + Enter", "In the shop: pick a card, buy it"],
+      ["Esc / P", "Pause · or leave the shop"]
+    ],
+    "touch": [
+      ["Drag", "Aim"],
+      ["Hold", "Draw the bow"],
+      ["Release", "Loose the arrow"],
+      ["Two-finger drag", "Pan the battlefield"],
+      ["Tap minimap", "Jump the camera"],
+      ["Tap ⏸", "Pause"],
+      ["Tap chip", "Change arrow type"],
+      ["Tap card", "Buy in the shop, then tap NEXT WAVE"]
+    ],
+    "gamepad": [
+      ["LS / DPad", "Pan the field and aim"],
+      ["A", "Hold to draw, release to loose"],
+      ["X", "Sally the knights"],
+      ["Y / RB / LB", "Next / previous arrow type"],
+      ["DPad / LS", "Shop: pick a card; A buys"],
+      ["Start / B", "Pause · B also leaves the shop"]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Enter",
+      "click": { "desktop": [0.5, 0.5] },
+      "tap": { "portrait": [0.5, 0.5], "landscape": [0.5, 0.5] },
+      "pad": "A"
+    },
+    "setup": [{ "do": "wait", "ms": 2000 }],
+    "pause": {
+      "key": "Escape",
+      "tap": { "portrait": [0.92, 0.045], "landscape": [0.96, 0.087] },
+      "resume_tap": null
+    },
+    "keyboard": [
+      {
+        "name": "hold Space to draw, release to loose",
+        "steps": [{ "do": "key", "key": "Space", "ms": 700 }],
+        "expect": ["shots up 1"]
+      },
+      {
+        "name": "ArrowRight pans the field right",
+        "steps": [{ "do": "key", "key": "ArrowRight", "ms": 700 }],
+        "expect": ["player.x up 10"]
+      },
+      {
+        "name": "ArrowUp raises the aim",
+        "steps": [{ "do": "key", "key": "ArrowUp", "ms": 600 }],
+        "expect": ["aimElev up 3"]
+      }
+    ],
+    "mouse": [
+      {
+        "name": "drag up-right and release looses an arrow",
+        "steps": [{ "do": "mousedrag", "from": [0.45, 0.62], "to": [0.58, 0.45], "ms": 650, "hold": 200 }],
+        "expect": ["shots up 1"]
+      }
+    ],
+    "touch": [
+      {
+        "name": "drag to aim, hold, release looses an arrow",
+        "steps": [{ "do": "drag", "from": [0.5, 0.62], "to": [0.62, 0.44], "ms": 600, "hold": 250 }],
+        "expect": ["shots up 1"]
+      },
+      {
+        "name": "tap the minimap jumps the camera",
+        "steps": [{ "do": "tap", "at": { "portrait": [0.85, 0.137], "landscape": [0.9, 0.3] } }],
+        "expect": ["player.x up 100"]
+      }
+    ],
+    "gamepad": [
+      {
+        "name": "pad A draws and looses",
+        "steps": [{ "do": "pad", "axes": [0, 0, 0, 0], "buttons": ["A"], "ms": 700 }],
+        "expect": ["shots up 1"]
+      },
+      {
+        "name": "left stick pans the field",
+        "steps": [{ "do": "pad", "axes": [1, 0, 0, 0], "ms": 700 }],
+        "expect": ["player.x up 10"]
+      },
+      {
+        "name": "stick up raises the aim",
+        "steps": [{ "do": "pad", "axes": [0, -1, 0, 0], "ms": 600 }],
+        "expect": ["aimElev up 3"]
+      }
+    ]
+  },
+  "na": {}
+}

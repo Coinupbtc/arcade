@@ -1,0 +1,139 @@
+{
+  "id": "rocket-run",
+  "title": "Rocket Run",
+  "tagline": "One button: thrust through a neon lab that keeps closing in.",
+  "description": "Hold to fire the rocket, let go to fall. Lasers cut the corridor, saws sweep the floor and ceiling, bots chase, and missiles lock on. The rocket carries three hull points: every hit spends one, lifts you clear and gives a moment of cover, and the third hit ends the run. Distance is the score; coins pay a bonus, and the speed rises the longer you stay alive. Best distance stays on the device.",
+  "genre": "One-button runner",
+  "tags": [
+    "arcade",
+    "reflex"
+  ],
+  "orientation": "any",
+  "realtime": true,
+  "session": "1 min",
+  "controls": {
+    "desktop": [
+      [
+        "Space / ArrowUp / W",
+        "Thrust"
+      ],
+      [
+        "Mouse hold",
+        "Thrust"
+      ],
+      [
+        "Esc",
+        "Pause"
+      ]
+    ],
+    "touch": [
+      [
+        "Hold",
+        "Thrust"
+      ],
+      [
+        "Tap",
+        "Start / resume"
+      ],
+      [
+        "Button",
+        "Pause"
+      ]
+    ],
+    "gamepad": [
+      [
+        "A / DPad up",
+        "Thrust"
+      ],
+      [
+        "Start",
+        "Pause"
+      ]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Space",
+      "click": [
+        0.5,
+        0.62
+      ],
+      "tap": {
+        "portrait": [
+          0.5,
+          0.62
+        ],
+        "landscape": [
+          0.5,
+          0.66
+        ]
+      }
+    },
+    "pause": {
+      "key": "Escape",
+      "tap": {
+        "portrait": [
+          0.91,
+          0.039
+        ],
+        "landscape": [
+          0.958,
+          0.085
+        ]
+      },
+      "resume_tap": null
+    },
+    "keyboard": [
+      {
+        "name": "Space thrusts the rocket up",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Space",
+            "ms": 200
+          }
+        ],
+        "expect": [
+          "player.y down 20"
+        ]
+      }
+    ],
+    "mouse": [],
+    "touch": [
+      {
+        "name": "holding the screen thrusts",
+        "steps": [
+          {
+            "do": "hold",
+            "at": [
+              0.5,
+              0.5
+            ],
+            "ms": 200
+          }
+        ],
+        "expect": [
+          "player.y down 20"
+        ]
+      }
+    ],
+    "gamepad": [
+      {
+        "name": "A thrusts the rocket up",
+        "steps": [
+          {
+            "do": "pad",
+            "buttons": [
+              "A"
+            ],
+            "ms": 500
+          }
+        ],
+        "expect": [
+          "player.y down 20"
+        ]
+      }
+    ]
+  },
+  "na": {}
+}

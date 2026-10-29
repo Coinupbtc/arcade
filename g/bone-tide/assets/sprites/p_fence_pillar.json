@@ -1,0 +1,59 @@
+{
+ "frames": {
+  "static_S_000": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 96,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 96,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 96,
+    "h": 96
+   }
+  }
+ },
+ "animations": {
+  "static_S": {
+   "frames": [
+    "static_S_000"
+   ],
+   "fps": 12,
+   "loop": false
+  }
+ },
+ "meta": {
+  "image": "p_fence_pillar.png",
+  "size": {
+   "w": 96,
+   "h": 96
+  },
+  "format": "RGBA8888",
+  "scale": "1",
+  "cell": 96,
+  "pivot": {
+   "x": 48.0,
+   "y": 88.1
+  },
+  "dirs": [
+   "S"
+  ],
+  "pixel_art": false,
+  "source": "kenney/kaykit-halloween/addons/kaykit_halloween_bits/Assets/gltf/fence_pillar.gltf",
+  "elevation": 30,
+  "ortho": 2.1318,
+  "target": [
+   -0.0,
+   0.8901
+  ],
+  "world_per_px": 0.02221
+ }
+}

@@ -1,0 +1,59 @@
+{
+ "frames": {
+  "static_S_000": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 128
+   }
+  }
+ },
+ "animations": {
+  "static_S": {
+   "frames": [
+    "static_S_000"
+   ],
+   "fps": 12,
+   "loop": false
+  }
+ },
+ "meta": {
+  "image": "p_coffin.png",
+  "size": {
+   "w": 128,
+   "h": 128
+  },
+  "format": "RGBA8888",
+  "scale": "1",
+  "cell": 128,
+  "pivot": {
+   "x": 64.0,
+   "y": 87.3
+  },
+  "dirs": [
+   "S"
+  ],
+  "pixel_art": false,
+  "source": "kenney/kaykit-halloween/addons/kaykit_halloween_bits/Assets/gltf/coffin.gltf",
+  "elevation": 30,
+  "ortho": 2.3793,
+  "target": [
+   0.0,
+   0.433
+  ],
+  "world_per_px": 0.01859
+ }
+}

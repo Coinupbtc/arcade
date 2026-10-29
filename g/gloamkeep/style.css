@@ -1,0 +1,42 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #070910;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+body { position: fixed; inset: 0; }
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  image-rendering: pixelated;
+}
+#safe-probe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* arcade-input paints a round action button for touch. This game's shop is painted on the canvas
+   (4 tower buttons + SEND, all >= 44 px), so that round button would sit on top of the SEND slot
+   and swallow its taps. Hide it; the ⏸ button stays and is the touch pause control. */
+#arcade-ui .ai-act[data-act="primary"] { display: none !important; }
+
+/* no text selection / callout on the DOM pause button */
+#arcade-ui button {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}

@@ -1,0 +1,380 @@
+{
+  "id": "grave-lantern",
+  "title": "Grave Lantern",
+  "tagline": "Hold the crypt for three minutes, then kill the Bone Warden.",
+  "description": "You are a knight with a lantern in a dark crypt. Drag anywhere and he walks; the sword swings by itself at the nearest skeleton. Skeletons rear back and lunge with a red ring on the floor, mages throw bolts from range, and bigger brutes soak hits, so where you stand and when you dash is the whole decision. A dash passes through enemies and cuts them, so it is both your escape and your attack. Walk over gems, pick one of three upgrades, and survive ten waves (three minutes) that keep growing. Then the Bone Warden wakes, charges at you, and calls more of the horde until one of you falls.",
+  "genre": "Horde survivor",
+  "tags": [
+    "action",
+    "survival",
+    "top-down"
+  ],
+  "orientation": "any",
+  "realtime": true,
+  "session": "3 min",
+  "controls": {
+    "desktop": [
+      [
+        "W A S D / Arrows",
+        "Move"
+      ],
+      [
+        "Space / LMB click",
+        "Dash · cut"
+      ],
+      [
+        "LMB drag",
+        "Move with the mouse"
+      ],
+      [
+        "Esc / P",
+        "Pause"
+      ],
+      [
+        "Enter / Space",
+        "Start · confirm"
+      ],
+      [
+        "1 2 3 / ← →",
+        "Pick an upgrade"
+      ]
+    ],
+    "touch": [
+      [
+        "Drag",
+        "Move"
+      ],
+      [
+        "Tap / 2nd finger",
+        "Dash · cut"
+      ],
+      [
+        "Tap ⏸",
+        "Pause / resume"
+      ],
+      [
+        "Tap",
+        "Start · pick an upgrade"
+      ]
+    ],
+    "gamepad": [
+      [
+        "LS / DPad",
+        "Move"
+      ],
+      [
+        "A",
+        "Dash · cut · confirm"
+      ],
+      [
+        "Start",
+        "Pause"
+      ],
+      [
+        "DPad / LS",
+        "Pick upgrade"
+      ],
+      [
+        "B",
+        "Back · pause during cards"
+      ]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Enter",
+      "click": [
+        0.5,
+        0.5
+      ],
+      "tap": {
+        "portrait": [
+          0.5,
+          0.5
+        ],
+        "landscape": [
+          0.5,
+          0.5
+        ]
+      }
+    },
+    "pause": {
+      "key": "Escape",
+      "tap": {
+        "portrait": [
+          0.903,
+          0.045
+        ],
+        "landscape": [
+          0.955,
+          0.097
+        ]
+      },
+      "resume_tap": {
+        "portrait": [
+          0.903,
+          0.045
+        ],
+        "landscape": [
+          0.955,
+          0.097
+        ]
+      }
+    },
+    "keyboard": [
+      {
+        "name": "ArrowRight walks east",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Digit1",
+            "ms": 60
+          },
+          {
+            "do": "key",
+            "key": "ArrowRight",
+            "ms": 700
+          }
+        ],
+        "expect": [
+          "player.x up 60"
+        ]
+      },
+      {
+        "name": "KeyA walks west",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Digit1",
+            "ms": 60
+          },
+          {
+            "do": "key",
+            "key": "KeyA",
+            "ms": 600
+          }
+        ],
+        "expect": [
+          "player.x down 40"
+        ]
+      },
+      {
+        "name": "ArrowDown walks south",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Digit1",
+            "ms": 60
+          },
+          {
+            "do": "key",
+            "key": "ArrowDown",
+            "ms": 600
+          }
+        ],
+        "expect": [
+          "player.y up 40"
+        ]
+      }
+    ],
+    "mouse": [
+      {
+        "name": "mouse drag walks east",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Digit1",
+            "ms": 60
+          },
+          {
+            "do": "mousedrag",
+            "from": {
+              "desktop": [
+                0.5,
+                0.68
+              ]
+            },
+            "to": {
+              "desktop": [
+                0.72,
+                0.68
+              ]
+            },
+            "ms": 700
+          }
+        ],
+        "expect": [
+          "player.x up 60"
+        ]
+      }
+    ],
+    "touch": [
+      {
+        "name": "drag right walks east",
+        "steps": [
+          {
+            "do": "tap",
+            "at": {
+              "portrait": [
+                0.5,
+                0.4
+              ],
+              "landscape": [
+                0.5,
+                0.55
+              ]
+            }
+          },
+          {
+            "do": "drag",
+            "from": {
+              "portrait": [
+                0.5,
+                0.62
+              ],
+              "landscape": [
+                0.5,
+                0.62
+              ]
+            },
+            "to": {
+              "portrait": [
+                0.75,
+                0.62
+              ],
+              "landscape": [
+                0.75,
+                0.62
+              ]
+            },
+            "ms": 700
+          }
+        ],
+        "expect": [
+          "player.x up 40"
+        ]
+      },
+      {
+        "name": "drag up walks north",
+        "steps": [
+          {
+            "do": "tap",
+            "at": {
+              "portrait": [
+                0.5,
+                0.4
+              ],
+              "landscape": [
+                0.5,
+                0.55
+              ]
+            }
+          },
+          {
+            "do": "drag",
+            "from": {
+              "portrait": [
+                0.4,
+                0.6
+              ],
+              "landscape": [
+                0.4,
+                0.6
+              ]
+            },
+            "to": {
+              "portrait": [
+                0.4,
+                0.4
+              ],
+              "landscape": [
+                0.4,
+                0.3
+              ]
+            },
+            "ms": 600
+          }
+        ],
+        "expect": [
+          "player.y down 30"
+        ]
+      }
+    ],
+    "gamepad": [
+      {
+        "name": "left stick east",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Digit1",
+            "ms": 60
+          },
+          {
+            "do": "pad",
+            "axes": [
+              0.9,
+              0,
+              0,
+              0
+            ],
+            "ms": 700
+          }
+        ],
+        "expect": [
+          "player.x up 60"
+        ]
+      },
+      {
+        "name": "DPad south",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Digit1",
+            "ms": 60
+          },
+          {
+            "do": "pad",
+            "buttons": [
+              "DOWN"
+            ],
+            "ms": 600
+          }
+        ],
+        "expect": [
+          "player.y up 40"
+        ]
+      },
+      {
+        "name": "A dashes east with the stick held",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Digit1",
+            "ms": 60
+          },
+          {
+            "do": "pad",
+            "axes": [
+              0.9,
+              0,
+              0,
+              0
+            ],
+            "buttons": [
+              "A"
+            ],
+            "ms": 140
+          },
+          {
+            "do": "wait",
+            "ms": 220
+          }
+        ],
+        "expect": [
+          "player.x up 20"
+        ]
+      }
+    ]
+  },
+  "na": {}
+}

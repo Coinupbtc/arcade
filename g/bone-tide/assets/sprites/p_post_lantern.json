@@ -1,0 +1,59 @@
+{
+ "frames": {
+  "static_S_000": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 208,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 208,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 208,
+    "h": 208
+   }
+  }
+ },
+ "animations": {
+  "static_S": {
+   "frames": [
+    "static_S_000"
+   ],
+   "fps": 12,
+   "loop": false
+  }
+ },
+ "meta": {
+  "image": "p_post_lantern.png",
+  "size": {
+   "w": 208,
+   "h": 208
+  },
+  "format": "RGBA8888",
+  "scale": "1",
+  "cell": 208,
+  "pivot": {
+   "x": 104.0,
+   "y": 198.2
+  },
+  "dirs": [
+   "S"
+  ],
+  "pixel_art": false,
+  "source": "kenney/kaykit-halloween/addons/kaykit_halloween_bits/Assets/gltf/post_lantern.gltf",
+  "elevation": 30,
+  "ortho": 3.1691,
+  "target": [
+   0.0,
+   1.4341
+  ],
+  "world_per_px": 0.01524
+ }
+}

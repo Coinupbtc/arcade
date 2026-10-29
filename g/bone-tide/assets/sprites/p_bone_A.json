@@ -1,0 +1,59 @@
+{
+ "frames": {
+  "static_S_000": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 48,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   }
+  }
+ },
+ "animations": {
+  "static_S": {
+   "frames": [
+    "static_S_000"
+   ],
+   "fps": 12,
+   "loop": false
+  }
+ },
+ "meta": {
+  "image": "p_bone_A.png",
+  "size": {
+   "w": 48,
+   "h": 48
+  },
+  "format": "RGBA8888",
+  "scale": "1",
+  "cell": 48,
+  "pivot": {
+   "x": 24.0,
+   "y": 31.8
+  },
+  "dirs": [
+   "S"
+  ],
+  "pixel_art": false,
+  "source": "kenney/kaykit-halloween/addons/kaykit_halloween_bits/Assets/gltf/bone_A.gltf",
+  "elevation": 30,
+  "ortho": 0.7423,
+  "target": [
+   -0.0,
+   0.0
+  ],
+  "world_per_px": 0.01546
+ }
+}

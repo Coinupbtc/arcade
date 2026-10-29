@@ -1,0 +1,380 @@
+{
+  "id": "orbital-decay",
+  "title": "Orbital Decay",
+  "tagline": "Switch rings to dodge the debris, then ride the reentry down.",
+  "description": "Your satellite circles a dying planet on four to six orbital rings. Debris drifts across the lanes, so you tap a screen half or press left/right to hop inward or outward. Near misses build a score chain, green rings give you a shield, amber crosses patch the hull. Every few levels the outermost orbit burns away, so you must descend before your lane does. You have three hull: an impact costs one, and a retro burn clears every rock around you on a five-second recharge. Reach the surface in 94 seconds for a rank and up to three stars; the endless Survival mode keeps burning orbits and adding hunters and decay pulses until the hull fails.",
+  "genre": "Orbital dodger",
+  "tags": [
+    "arcade",
+    "survival",
+    "dodge"
+  ],
+  "orientation": "any",
+  "realtime": true,
+  "session": "94 s mission \u00b7 endless survival",
+  "controls": {
+    "desktop": [
+      [
+        "A D / \u2190 \u2192",
+        "Switch ring"
+      ],
+      [
+        "Space",
+        "Retro burn"
+      ],
+      [
+        "Enter",
+        "Start"
+      ],
+      [
+        "Esc / P",
+        "Pause"
+      ],
+      [
+        "LMB on a screen half",
+        "Switch ring"
+      ]
+    ],
+    "touch": [
+      [
+        "Tap screen half",
+        "Switch ring"
+      ],
+      [
+        "Tap BURN",
+        "Retro burn"
+      ],
+      [
+        "Tap \u23f8",
+        "Pause"
+      ]
+    ],
+    "gamepad": [
+      [
+        "LS / DPad",
+        "Switch ring"
+      ],
+      [
+        "A",
+        "Retro burn"
+      ],
+      [
+        "Start",
+        "Pause"
+      ]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Enter",
+      "click": [
+        0.5,
+        0.5187
+      ],
+      "tap": {
+        "portrait": [
+          0.5,
+          0.5065
+        ],
+        "landscape": [
+          0.3621,
+          0.4564
+        ]
+      },
+      "pad": "A"
+    },
+    "pause": {
+      "key": "Escape",
+      "tap": {
+        "portrait": [
+          0.9128,
+          0.0403
+        ],
+        "landscape": [
+          0.9597,
+          0.0872
+        ]
+      },
+      "resume_tap": {
+        "portrait": [
+          0.9128,
+          0.0403
+        ],
+        "landscape": [
+          0.9597,
+          0.0872
+        ]
+      }
+    },
+    "keyboard": [
+      {
+        "name": "ArrowRight switches outward",
+        "steps": [
+          {
+            "do": "key",
+            "key": "ArrowRight",
+            "ms": 90
+          }
+        ],
+        "expect": [
+          "ring up 1"
+        ]
+      },
+      {
+        "name": "KeyD switches outward",
+        "steps": [
+          {
+            "do": "key",
+            "key": "KeyD",
+            "ms": 90
+          }
+        ],
+        "expect": [
+          "ring up 1"
+        ]
+      },
+      {
+        "name": "ArrowUp switches inward",
+        "steps": [
+          {
+            "do": "key",
+            "key": "ArrowUp",
+            "ms": 90
+          }
+        ],
+        "expect": [
+          "ring down 1"
+        ]
+      },
+      {
+        "name": "KeyA switches inward",
+        "steps": [
+          {
+            "do": "key",
+            "key": "KeyA",
+            "ms": 90
+          }
+        ],
+        "expect": [
+          "ring down 1"
+        ]
+      },
+      {
+        "name": "KeyD switches outward again",
+        "steps": [
+          {
+            "do": "key",
+            "key": "KeyD",
+            "ms": 90
+          }
+        ],
+        "expect": [
+          "ring up 1"
+        ]
+      },
+      {
+        "name": "KeyW switches inward",
+        "steps": [
+          {
+            "do": "key",
+            "key": "KeyW",
+            "ms": 90
+          }
+        ],
+        "expect": [
+          "ring down 1"
+        ]
+      },
+      {
+        "name": "ArrowRight then ArrowLeft",
+        "steps": [
+          {
+            "do": "key",
+            "key": "ArrowRight",
+            "ms": 90
+          }
+        ],
+        "expect": [
+          "ring up 1"
+        ]
+      },
+      {
+        "name": "ArrowLeft switches inward",
+        "steps": [
+          {
+            "do": "key",
+            "key": "ArrowLeft",
+            "ms": 90
+          }
+        ],
+        "expect": [
+          "ring down 1"
+        ]
+      },
+      {
+        "name": "Space fires the retro burn",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Space",
+            "ms": 90
+          }
+        ],
+        "expect": [
+          "burnCharge down 0.5"
+        ]
+      }
+    ],
+    "mouse": [
+      {
+        "name": "click the right half switches outward",
+        "steps": [
+          {
+            "do": "click",
+            "at": [
+              0.82,
+              0.5
+            ]
+          }
+        ],
+        "expect": [
+          "ring up 1"
+        ]
+      },
+      {
+        "name": "click the left half switches inward",
+        "steps": [
+          {
+            "do": "click",
+            "at": [
+              0.18,
+              0.5
+            ]
+          }
+        ],
+        "expect": [
+          "ring down 1"
+        ]
+      }
+    ],
+    "touch": [
+      {
+        "name": "tap right half switches outward",
+        "steps": [
+          {
+            "do": "tap",
+            "at": [
+              0.85,
+              0.5
+            ]
+          }
+        ],
+        "expect": [
+          "ring up 1"
+        ]
+      },
+      {
+        "name": "tap left half switches inward",
+        "steps": [
+          {
+            "do": "tap",
+            "at": [
+              0.15,
+              0.5
+            ]
+          }
+        ],
+        "expect": [
+          "ring down 1"
+        ]
+      },
+      {
+        "name": "tap right half again",
+        "steps": [
+          {
+            "do": "tap",
+            "at": [
+              0.85,
+              0.5
+            ]
+          }
+        ],
+        "expect": [
+          "ring up 1"
+        ]
+      },
+      {
+        "name": "tap BURN fires the retro burn",
+        "steps": [
+          {
+            "do": "tap",
+            "at": {
+              "portrait": [
+                0.8538,
+                0.9325
+              ],
+              "landscape": [
+                0.9325,
+                0.8538
+              ]
+            }
+          }
+        ],
+        "expect": [
+          "burnCharge down 0.5"
+        ]
+      }
+    ],
+    "gamepad": [
+      {
+        "name": "DPad right switches outward",
+        "steps": [
+          {
+            "do": "pad",
+            "buttons": [
+              "RIGHT"
+            ],
+            "ms": 140
+          }
+        ],
+        "expect": [
+          "ring up 1"
+        ]
+      },
+      {
+        "name": "DPad left switches inward",
+        "steps": [
+          {
+            "do": "pad",
+            "buttons": [
+              "LEFT"
+            ],
+            "ms": 140
+          }
+        ],
+        "expect": [
+          "ring down 1"
+        ]
+      },
+      {
+        "name": "left stick down switches outward",
+        "steps": [
+          {
+            "do": "pad",
+            "axes": [
+              0,
+              0.95,
+              0,
+              0
+            ],
+            "ms": 220
+          }
+        ],
+        "expect": [
+          "ring up 1"
+        ]
+      }
+    ]
+  },
+  "na": {}
+}

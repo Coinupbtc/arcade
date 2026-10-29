@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>ORBITAL DECAY</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none; touch-action:none; }
+  html,body { width:100%; height:100%; overflow:hidden; background:#05060e; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+  #c { display:block; width:100%; height:100%; }
+  .safe { position:fixed; inset:0; pointer-events:none; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  #hud { position:fixed; top:calc(env(safe-area-inset-top) + 62px); left:calc(env(safe-area-inset-left) + 14px); right:calc(env(safe-area-inset-right) + 14px); pointer-events:none; display:flex; justify-content:space-between; align-items:flex-start; gap:8px; z-index:10; }
+  .hud-col { display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .hud-col.right { align-items:flex-end; }
+  .hud-label { font-size:9px; letter-spacing:2px; color:#4a5568; text-transform:uppercase; font-weight:600; }
+  .hud-value { font-size:19px; color:#e2e8f0; font-weight:700; font-variant-numeric:tabular-nums; line-height:1.1; }
+  .hud-value.small { font-size:13px; }
+  .hud-line { font-size:9px; letter-spacing:1.4px; color:#5b6b85; font-weight:600; font-variant-numeric:tabular-nums; text-transform:uppercase; }
+  #chain { color:#ffd166; }
+  #chain.pop { animation:chainPop .18s ease-out; }
+  @keyframes chainPop { 0%{transform:scale(1.35);} 100%{transform:scale(1);} }
+  #combo-timer-bar { height:3px; background:linear-gradient(90deg,#ffd166,#ff6b6b); width:0%; border-radius:2px; max-width:84px; transition:width .05s linear; }
+  #hull-pips { display:flex; gap:4px; }
+  #hull-pips i { display:block; width:15px; height:8px; border-radius:2px; background:#222a3a; box-shadow:inset 0 0 0 1px rgba(96,165,250,0.35); }
+  #hull-pips i.on { background:linear-gradient(180deg,#7dd3fc,#3b82f6); box-shadow:0 0 8px rgba(96,165,250,0.6); }
+  #hull-pips.low i.on { background:linear-gradient(180deg,#ffb4a2,#ff6b6b); box-shadow:0 0 8px rgba(255,107,107,0.6); }
+  #burn-meter { width:72px; height:5px; border-radius:3px; background:#1b2230; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(96,165,250,0.25); }
+  #burn-meter i { display:block; height:100%; width:100%; background:linear-gradient(90deg,#818cf8,#60a5fa); border-radius:3px; }
+  #burn-meter.ready i { background:linear-gradient(90deg,#a7f3c0,#4ade80); box-shadow:0 0 8px rgba(74,222,128,0.6); }
+  #mission { position:fixed; top:calc(env(safe-area-inset-top) + 60px); left:50%; transform:translateX(-50%); width:150px; z-index:10; pointer-events:none; text-align:center; }
+  #mission .m-label { font-size:9px; letter-spacing:1.6px; color:#8ab4ff; font-weight:700; text-transform:uppercase; margin-bottom:4px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  #mission .m-track { height:3px; background:rgba(96,165,250,0.18); border-radius:2px; overflow:hidden; }
+  #mission .m-fill { height:100%; width:0%; background:linear-gradient(90deg,#60a5fa,#a7f3c0); border-radius:2px; transition:width .12s linear; }
+  #mission.reentry .m-label { color:#ff8f6b; }
+  #mission.reentry .m-fill { background:linear-gradient(90deg,#ff8f6b,#ffd166); }
+  .overlay { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(5,6,14,0.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:20; text-align:center; padding:24px; overflow:hidden; }
+  .overlay.hidden { display:none; }
+  .title { font-size:clamp(32px,9vw,60px); font-weight:800; letter-spacing:6px; color:#e2e8f0; margin-bottom:6px; text-shadow:0 0 40px rgba(96,165,250,0.4); }
+  .subtitle { font-size:12px; letter-spacing:3px; color:#60a5fa; text-transform:uppercase; margin-bottom:22px; font-weight:600; }
+  .btn { pointer-events:auto; min-width:220px; min-height:52px; padding:14px 30px; font-size:14px; letter-spacing:3px; text-transform:uppercase; font-weight:700; color:#05060e; background:linear-gradient(135deg,#60a5fa,#818cf8); border:none; border-radius:10px; cursor:pointer; box-shadow:0 4px 24px rgba(96,165,250,0.3); transition:transform .1s, box-shadow .1s; }
+  .btn:active { transform:scale(0.96); box-shadow:0 2px 12px rgba(96,165,250,0.2); }
+  .btn.secondary { background:transparent; color:#60a5fa; border:1px solid rgba(96,165,250,0.4); box-shadow:none; }
+  .btn.small { min-width:0; min-height:44px; padding:10px 18px; font-size:11px; letter-spacing:2px; margin-top:10px; }
+  .menu-block { display:flex; flex-direction:column; gap:10px; align-items:center; }
+  .menu-best { font-size:10px; letter-spacing:2px; color:#8ab4ff; margin-top:14px; text-transform:uppercase; font-variant-numeric:tabular-nums; }
+  .menu-best i { color:#4ade80; font-style:normal; }
+  .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 26px; margin:16px 0 22px; }
+  .stat-item { text-align:center; }
+  .stat-label { font-size:9px; letter-spacing:2px; color:#4a5568; text-transform:uppercase; margin-bottom:3px; font-weight:600; }
+  .stat-value { font-size:24px; font-weight:700; color:#e2e8f0; font-variant-numeric:tabular-nums; }
+  .stat-value.gold { color:#ffd166; }
+  .stat-value.best { color:#4ade80; }
+  .hint { font-size:11px; color:#4a5568; margin-top:14px; letter-spacing:1px; line-height:1.7; }
+  .hint b { color:#94a3b8; }
+  .prompt-row { display:flex; flex-wrap:wrap; gap:10px 16px; justify-content:center; margin-top:12px; }
+  .prompt-row span { display:flex; align-items:center; gap:5px; font-size:10px; letter-spacing:1px; color:#94a3b8; text-transform:uppercase; }
+  .prompt-row img { height:20px; width:auto; }
+  #gameover-title { font-size:clamp(22px,6.5vw,36px); font-weight:800; letter-spacing:4px; color:#ff6b6b; margin-bottom:4px; text-shadow:0 0 30px rgba(255,107,107,0.3); }
+  #pause-overlay .title { font-size:clamp(22px,6.5vw,34px); margin-bottom:18px; }
+  #shield-indicator { position:fixed; bottom:calc(env(safe-area-inset-bottom) + 34px); left:50%; transform:translateX(-50%); display:none; align-items:center; gap:6px; z-index:10; pointer-events:none; padding:6px 14px; background:rgba(74,222,128,0.12); border:1px solid rgba(74,222,128,0.3); border-radius:20px; }
+  #shield-indicator span { font-size:10px; letter-spacing:2px; color:#4ade80; font-weight:600; text-transform:uppercase; }
+  #shield-indicator.active { display:flex; animation:shieldPulse 1.2s ease-in-out infinite; }
+  @keyframes shieldPulse { 0%,100%{opacity:0.7;} 50%{opacity:1;} }
+  #win-title { font-size:clamp(24px,7vw,40px); font-weight:800; letter-spacing:4px; color:#4ade80; margin-bottom:2px; text-shadow:0 0 30px rgba(74,222,128,0.35); }
+  .rank-badge { font-size:clamp(44px,14vw,76px); font-weight:800; color:#ffd166; line-height:1.1; margin:4px 0 8px; text-shadow:0 0 40px rgba(255,209,102,0.5); }
+  #directive { position:fixed; left:calc(env(safe-area-inset-left) + 14px); bottom:calc(env(safe-area-inset-bottom) + 10px); z-index:10; pointer-events:none; font-size:10px; letter-spacing:1.2px; color:#8ab4ff; font-weight:600; text-transform:uppercase; text-align:left; }
+  #directive.done { color:#4ade80; }
+  #ingame-hint { position:fixed; left:50%; transform:translateX(-50%); bottom:calc(env(safe-area-inset-bottom) + 10px); z-index:10; pointer-events:none; font-size:9px; letter-spacing:1px; color:#5b6b85; text-transform:uppercase; white-space:nowrap; }
+  #ingame-hint b { color:#94a3b8; }
+  #altitude { display:none; }
+  #decay-banner { position:fixed; top:calc(env(safe-area-inset-top) + 96px); left:50%; transform:translateX(-50%); z-index:11; pointer-events:none; padding:6px 14px; border-radius:14px; background:rgba(120,24,10,0.55); border:1px solid rgba(255,110,60,0.7); color:#ffd0b8; font-size:10px; letter-spacing:1.6px; font-weight:700; text-transform:uppercase; white-space:nowrap; animation:decayPulse .7s ease-in-out infinite; }
+  #decay-banner.hidden { display:none; }
+  #decay-banner b { color:#fff; }
+  @keyframes decayPulse { 0%,100%{opacity:.72;} 50%{opacity:1;} }
+  #win-stars { font-size:26px; letter-spacing:8px; color:#ffd166; margin:2px 0 10px; text-shadow:0 0 24px rgba(255,209,102,.5); }
+  #win-stars i { font-style:normal; color:#2a3346; text-shadow:none; }
+  .new-best { display:inline-block; padding:3px 10px; background:rgba(74,222,128,0.15); border:1px solid rgba(74,222,128,0.4); border-radius:12px; font-size:10px; letter-spacing:2px; color:#4ade80; font-weight:700; margin-top:8px; text-transform:uppercase; }
+  #ingame-hint { transition:opacity .8s ease; }
+  #ingame-hint.fade { opacity:0; }
+  @media (max-width:520px) { #menu-overlay { padding-top:162px; } }
+  @media (min-width:521px) { #menu-overlay { padding-top:132px; } }
+  @media (max-height:520px) {
+    .overlay { padding:14px; }
+    #menu-overlay { padding-top:14px; }
+    .title { font-size:clamp(22px,5vw,34px); letter-spacing:3px; }
+    .subtitle { margin-bottom:8px; font-size:10px; }
+    .menu-block { flex-direction:row; gap:10px; }
+    #btn-start { min-width:300px; }
+    #btn-survival { min-width:200px; }
+    .btn { min-width:190px; min-height:46px; padding:10px 20px; font-size:12px; }
+    .menu-best { margin-top:8px; }
+    .hint { margin-top:8px; font-size:10px; line-height:1.5; }
+    .prompt-row { margin-top:6px; }
+    .stat-grid { margin:8px 0 12px; gap:6px 20px; }
+    .stat-value { font-size:20px; }
+    .rank-badge { font-size:48px; margin:2px 0 4px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="hud">
+  <div class="hud-col">
+    <span class="hud-label">Score</span>
+    <span class="hud-value" id="score">0</span>
+    <span class="hud-label" style="margin-top:2px">Chain</span>
+    <span class="hud-value small">×<b id="chain">1</b></span>
+    <div id="combo-timer-bar"></div>
+    <span class="hud-line" id="altitude">LV 1 · ALT 8.0 km</span>
+  </div>
+  <div class="hud-col right">
+    <span class="hud-label">Hull</span>
+    <div id="hull-pips"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+    <span class="hud-label" style="margin-top:5px">Burn</span>
+    <div id="burn-meter" class="ready"><i></i></div>
+  </div>
+</div>
+
+<div id="mission">
+  <div class="m-label" id="mission-label">SURFACE 1:34</div>
+  <div class="m-track"><div class="m-fill" id="mission-fill"></div></div>
+</div>
+
+<div id="decay-banner" class="hidden"></div>
+
+<div id="shield-indicator"><span>◈ Shield</span></div>
+<div id="directive"></div>
+<div id="ingame-hint"></div>
+
+<div class="overlay" id="menu-overlay">
+  <div class="title">ORBITAL DECAY</div>
+  <div class="subtitle">A Satellite's Last Orbit</div>
+  <div class="menu-block">
+    <button class="btn" id="btn-start" data-menu="mission">Begin Descent</button>
+    <button class="btn secondary" id="btn-survival" data-menu="survival">Survival · Endless</button>
+  </div>
+  <div class="menu-best" id="menu-best">BEST <i>0</i></div>
+  <div class="hint" id="menu-hint">
+    Switch rings to dodge debris. Reach the surface in <b>94 s</b>.<br>
+    Three hull. The retro burn clears the rocks around you.<br>
+    Outer orbits burn away — <b>descend before they do</b>.
+  </div>
+  <div class="prompt-row" id="menu-prompts"></div>
+</div>
+
+<div class="overlay hidden" id="gameover-overlay">
+  <div id="gameover-title">SIGNAL LOST</div>
+  <div id="gameover-sub" style="font-size:11px;color:#94a3b8;letter-spacing:1px;margin-bottom:10px;"></div>
+  <div class="stat-grid">
+    <div class="stat-item"><div class="stat-label">Score</div><div class="stat-value" id="final-score">0</div></div>
+    <div class="stat-item"><div class="stat-label">Best</div><div class="stat-value best" id="best-score">0</div></div>
+    <div class="stat-item"><div class="stat-label">Survived</div><div class="stat-value" id="final-time">0s</div></div>
+    <div class="stat-item"><div class="stat-label">Near-misses</div><div class="stat-value gold" id="final-nearmiss">0</div></div>
+  </div>
+  <div id="best-badge"></div>
+  <button class="btn" id="btn-retry">Retry</button>
+  <button class="btn secondary small" id="btn-over-menu">Change mode</button>
+  <div class="hint" id="over-hint">Tap anywhere or press <b>ENTER</b> to retry</div>
+</div>
+
+<div class="overlay hidden" id="win-overlay">
+  <div id="win-title">MISSION COMPLETE</div>
+  <div class="rank-badge" id="rank-badge">A</div>
+  <div id="win-stars"></div>
+  <div class="stat-grid">
+    <div class="stat-item"><div class="stat-label">Score</div><div class="stat-value" id="win-score">0</div></div>
+    <div class="stat-item"><div class="stat-label">Best</div><div class="stat-value best" id="win-best">0</div></div>
+    <div class="stat-item"><div class="stat-label">Directives</div><div class="stat-value gold" id="win-directives">0</div></div>
+    <div class="stat-item"><div class="stat-label">Near-misses</div><div class="stat-value" id="win-nearmiss">0</div></div>
+  </div>
+  <div id="win-sub" style="font-size:11px;color:#94a3b8;letter-spacing:1px;margin-bottom:14px;">You reached the surface.</div>
+  <button class="btn" id="btn-again">Fly Again</button>
+  <button class="btn secondary small" id="btn-win-menu">Change mode</button>
+  <div class="hint" id="win-hint">Tap anywhere or press <b>ENTER</b> to fly again</div>
+</div>
+
+<div class="overlay hidden" id="pause-overlay">
+  <div class="title">PAUSED</div>
+  <button class="btn" id="btn-resume">Resume</button>
+  <button class="btn secondary small" id="btn-quit">End Run</button>
+  <div class="hint" id="pause-hint">Press <b>ESC</b> / <b>P</b> / <b>START</b> to resume</div>
+</div>
+
+<script src="arcade-input.js"></script>
+<script>
+'use strict';
+// ============================================================
+// ORBITAL DECAY — arcade survival, fully juiced
+// One verb: switch rings. Dying planet below, debris everywhere.
+// ============================================================
+
+// ---------- canvas: real size on every resize, DPR-aware ----------
+const canvas = document.getElementById('c');
+// alpha:false lets the compositor treat the canvas as opaque: one less full-screen blend per frame
+const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
+let W=0, H=0, DPR=1, CX=0, CY=0, MIN_DIM=0;
+function resize(){
+  // Render budget, not device DPR: keep the canvas under ~1.8 M pixels so the compositor can
+  // present every frame even when the box is loaded. Vector art stays sharp at these densities.
+  const rawDpr = window.devicePixelRatio||1;
+  DPR = Math.min(rawDpr, 1.5, Math.max(1, Math.sqrt(1800000/Math.max(1, window.innerWidth*window.innerHeight))));
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width  = Math.round(W*DPR);
+  canvas.height = Math.round(H*DPR);
+  canvas.style.width  = W+'px';
+  canvas.style.height = H+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  CX = W/2; CY = H/2;
+  MIN_DIM = Math.min(W,H);
+  G.radBase = MIN_DIM*0.17;
+  G.radGap  = MIN_DIM*0.092;
+}
+window.addEventListener('resize', resize);
+window.addEventListener('orientationchange', ()=>setTimeout(resize,100));
+
+// ---------- audio: WebAudio, no assets, lazy init on first input ----------
+let audioCtx=null, masterGain=null, musicOn=true;
+function ensureAudio(){
+  if(audioCtx) { if(audioCtx.state==='suspended') audioCtx.resume(); return; }
+  try{
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.5;
+    masterGain.connect(audioCtx.destination);
+  }catch(e){ audioCtx=null; }
+}
+function tone(freq, dur, type='sine', vol=0.2, slide=0, delay=0){
+  if(!audioCtx) return;
+  const t0 = audioCtx.currentTime + delay;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t0);
+  if(slide) o.frequency.exponentialRampToValueAtTime(Math.max(30,freq+slide), t0+dur);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0+0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+  o.connect(g); g.connect(masterGain);
+  o.start(t0); o.stop(t0+dur+0.02);
+}
+function noiseBurst(dur=0.25, vol=0.3, delay=0, freq=900){
+  if(!audioCtx) return;
+  const t0 = audioCtx.currentTime + delay;
+  const len = Math.floor(audioCtx.sampleRate*dur);
+  const buf = audioCtx.createBuffer(1,len,audioCtx.sampleRate);
+  const d = buf.getChannelData(0);
+  for(let i=0;i<len;i++) d[i] = (Math.random()*2-1) * Math.pow(1-i/len,2);
+  const src = audioCtx.createBufferSource(); src.buffer=buf;
+  const g = audioCtx.createGain(); g.gain.value=vol;
+  const f = audioCtx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=freq;
+  src.connect(f); f.connect(g); g.connect(masterGain);
+  src.start(t0);
+}
+const SFX = {
+  switchRing(p){ tone(340+p*60, 0.09, 'triangle', 0.16, 120); },
+  nearMiss(ch){ const base=520+Math.min(ch,10)*45; tone(base,0.1,'sine',0.15); tone(base*1.5,0.14,'sine',0.09,0,0.04); },
+  shieldPickup(){ tone(660,0.09,'sine',0.14); tone(880,0.12,'sine',0.14,0,0.07); tone(1320,0.16,'sine',0.12,0,0.14); },
+  shieldBreak(){ noiseBurst(0.3,0.25); tone(220,0.25,'sawtooth',0.12,-100); },
+  crash(){ noiseBurst(0.7,0.5,0,1800); tone(110,0.5,'sawtooth',0.22,-60); tone(55,0.7,'sine',0.25,-20,0.05); },
+  levelUp(){ tone(523,0.1,'triangle',0.14); tone(659,0.1,'triangle',0.14,0,0.08); tone(784,0.16,'triangle',0.14,0,0.16); },
+  uiTap(){ tone(500,0.05,'sine',0.08); },
+  comboTick(lv){ tone(400+lv*40,0.06,'square',0.05); },
+  hunterTick(){ tone(920,0.05,'square',0.05); },
+  pulseWarn(){ tone(190,0.3,'sawtooth',0.1,-40); tone(190,0.3,'sawtooth',0.08,-40,0.4); },
+  pulseHit(){ noiseBurst(0.4,0.3,0,600); tone(140,0.35,'sawtooth',0.14,-50); },
+  decayWarn(){ tone(150,0.5,'sawtooth',0.12,-30); tone(300,0.45,'triangle',0.07,25,0.18); },
+  decayBurn(){ noiseBurst(0.65,0.4,0,900); tone(70,0.7,'sine',0.24,-24); tone(190,0.5,'sawtooth',0.1,-90,0.05); },
+  scoreChime(n){ tone(700+n*60,0.07,'sine',0.09); },
+  hullHit(){ noiseBurst(0.5,0.45,0,1400); tone(150,0.3,'square',0.18,-70); tone(72,0.4,'sine',0.2,-18,0.03); },
+  burn(){ noiseBurst(0.35,0.3,0,2600); tone(180,0.28,'sawtooth',0.18,420); tone(90,0.3,'sine',0.14,120,0.04); },
+  patchGet(){ tone(520,0.08,'triangle',0.13); tone(780,0.1,'triangle',0.13,0,0.07); tone(1040,0.14,'triangle',0.12,0,0.14); },
+  warn(){ tone(880,0.09,'square',0.07); tone(880,0.09,'square',0.07,0,0.14); },
+};
+// ambient pad — detuned saws through a lowpass, slow LFO on cutoff + sub pulse
+let musicNodes=null;
+function startMusic(){
+  if(!audioCtx || musicNodes) return;
+  const g = audioCtx.createGain(); g.gain.value=0.0;
+  g.connect(masterGain);
+  const f = audioCtx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=300; f.Q.value=0.7;
+  f.connect(g);
+  const o1 = audioCtx.createOscillator(); o1.type='sawtooth'; o1.frequency.value=110;
+  const o2 = audioCtx.createOscillator(); o2.type='sawtooth'; o2.frequency.value=110*1.007;
+  const o3 = audioCtx.createOscillator(); o3.type='sine'; o3.frequency.value=220.6;
+  o1.connect(f); o2.connect(f); o3.connect(f);
+  const lfo = audioCtx.createOscillator(); lfo.type='sine'; lfo.frequency.value=0.07;
+  const lfoG = audioCtx.createGain(); lfoG.gain.value=140;
+  lfo.connect(lfoG); lfoG.connect(f.frequency);
+  o1.start(); o2.start(); o3.start(); lfo.start();
+  g.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime+2);
+  musicNodes={g,f,o1,o2,o3,lfo,lfoG};
+}
+function setMusicTension(level){
+  if(!musicNodes) return;
+  const t = audioCtx.currentTime;
+  musicNodes.f.frequency.setTargetAtTime(300+level*700, t, 0.5);
+  musicNodes.g.gain.setTargetAtTime(0.05+level*0.05, t, 0.5);
+}
+function stopMusic(){
+  if(!musicNodes) return;
+  try{ const t=audioCtx.currentTime; musicNodes.g.gain.setTargetAtTime(0,t,0.3);
+    setTimeout(()=>{ try{ musicNodes.o1.stop(); musicNodes.o2.stop(); musicNodes.o3.stop(); musicNodes.lfo.stop(); }catch(e){} musicNodes=null; },800);
+  }catch(e){ musicNodes=null; }
+}
+
+// ---------- game state ----------
+const G = {
+  S: { MENU:0, PLAY:1, OVER:3, WIN:5 },
+  winZoom: 0,
+  state: 0,
+  mode: 'mission',
+  score: 0, best: +(localStorage.getItem('od_best')||0),
+  bestRank: localStorage.getItem('od_best_rank')||'',
+  bestSurvival: +(localStorage.getItem('od_survival_best')||0),
+  time: 0, level: 1,
+  rings: 4,
+  hull: 3, hullMax: 3, hitStop: 0,
+  burn: { cd: 0, max: 5.0 },
+  sat: { ring:1, angle:-Math.PI/2, rad:0, angVel:0, shield:0, shieldMax:12, trail:[], inv:0,
+         thrust:0, strobe:0, tilt:0 },
+  ringSwitch: { active:false, from:0, to:0, t:0, dur:0.18 },
+  debris: [], pickups: [], wrecks: [],
+  spawnTimer: 0, pickupTimer: 0,
+  chain: 1, chainTimer: 0, chainWindow: 2.6, nearMisses: 0, ringsSwitched: 0,
+  shake: 0, shakeAng: 0, zoomPunch: 0,
+  slowmo: 0, flash: 0, deathTimer: 0,
+  nearWindow: 0.5,
+  stars: [], nebula: [], particles: [], floaters: [], shards: [],
+  planet: { rot:0, cracks:[], bands:[] },
+  ringPulse: { timer: 0, warn: 0, lane: -1, active: false, countdown: 0 },
+  // orbit decay: the outermost live orbit can burn away. warnLane is the one under warning,
+  // burns are the fading ember arcs left behind after it goes.
+  decay: { warnLane: -1, warnT: 0, burns: [] },
+  hullLog: [],
+  overAt: 0,
+  huntersTicked: 0,
+  radBase: 100, radGap: 60,
+  spawnInterval: 1.0, spawnMin: 0.3,
+  deathCause: '',
+  reentry: false, reentryT: 0,
+  directives: [], directiveIdx: 0, directivesDone: 0,
+  lastFrame: 0, running: false,
+  grain: null,
+};
+// 3-layer parallax starfield (rotates — we're in orbit)
+for(let i=0;i<230;i++){
+  G.stars.push({ a:Math.random()*Math.PI*2, r:0.04+Math.random()*0.52, z:Math.random()*0.9+0.1,
+                 tw:Math.random()*Math.PI*2, tws:0.4+Math.random()*1.6, layer:Math.floor(Math.random()*3) });
+}
+for(let i=0;i<12;i++){
+  const warm = i%3===0;
+  G.nebula.push({ a:Math.random()*Math.PI*2, r:0.15+Math.random()*0.5, size:0.1+Math.random()*0.22, hue: warm? 20+Math.random()*25 : 190+Math.random()*80, a:0.05+Math.random()*0.07, ph:Math.random()*Math.PI*2, layer:Math.floor(Math.random()*2) });
+}
+// planet cracks (lava veins) — normalized arcs
+for(let i=0;i<9;i++){
+  const a0 = Math.random()*Math.PI*2, span = 0.3+Math.random()*0.9;
+  G.planet.cracks.push({ a0, span, w: 0.02+Math.random()*0.05, ph: Math.random()*Math.PI*2 });
+}
+// surface bands
+for(let i=0;i<5;i++){
+  G.planet.bands.push({ y: 0.15+i*0.18+Math.random()*0.06, w: 0.05+Math.random()*0.09, sp: (Math.random()*0.02+0.008)*(Math.random()<0.5?-1:1), ph: Math.random()*Math.PI*2 });
+}
+// pre-rendered film grain tile
+(function makeGrain(){
+  const c = document.createElement('canvas'); c.width=c.height=128;
+  const x = c.getContext('2d'); const img = x.createImageData(128,128);
+  for(let i=0;i<img.data.length;i+=4){ const v = Math.random()*255|0; img.data[i]=img.data[i+1]=img.data[i+2]=v; img.data[i+3]=14; }
+  x.putImageData(img,0,0); G.grain = c;
+})();
+// shooting stars
+let shootStar = null; // {x,y,vx,vy,life}
+let shootTimer = 6;
+
+// ---------- input: arcade-input template (keyboard, mouse, touch, standard pad) ----------
+// Copied from ~/Documents/projects/arcade-input. Two custom actions carry the game's one verb;
+// the canvas half-tap stays here because a lane switch is not a movement vector.
+const $ = (id)=>document.getElementById(id);
+const S = G.S;
+function stateWord(){ return G.state===S.MENU ? 'menu' : (G.state===S.PLAY ? 'play' : 'over'); }
+
+const input = ArcadeInput.create({
+  surface:'#c',
+  actions:['ring_in','ring_out'],
+  bindings:{
+    ring_in:   { keys:['ArrowLeft','ArrowUp','KeyA','KeyW'], pad:['LEFT','UP'] },
+    ring_out:  { keys:['ArrowRight','ArrowDown','KeyD','KeyS'], pad:['RIGHT','DOWN'] },
+    primary:   { keys:['Space'], pad:['A'], mouse:[] },
+    secondary: { keys:['ShiftLeft','ShiftRight','KeyK'], pad:['X'], mouse:[] },
+    pause:     { keys:['Escape','KeyP'], pad:['START'], touch:'button' }
+  },
+  labels:{ primary:'BURN' },
+  touchButtons:['primary'],
+  dragMove:false,
+  stick:false,            // no thumb stick: the core touch verb is a half-screen tap
+  isRunning:()=> G.state===S.PLAY && !input.pause.paused,
+  onPause:()=>{ showOverlay('pause-overlay'); SFX.uiTap(); },
+  onResume:()=>{ hideOverlays(); G.lastFrame=performance.now(); },
+  onRefit:resize,
+  promptBase:'prompts/'
+});
+input.audio.attach(()=>{ ensureAudio(); return audioCtx; });
+
+const menu = input.menu({
+  items:[
+    { id:'mission',  el:$('btn-start'),    action:()=>startGame('mission') },
+    { id:'survival', el:$('btn-survival'), action:()=>startGame('survival') }
+  ]
+});
+
+// Device prompts: Kenney CC0 icons copied into ./prompts/, one row per device in use.
+const PROMPTS_HTML = {
+  keyboard:'<span><img src="prompts/keyboard_arrows.png" alt="arrows">A D / ← → Switch ring</span>' +
+           '<span><img src="prompts/keyboard_space.png" alt="space">Space Retro burn</span>' +
+           '<span><img src="prompts/keyboard_enter.png" alt="enter">Enter Start</span>' +
+           '<span><img src="prompts/keyboard_escape.png" alt="esc">Esc Pause</span>',
+  pad:     '<span><img src="prompts/xbox_stick_l.png" alt="stick">LS / DPad Switch ring</span>' +
+           '<span><img src="prompts/xbox_button_a.png" alt="A">A Retro burn</span>' +
+           '<span><img src="prompts/xbox_button_start.png" alt="start">Start Pause</span>',
+  touch:   '<span><img src="prompts/touch_tap.png" alt="tap">Tap a half Switch ring</span>' +
+           '<span><img src="prompts/touch_tap.png" alt="tap">BURN Retro burn</span>' +
+           '<span><img src="prompts/touch_tap.png" alt="tap">⏸ Pause</span>'
+};
+function paintPrompts(){
+  const d = input.deviceName ? input.deviceName() : 'keyboard';
+  // A phone with a pad connected can use both: show the touch row first, then the pad row.
+  const touchFirst = !!input.touchCapable && ((navigator.maxTouchPoints||0) > 0);
+  const row = (touchFirst && d === 'pad') ? (PROMPTS_HTML.touch + PROMPTS_HTML.pad)
+            : (PROMPTS_HTML[d] || PROMPTS_HTML.keyboard);
+  $('menu-prompts').innerHTML = row;
+  const hint = $('ingame-hint');
+  hint.classList.remove('fade');
+  if(touchFirst && d !== 'pad') hint.innerHTML = 'Tap <b>left half</b> in · <b>right half</b> out · <b>BURN</b> clears rocks';
+  else if(touchFirst) hint.innerHTML = 'Tap a half or <b>LS</b> to switch rings · <b>A</b> / BURN clears rocks';
+  else if(d==='pad') hint.innerHTML = 'LS / DPad switch ring · <b>A</b> burn · <b>START</b> pause';
+  else hint.innerHTML = '<b>A D / ← →</b> switch ring · <b>SPACE</b> burn · <b>ESC</b> pause';
+  $('pause-hint').innerHTML = d==='touch' ? 'Tap <b>▶</b> or the ⏸ button to resume'
+    : (d==='pad' ? 'Press <b>START</b> to resume' : 'Press <b>ESC</b> / <b>P</b> to resume');
+  const again = touchFirst ? 'Tap anywhere to go again' : (d==='pad' ? 'Press <b>A</b> to go again' : 'Tap or press <b>ENTER</b> to go again');
+  if($('over-hint')) $('over-hint').innerHTML = again;
+  if($('win-hint')) $('win-hint').innerHTML = again;
+}
+input.on('device', paintPrompts);
+// Device guess before the first input: three signals (coarse pointer, touch points, phone UA).
+(function guessDevice(){
+  const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  const touchPts = (navigator.maxTouchPoints||0) > 0;
+  const phoneUA = /iPhone|iPad|Android|Mobile/i.test(navigator.userAgent||'');
+  if(touchPts && (coarse || phoneUA) && input.touchCapable) input._setDevice('touch');
+})();
+
+function doSwitch(dir){
+  if(G.state!==S.PLAY || input.pause.paused) return;
+  const target = G.sat.ring + dir;
+  if(target<0 || target>=G.rings){ SFX.uiTap(); return; }
+  const from = G.sat.ring;
+  G.sat.ring = target;
+  G.ringsSwitched++;
+  // Mark the rocks we just left: a later near miss from one of those is honestly a dodge.
+  for(const d of G.debris){
+    if(d.dodged) continue;
+    if(physLane(d.rad)===from && angGapAbs(d.ang, G.sat.angle) < 0.52){ d.dodged = true; }
+  }
+  G.sat.thrust = 1;
+  G.ringSwitch.active = true; G.ringSwitch.from = from; G.ringSwitch.to = target; G.ringSwitch.t = 0;
+  SFX.switchRing(dir>0?1:-1);
+  // RCS puff particles opposite the burn
+  const a = G.sat.angle + (dir>0? -Math.PI/2 : Math.PI/2);
+  const sx = CX + Math.cos(G.sat.angle)*G.sat.rad, sy = CY + Math.sin(G.sat.angle)*G.sat.rad;
+  for(let i=0;i<6;i++){
+    const sp = 0.5+Math.random()*1.5;
+    G.particles.push({x:sx,y:sy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0.25+Math.random()*0.2,max:0.45,hue:200,size:1+Math.random()*1.5,drag:0.94,add:true});
+  }
+}
+function doBurn(){
+  if(G.state!==S.PLAY || input.pause.paused) return;
+  const {x,y} = satXY();
+  if(G.burn.cd>0){
+    SFX.warn();
+    addFloater(x, y-24, 'BURN '+Math.ceil(G.burn.cd)+'s', '#8ab4ff', 11);
+    return;
+  }
+  G.burn.cd = G.burn.max;
+  G.sat.inv = Math.max(G.sat.inv, 0.95);
+  G.sat.thrust = 1;
+  let n = 0;
+  for(let i=G.debris.length-1;i>=0;i--){
+    const d = G.debris[i];
+    if(Math.hypot(d.x-x, d.y-y) < 100 + d.r){ spawnSparkle(d.x, d.y, '150'); G.debris.splice(i,1); n++; }
+  }
+  G.score += n*15;
+  G._burns = (G._burns||0)+1;
+  screenShake(7); G.flash = Math.max(G.flash, 0.3);
+  SFX.burn();
+  addFloater(x, y-26, n ? ('BURN ×'+n) : 'RETRO BURN', '#a7f3c0', 13);
+}
+
+// The canvas half-tap is still the core touch verb (left half = inward, right half = outward).
+// It ignores DOM buttons: the template owns the ⏸ and BURN buttons.
+$('c').addEventListener('pointerdown', (e)=>{
+  ensureAudio();
+  if(G.state!==S.PLAY || input.pause.paused) return;
+  if(e.target && e.target.closest && e.target.closest('#arcade-ui, button, a')) return;
+  const r = canvas.getBoundingClientRect();
+  doSwitch((e.clientX - r.left) < r.width/2 ? -1 : 1);
+}, {passive:false});
+
+// Tap anywhere on the menu or the end screens starts the focused mode / retries the same one.
+$('menu-overlay').addEventListener('pointerdown', (e)=>{
+  if(e.target.closest && e.target.closest('button')) return;
+  startGame(menu.items[menu.index].id);
+});
+$('gameover-overlay').addEventListener('pointerdown', (e)=>{
+  if(e.target.closest && e.target.closest('button')) return;
+  if(performance.now()-(G.overAt||0) < 900) return;   // a panic tap at death must not skip the score
+  startGame(G.mode);
+});
+$('win-overlay').addEventListener('pointerdown', (e)=>{
+  if(e.target.closest && e.target.closest('button')) return;
+  if(performance.now()-(G.overAt||0) < 900) return;
+  startGame(G.mode);
+});
+function onPress(id, fn){
+  const el = $(id);
+  el.addEventListener('pointerdown', (e)=>{ e.preventDefault(); e.stopPropagation(); fn(); });
+  el.addEventListener('click', (e)=>e.preventDefault());
+}
+onPress('btn-retry', ()=>{ if(performance.now()-(G.overAt||0) >= 900) startGame(G.mode); });
+onPress('btn-again', ()=>{ if(performance.now()-(G.overAt||0) >= 900) startGame(G.mode); });
+onPress('btn-over-menu', ()=>goMenu());
+onPress('btn-win-menu', ()=>goMenu());
+onPress('btn-resume', ()=>{ input.pause.resume(); });
+onPress('btn-quit', ()=>quitToMenu());
+
+// ---------- flow ----------
+function showOverlay(id){ ['menu-overlay','gameover-overlay','pause-overlay','win-overlay'].forEach(o=>$(o).classList.toggle('hidden', o!==id)); }
+function hideOverlays(){ ['menu-overlay','gameover-overlay','pause-overlay','win-overlay'].forEach(o=>$(o).classList.add('hidden')); }
+function fmtTime(t){ t = Math.max(0, t||0); const m = Math.floor(t/60), s = Math.floor(t%60); return m+':'+String(s).padStart(2,'0'); }
+function refreshMenuBest(){
+  const bv = G.bestSurvival;
+  const rk = G.bestRank ? ' · RANK <i>'+G.bestRank+'</i>' : '';
+  $('menu-best').innerHTML = 'BEST <i>'+G.best+'</i>' + rk
+    + (bv>0 ? ' &nbsp;·&nbsp; SURVIVAL <i>'+fmtTime(bv)+'</i>' : '');
+}
+function goMenu(){
+  G.state = S.MENU;
+  G.mode = 'mission';
+  input.pause.reset();
+  stopMusic();
+  G.debris.length=0; G.pickups.length=0; G.particles.length=0; G.floaters.length=0; G.shards.length=0;
+  hideOverlays(); showOverlay('menu-overlay');
+  menu.open(0);
+  refreshMenuBest();
+  paintPrompts();
+  updateHud();
+}
+function quitToMenu(){
+  if(G.state!==S.PLAY) return;
+  input.pause.reset();
+  goMenu();
+}
+function startGame(mode){
+  G.mode = (mode==='survival') ? 'survival' : 'mission';
+  hideOverlays(); menu.close(); input.pause.reset();
+  ensureAudio(); startMusic();
+  G.state = S.PLAY;
+  G.score=0; G.scoreFrac=0; G.time=0; G.level=1; G.rings=4;
+  G.hull=3; G.hullMax=3; G.hitStop=0; G.burn.cd=0;
+  G.sat.ring=1; G.sat.rad=ringRadius(1); G.sat.angVel=1.05; G.sat.angle=-Math.PI/2;
+  G.sat.shield=0; G.sat.trail.length=0; G.sat.thrust=0; G.sat.strobe=0; G.sat.inv=1.2;
+  G.ringSwitch.active=false;
+  G.debris.length=0; G.pickups.length=0; G.particles.length=0; G.floaters.length=0; G.shards.length=0;
+  G.spawnTimer=1.0; G.pickupTimer=6; G.chain=1; G.chainTimer=0; G.nearMisses=0; G.ringsSwitched=0;
+  G.spawnInterval=1.2; G.shake=0; G.slowmo=0; G.flash=0; G.zoomPunch=0;
+  G.ringPulse={timer:8, warn:0, lane:-1, active:false, countdown:0};
+  G.decay.warnLane=-1; G.decay.warnT=0; G.decay.burns.length=0;
+  G.hullLog=[];
+  G.reentry=false; G.reentryT=0;
+  G._maxChain=1; G._shieldsCaught=0; G._burns=0;
+  G.directives=[]; G.directivesDone=0; nextDirective();
+  $('shield-indicator').classList.remove('active');
+  G.lastFrame=performance.now();
+  updateHud(); refreshMission();
+  G.hintFadeAt = performance.now()+7000; G.hintFaded = false;
+  $('ingame-hint').classList.remove('fade');
+  if(!G.running){ G.running=true; requestAnimationFrame(loop); }
+}
+function satXY(){
+  return { x: CX + Math.cos(G.sat.angle)*G.sat.rad, y: CY + Math.sin(G.sat.angle)*G.sat.rad };
+}
+function satShatter(){
+  // satellite breaks into its actual parts — panels spin off
+  const {x,y} = satXY();
+  const parts = [
+    {dx:-10,dy:-4,vx:-2.2,vy:-1.4,w:3.5}, {dx:-10,dy:4,vx:-1.8,vy:1.6,w:-4},
+    {dx:10,dy:-4,vx:2.4,vy:-1.2,w:4.2},  {dx:10,dy:4,vx:1.9,vy:1.7,w:-3.2},
+    {dx:0,dy:-2,vx:-0.4,vy:-2.6,w:2.2},  {dx:0,dy:4,vx:0.5,vy:2.2,w:-2.6},
+  ];
+  for(const p of parts){
+    G.shards.push({ x:x+p.dx, y:y+p.dy, vx:p.vx, vy:p.vy, rot:Math.random()*6, w:p.w, life:2.2, kind: Math.abs(p.dx)>5?'panel':'body' });
+  }
+  spawnExplosion(x,y,40);
+}
+function winGame(){
+  const hullBonus = G.hull*800;
+  G.score += hullBonus;
+  G.state = S.WIN; G.winZoom = 0; G.overAt = performance.now();
+  const isBest = G.score>G.best;
+  if(isBest){ G.best=G.score; localStorage.setItem('od_best', G.best); }
+  // rank: S >= 12000, A >= 8000, B >= 4000, else C
+  const rank = G.score>=12000?'S':G.score>=8000?'A':G.score>=4000?'B':'C';
+  $('win-score').textContent=G.score;
+  $('win-best').textContent=G.best;
+  $('win-directives').textContent=G.directivesDone+' / '+G.directives.length;
+  $('win-nearmiss').textContent=G.nearMisses;
+  $('rank-badge').textContent=rank;
+  // one star per hull left: a clean run is visibly better than a scrappy one
+  $('win-stars').innerHTML = [0,1,2].map(i => i<G.hull ? '★' : '<i>★</i>').join('');
+  const RV = {C:1,B:2,A:3,S:4};
+  if(RV[rank] > (RV[G.bestRank]||0)){ G.bestRank = rank; localStorage.setItem('od_best_rank', rank); }
+  $('win-sub').textContent = 'Surface reached with '+G.hull+' hull left'+(G.hull>0?'.':'')+(isBest?' New best run.':'');
+  SFX.levelUp(); SFX.shieldPickup();
+  showOverlay('win-overlay');
+  $('directive').textContent='';
+  stopMusic();
+}
+function endGame(cause){
+  const survived = G.time;
+  const betterSurvival = G.mode==='survival' && survived > (G.bestSurvival||0);
+  if(betterSurvival){ G.bestSurvival = survived; localStorage.setItem('od_survival_best', survived.toFixed(1)); }
+  const isBest = G.score>G.best;
+  if(isBest){ G.best=G.score; localStorage.setItem('od_best', G.best); }
+  G.state = S.OVER; G.deathCause = cause; G.overAt = performance.now();
+  SFX.crash(); G.shake=26; G.flash=1; G.zoomPunch=1;
+  satShatter();
+  $('gameover-title').textContent = cause==='aborted' ? 'RUN ENDED' : 'SIGNAL LOST';
+  const causeText = cause==='impact' ? 'hull breached by debris' : (cause==='decay pulse' ? 'caught by a decay pulse' : 'run ended');
+  $('gameover-sub').textContent = (G.mode==='survival' ? 'SURVIVAL' : 'DESCENT') + ' · level ' + G.level +
+    ' · ' + Math.floor(survived) + 's · ' + causeText +
+    (G.mode==='survival' && betterSurvival ? ' · new best time' : '');
+  $('final-score').textContent=G.score;
+  $('best-score').textContent=G.best;
+  $('final-time').textContent = G.mode==='survival' ? fmtTime(survived) : Math.floor(survived)+'s';
+  $('final-nearmiss').textContent=G.nearMisses;
+  $('best-badge').innerHTML = isBest && G.score>=500 ? '<span class="new-best">◆ New Best</span>'
+    : (betterSurvival ? '<span class="new-best">◆ Best survival</span>' : '');
+  $('directive').textContent='';
+  showOverlay('gameover-overlay');
+  stopMusic();
+}
+
+// ---------- helpers ----------
+function ringRadius(r){ return G.radBase + r*G.radGap; }
+// A rock's real orbit is where its radius puts it, not the lane it spawned in.
+function physLane(rad){ return Math.max(0, Math.min(G.rings-1, Math.round((rad - G.radBase)/G.radGap))); }
+function angGapAbs(a,b){ return Math.abs(((a - b + Math.PI*3) % (Math.PI*2)) - Math.PI); }
+
+// ---------- orbit decay: the outermost orbit burns away, so the play space shrinks ----------
+function beginDecay(){
+  if(G.decay.warnLane>=0) return;      // one orbit at a time
+  if(G.rings<=2) return;               // two orbits is the hard floor: never a single lane
+  const lane = G.rings-1;
+  G.decay.warnLane = lane; G.decay.warnT = 2.8;
+  SFX.decayWarn();
+  addFloater(CX, CY - MIN_DIM*0.155, 'ORBIT '+(lane+1)+' DECAYING', '#ff7043', 16);
+  addFloater(CX, CY - MIN_DIM*0.115, 'MOVE INWARD', '#ffb4a2', 12);
+}
+function burnLane(lane){
+  const rad = ringRadius(lane);
+  G.decay.burns.push({ r: rad, t: 1.6, max: 1.6, lane });
+  // rocks and pickups on that orbit die with it
+  for(let i=G.debris.length-1;i>=0;i--){
+    const d = G.debris[i];
+    if(physLane(d.rad)===lane){ spawnSparkle(d.x, d.y, '22'); G.debris.splice(i,1); }
+  }
+  for(let i=G.pickups.length-1;i>=0;i--){ if(G.pickups[i].ring===lane) G.pickups.splice(i,1); }
+  G.rings = lane;                       // the orbit is gone; indices below it stay valid
+  G.decay.warnLane = -1;
+  SFX.decayBurn();
+  screenShake(11); G.flash = Math.max(G.flash, 0.4);
+  if(G.sat.ring >= G.rings){
+    // anyone standing on it is shoved inward and takes one hull (the warning was on screen for 2.8 s)
+    const target = G.rings-1;
+    G.sat.ring = target;
+    G.ringSwitch.active = true; G.ringSwitch.from = lane; G.ringSwitch.to = target; G.ringSwitch.t = 0;
+    G.sat.rad = rad;
+    const {x,y} = satXY();
+    spawnExplosion(x, y, 16);
+    if(G.sat.inv>0){
+      addFloater(x, y-18, 'BURNED THROUGH', '#a7f3c0');
+    } else if(G.sat.shield>0){
+      G.sat.shield=0; G.sat.inv=0.9; $('shield-indicator').classList.remove('active');
+      SFX.shieldBreak(); addFloater(x, y-18, 'SHIELD DOWN', '#4ade80');
+    } else {
+      G.sat.inv = 0.6;
+      damageHull('orbit decay', x, y);
+    }
+  }
+}
+function spawnExplosion(x,y,n){
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2, sp=1+Math.random()*6;
+    G.particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0.5+Math.random()*0.9,max:1.4,
+      hue:Math.random()<0.6?18:45, size:2+Math.random()*3.5, drag:0.985, add:true});
+  }
+  // additive white-hot core flash
+  for(let i=0;i<10;i++){
+    const a=Math.random()*Math.PI*2, sp=0.5+Math.random()*2;
+    G.particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0.2+Math.random()*0.25,max:0.45,hue:55,size:3+Math.random()*3,drag:0.97,add:true});
+  }
+}
+function spawnSparkle(x,y,color){
+  for(let i=0;i<10;i++){
+    const a=Math.random()*Math.PI*2, sp=0.6+Math.random()*2.4;
+    G.particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0.3+Math.random()*0.5,max:0.8,hue:color,size:1.5+Math.random()*2,drag:0.96,add:true});
+  }
+}
+function addFloater(x,y,text,color,size=14){ G.floaters.push({x,y,text,color,life:1,vy:-36,size}); }
+function screenShake(amt){ G.shake=Math.max(G.shake,amt); G.shakeAng=Math.random()*Math.PI*2; }
+
+// ---------- HUD: every number here is read from the same state the rules use ----------
+function updateHud(){
+  $('score').textContent = G.score;
+  $('chain').textContent = G.chain;
+  $('combo-timer-bar').style.width = (G.chain>1 ? Math.max(0, G.chainTimer/G.chainWindow*100) : 0)+'%';
+  const pips = $('hull-pips');
+  if(pips){
+    pips.classList.toggle('low', G.hull<=1);
+    for(let i=0;i<pips.children.length;i++) pips.children[i].classList.toggle('on', i < G.hull);
+  }
+  const ready = G.burn.cd<=0;
+  const meter = $('burn-meter');
+  if(meter){
+    meter.classList.toggle('ready', ready);
+    meter.firstElementChild.style.width = (ready ? 100 : Math.max(0, 100*(1-G.burn.cd/G.burn.max))).toFixed(1)+'%';
+  }
+  // the touch BURN button says how long it is until the burn is ready — no guessing
+  const bb = document.querySelector('#arcade-ui .ai-act[data-act="primary"]');
+  if(bb) bb.textContent = ready ? 'BURN' : Math.ceil(G.burn.cd)+'s';
+}
+function refreshMission(){
+  const lbl = $('mission-label'), fill = $('mission-fill'), box = $('mission');
+  if(!lbl) return;
+  if(G.mode==='survival'){
+    box.classList.remove('reentry');
+    lbl.textContent = 'SURVIVAL '+fmtTime(G.time);
+    fill.style.width = ((G.time%11)/11*100).toFixed(1)+'%';
+  } else {
+    const left = Math.max(0, 94-G.time);
+    box.classList.toggle('reentry', G.reentry);
+    lbl.textContent = G.reentry ? 'REENTRY '+Math.ceil(Math.max(0,17-G.reentryT))+'s' : 'SURFACE '+fmtTime(left);
+    fill.style.width = (Math.min(1, G.time/94)*100).toFixed(1)+'%';
+  }
+}
+function damageHull(cause, x, y){
+  if(G.hull<=0) return;
+  G.hull--;
+  G.hullLog.push({ cause, t:+G.time.toFixed(1), lvl:G.level, orbits:G.rings });
+  if(input.rumble) input.rumble(110, 0.9, 0.6);
+  G.sat.inv = Math.max(G.sat.inv, 1.7);
+  G.hitStop = 0.09;
+  G.slowmo = Math.min(0.45, G.slowmo + 0.22);
+  screenShake(20); G.flash = Math.max(G.flash, 0.55);
+  spawnExplosion(x, y, 18);
+  SFX.hullHit();
+  updateHud();
+  addFloater(x, y-22, G.hull>0 ? ('HULL '+G.hull) : 'HULL BREACH', G.hull>0 ? '#ffb4a2' : '#ff6b6b', 14);
+  if(G.hull<=0) endGame(cause);
+}
+
+
+// ---------- directives (the objective texture) ----------
+const DIRECTIVE_POOL = [
+  { id:'chain5',  text:'Reach a ×5 chain',        check:()=>G._maxChain>=5 },
+  { id:'shield',  text:'Catch a shield',          check:()=>G._shieldsCaught>=1 },
+  { id:'dodge10', text:'10 near-misses',          check:()=>G.nearMisses>=10 },
+  { id:'switch25',text:'25 ring switches',        check:()=>G.ringsSwitched>=25 },
+  { id:'chain10', text:'Reach a ×10 chain',       check:()=>G._maxChain>=10 },
+  { id:'dodge25', text:'25 near-misses',          check:()=>G.nearMisses>=25 },
+  { id:'score1k', text:'Bank 1,000 points',       check:()=>G.score>=1000 },
+];
+function nextDirective(){
+  // pick a directive that fits the current depth; skip completed-type duplicates
+  const pool = DIRECTIVE_POOL.filter(d=>!G.directives.some(x=>x.id===d.id));
+  if(!pool.length) return null;
+  const easy = ['chain5','shield','dodge10','switch25','score1k'];
+  const pool2 = pool.filter(d=> (G.level<5 ? easy.includes(d.id) : true));
+  const pick = (pool2.length?pool2:pool)[Math.floor(Math.random()*(pool2.length?pool2.length:pool.length))];
+  G.directives.push({...pick, done:false});
+  renderDirective();
+  return pick;
+}
+function renderDirective(){
+  const el = $('directive');
+  const d = G.directives[G.directives.length-1];
+  if(!d){ el.textContent=''; return; }
+  el.textContent = '◈ ' + d.text;
+  el.classList.toggle('done', !!d.done);
+}
+function checkDirectives(){
+  for(const d of G.directives){
+    if(!d.done && d.check()){
+      d.done = true;
+      const bonus = 250 * G.level;
+      G.score += bonus;
+      G.directivesDone++;
+      addFloater(CX, CY - MIN_DIM*0.10, 'DIRECTIVE +'+bonus, '#4ade80', 15);
+      SFX.scoreChime(6);
+      nextDirective();
+      break;
+    }
+  }
+}
+// ---------- spawning ----------
+function spawnDebris(forcedLane=-1, forcedAng=null, kindHint=null){
+  let lane = forcedLane>=0 ? forcedLane : Math.floor(Math.random()*G.rings);
+  const dir = Math.random()<0.5?1:-1;
+  let ang = forcedAng!=null ? forcedAng : Math.random()*Math.PI*2;
+  const satAng = G.sat.angle;
+  const laneSafe = Math.abs(((ang - satAng + Math.PI*3) % (Math.PI*2)) - Math.PI);
+  // spawn-safety: a rock never arrives on top of the player. In the first 3.2 s it never even
+  // shares the player's lane; after that it is pushed to the far side of that lane. Hunters exempt.
+  const safeArc = (G.level>=6) ? 1.2 : 1.8;
+  const isHunter = kindHint!=null ? kindHint==='hunter' : (G.level>=4 && Math.random() < Math.min(0.28, 0.08+G.level*0.02));
+  if(lane === G.sat.ring){
+    if(!isHunter && G.time < 3.2 && forcedLane < 0){
+      lane = (G.sat.ring + 1 + Math.floor(Math.random()*(G.rings-1))) % G.rings;
+    } else if(laneSafe < (isHunter ? 0.9 : safeArc)){
+      // a hunter still homes in, but it never materialises on top of the player
+      ang = satAng + Math.PI + (Math.random()*1.2 - 0.6);
+    }
+  }
+  const size = (isHunter? 7:0) + 8 + Math.random()*9 + G.level*0.28;
+  const speed = (0.35 + Math.random()*0.3 + G.level*0.05) * (MIN_DIM/700);
+  const rad = ringRadius(lane);
+  G.debris.push({
+    ring: lane, ang, dir,
+    rad: rad,
+    x: CX + Math.cos(ang)*rad, y: CY + Math.sin(ang)*rad,
+    r: size, speed,
+    spin: (Math.random()*2-1)*2,
+    rot: Math.random()*Math.PI*2,
+    shape: Math.floor(Math.random()*3),
+    hunter: isHunter,
+    craters: [{a:Math.random()*6.28, d:0.25+Math.random()*0.35, r:0.24+Math.random()*0.26},
+              ...(Math.random()<0.75?[{a:Math.random()*6.28, d:0.15+Math.random()*0.5, r:0.13+Math.random()*0.18}]:[])],
+    nearFlag: false, hitFlag: false,
+    nearFlagTimer: 0,
+    tickTimer: 0,
+    wobble: Math.random()*Math.PI*2,
+    wobbleSpeed: 1+Math.random()*2,
+    scored: false,
+    // tangential drift is now real: 2.2x faster than v1
+    angVel: dir * speed / Math.max(40, rad) * 60 * 2.2,
+  });
+  if(isHunter) SFX.hunterTick();
+}
+function spawnPickup(){
+  const lane = Math.floor(Math.random()*G.rings);
+  let ang = Math.random()*Math.PI*2;
+  const satAng = G.sat.angle;
+  const dsafe = Math.abs(((ang - satAng + Math.PI*3) % (Math.PI*2)) - Math.PI);
+  if(lane === G.sat.ring && dsafe < 0.8) ang = satAng + Math.PI;
+  // a damaged hull draws repair patches; a full hull draws shields
+  const type = (G.hull < G.hullMax && Math.random() < 0.55) ? 'patch' : 'shield';
+  G.pickups.push({ ring: lane, ang, r: 9, bob: Math.random()*Math.PI*2, type,
+                   x: CX+Math.cos(ang)*ringRadius(lane), y: CY+Math.sin(ang)*ringRadius(lane) });
+}
+
+// ---------- update ----------
+function update(dt){
+  // ambient animation always runs
+  G.planet.rot += dt*0.05;
+  const starW = [0.008, 0.02, 0.045]; // rad/s per layer — slow orbital drift
+  for(const s of G.stars){
+    s.tw += dt*s.tws;
+    if(G.state===G.S.PLAY || G.state===G.S.MENU){
+      s.a += starW[s.layer]*dt*(1+s.z);
+    }
+  }
+  for(const n of G.nebula) n.ph += dt*0.05;
+  // shooting stars
+  shootTimer -= dt;
+  if(shootTimer<=0 && !shootStar){ 
+    shootTimer = 7+Math.random()*10;
+    const a = Math.random()*Math.PI*2;
+    const rr = MIN_DIM*0.45;
+    shootStar = { x:CX+Math.cos(a)*rr, y:CY+Math.sin(a)*rr, vx:0, vy:0, life:0.9, max:0.9, a };
+    const dirA = a + Math.PI/2 + (Math.random()<0.5?Math.PI:0);
+    shootStar.vx = Math.cos(dirA)*MIN_DIM*0.9; shootStar.vy = Math.sin(dirA)*MIN_DIM*0.9;
+  }
+  if(shootStar){
+    shootStar.life -= dt;
+    shootStar.x += shootStar.vx*dt; shootStar.y += shootStar.vy*dt;
+    if(shootStar.life<=0) shootStar=null;
+  }
+  // wreck shards (fly even after death)
+  for(let i=G.shards.length-1;i>=0;i--){
+    const s=G.shards[i]; s.life-=dt;
+    s.x+=s.vx*dt*60; s.y+=s.vy*dt*60; s.vx*=0.99; s.vy*=0.99; s.rot+=s.w*dt;
+    if(s.life<=0) G.shards.splice(i,1);
+  }
+  // particles always update (used by menu too)
+  for(let i=G.particles.length-1;i>=0;i--){
+    const p=G.particles[i];
+    p.life-=dt; if(p.life<=0){ G.particles.splice(i,1); continue; }
+    p.x+=p.vx*dt*60; p.y+=p.vy*dt*60; p.vx*=p.drag; p.vy*=p.drag;
+  }
+  for(let i=G.floaters.length-1;i>=0;i--){
+    const f=G.floaters[i]; f.life-=dt*1.2; f.y+=f.vy*dt;
+    if(f.life<=0) G.floaters.splice(i,1);
+  }
+  G.shake = Math.max(0, G.shake - dt*30);
+  G.slowmo = Math.max(0, G.slowmo - dt*1.4);
+  G.flash = Math.max(0, G.flash - dt*2.2);
+  G.zoomPunch = Math.max(0, G.zoomPunch - dt*2.4);
+  G.sat.strobe += dt;
+  if(G.state===G.S.WIN) G.winZoom = Math.min(1, (G.winZoom||0) + dt*0.5);
+  G.sat.thrust = Math.max(0, G.sat.thrust - dt*3.2);
+  if(G.state!==G.S.PLAY || input.pause.paused) return;
+
+  G.time += dt;
+  // level: every 11s; mission is 7 levels then reentry (short, winnable run)
+  const newLevel = 1 + Math.floor(G.time/11);
+  if(newLevel!==G.level && newLevel<=14){
+    G.level=newLevel; SFX.levelUp();
+    addFloater(CX, CY - MIN_DIM*0.18, 'LEVEL '+G.level, '#60a5fa', 16);
+    // mission curve: 4 orbits, a fifth opens at level 4, then the outer two burn away (L6, L9).
+    if(G.mode==='mission'){
+      if(G.level===4 && G.rings<5){ G.rings=Math.min(5,G.rings+1); addFloater(CX, CY-MIN_DIM*0.12, '+1 ORBIT', '#ffd166'); }
+      if(G.level===6 || G.level===9) beginDecay();
+    } else {
+      if((G.level===4 || G.level===8) && G.rings<6){ G.rings=Math.min(6,G.rings+1); addFloater(CX, CY-MIN_DIM*0.12, '+1 ORBIT', '#ffd166'); }
+      if(G.level>=6 && G.level%2===0) beginDecay();
+    }
+    if(G.sat.ring>=G.rings) G.sat.ring=G.rings-1;
+  }
+  setMusicTension(Math.min(1, G.level/10));
+
+  // orbit decay: a 2.8 s warning with a banner, then the lane is gone for the rest of the run
+  const bw = $('decay-banner');
+  if(G.decay.warnLane>=0){
+    G.decay.warnT -= dt;
+    if(bw){
+      bw.classList.remove('hidden');
+      bw.innerHTML = 'ORBIT '+(G.decay.warnLane+1)+' DECAYING · MOVE INWARD <b>'+Math.max(0,Math.ceil(G.decay.warnT))+'</b>';
+    }
+    if(G.decay.warnT<=0) burnLane(G.decay.warnLane);
+  } else if(bw && !bw.classList.contains('hidden')){
+    bw.classList.add('hidden');
+  }
+  for(let i=G.decay.burns.length-1;i>=0;i--){
+    G.decay.burns[i].t -= dt;
+    if(G.decay.burns[i].t<=0) G.decay.burns.splice(i,1);
+  }
+  if(G.state!==S.PLAY) return;
+
+  // HUD tells the truth every frame: hull, burn charge, chain, mission clock.
+  updateHud(); refreshMission();
+
+  // mission: 77 s of descent, then a 17 s reentry (94 s total). Survival never ends by itself.
+  if(G.mode==='mission'){
+    const alt = Math.max(0, 8*(1 - G.time/(G.reentry?94:77))).toFixed(1);
+    $('altitude').textContent = 'LV '+G.level+' · ALT '+alt+' km';
+    if(!G.reentry && G.time >= 77){
+      G.reentry = true; G.reentryT = 0;
+      addFloater(CX, CY - MIN_DIM*0.18, 'REENTRY SEQUENCE', '#ff8f6b', 18);
+      SFX.levelUp(); SFX.pulseWarn();
+    }
+    if(G.reentry){
+      G.reentryT += dt;
+      if(G.reentryT >= 17){ winGame(); return; }
+    }
+  } else {
+    $('altitude').textContent = 'LV '+G.level+' · ALT '+Math.max(0, 8-G.time*0.06).toFixed(1)+' km';
+  }
+  if(G.burn.cd>0) G.burn.cd = Math.max(0, G.burn.cd - dt);
+
+  // difficulty: spawn floor drops with level — 1.0s → 0.30s by L14, no flat floor
+  const targetInterval = Math.max(G.reentry?0.30:(G.level<=3?0.85:0.34), (G.level<=3?1.20:1.26) - (G.level-1)*0.040);
+  G.spawnInterval = Math.max(targetInterval, G.spawnInterval*0.986);
+  const densityCap = 5 + G.level*3.0;
+  if(G.debris.length > densityCap) G.spawnTimer = Math.max(G.spawnTimer, 0.35);
+
+  // satellite angular velocity — noticeably faster
+  const baseVel = 1.05 + G.level*0.06;
+  G.sat.angVel += (baseVel - G.sat.angVel)*Math.min(1, dt*2);
+  G.sat.angle += G.sat.angVel*dt;
+
+  // ring slide animation
+  if(G.ringSwitch.active){
+    G.ringSwitch.t += dt/G.ringSwitch.dur;
+    if(G.ringSwitch.t>=1){ G.ringSwitch.active=false; G.sat.rad=ringRadius(G.ringSwitch.to); }
+    else G.sat.rad = ringRadius(G.ringSwitch.from) + (ringRadius(G.ringSwitch.to)-ringRadius(G.ringSwitch.from))*(G.ringSwitch.t<0.5 ? 2*G.ringSwitch.t*G.ringSwitch.t : 1-Math.pow(-2*G.ringSwitch.t+2,2)/2);
+  } else {
+    G.sat.rad = ringRadius(G.sat.ring);
+  }
+  const satX = CX + Math.cos(G.sat.angle)*G.sat.rad;
+  const satY = CY + Math.sin(G.sat.angle)*G.sat.rad;
+
+  // shield decay
+  if(G.sat.shield>0){
+    G.sat.shield -= dt;
+    if(G.sat.shield<=0){ G.sat.shield=0; $('shield-indicator').classList.remove('active'); }
+  }
+  if(G.sat.inv>0) G.sat.inv -= dt;
+
+  // trail
+  G.sat.trail.push({x:satX,y:satY,life:0.5});
+  for(let i=G.sat.trail.length-1;i>=0;i--){ G.sat.trail[i].life-=dt; if(G.sat.trail[i].life<=0) G.sat.trail.splice(i,1); }
+
+  // spawning — clusters from L5 (a wedge of 3 in one lane forces a switch)
+  G.spawnTimer -= dt;
+  if(G.spawnTimer<=0){
+    G.spawnTimer = G.spawnInterval*(0.75+Math.random()*0.5);
+    spawnDebris();
+    if(G.level>=5){
+      if(Math.random()<0.3){ // double spawn
+        spawnDebris();
+      } else if(Math.random()<0.14){ // same-lane wedge cluster of 3
+        const lane = Math.floor(Math.random()*G.rings);
+        const base = Math.random()*Math.PI*2;
+        spawnDebris(lane, base); spawnDebris(lane, base+0.22); spawnDebris(lane, base+0.44);
+        addFloater(CX, CY-MIN_DIM*0.05, 'CLUSTER', '#ff8f6b', 12);
+      }
+    }
+  }
+  // shields get scarcer with level
+  G.pickupTimer -= dt;
+  if(G.pickupTimer<=0){ spawnPickup(); G.pickupTimer = (7+Math.random()*4)*(1+G.level*0.06); }
+
+  // decay pulse — anti-camping ring hazard from L6
+  if(G.level>=6){
+    const rp = G.ringPulse;
+    if(!rp.active){
+      rp.timer -= dt;
+      if(rp.timer<=0){
+        rp.lane = Math.floor(Math.random()*G.rings);
+        rp.active=true; rp.countdown=2.2; rp.warn=0;
+        SFX.pulseWarn();
+        addFloater(CX, CY - MIN_DIM*0.08, 'DECAY PULSE', '#ff6b6b', 15);
+      }
+    } else {
+      rp.countdown -= dt;
+      if(rp.countdown<=0){
+        // detonate: hit anything on that lane
+        for(let i=G.debris.length-1;i>=0;i--){
+          if(G.debris[i].ring===rp.lane){
+            spawnSparkle(G.debris[i].x||CX, G.debris[i].y||CY, '10');
+            G.debris.splice(i,1);
+          }
+        }
+        if(G.sat.ring===rp.lane){
+          if(G.sat.inv>0){
+            addFloater(satX, satY-18, 'BURNED THROUGH', '#a7f3c0');
+          } else if(G.sat.shield>0){
+            G.sat.shield=0; G.sat.inv=0.9; $('shield-indicator').classList.remove('active');
+            SFX.shieldBreak(); screenShake(12); G.flash=Math.max(G.flash,0.6);
+            spawnSparkle(satX,satY,'0');
+            addFloater(satX, satY-18, 'SHIELD DOWN', '#4ade80');
+          } else {
+            damageHull('decay pulse', satX, satY);
+            if(G.state===S.OVER) return;
+          }
+        }
+        SFX.pulseHit(); screenShake(8); G.flash=Math.max(G.flash,0.35);
+        rp.active=false; rp.timer = 6.5+Math.random()*4;
+      }
+    }
+  }
+
+  // debris update
+  for(let i=G.debris.length-1;i>=0;i--){
+    const d = G.debris[i];
+    d.rot += d.spin*dt;
+    d.wobble += d.wobbleSpeed*dt;
+    // hunter: slowly homing angular velocity toward your angle
+    if(d.hunter && G.level>=3){
+      let da = G.sat.angle - d.ang;
+      da = ((da + Math.PI*3) % (Math.PI*2)) - Math.PI;
+      d.angVel += Math.sign(da)*Math.min(Math.abs(da), 0.14)*dt*2.0;
+      d.tickTimer -= dt;
+      if(d.tickTimer<=0){ d.tickTimer = 0.8; if(Math.abs(da)<2.2) SFX.hunterTick(); }
+    }
+    d.ang += d.angVel*dt*0.35;
+    // inward drift scales with level — the decay tightens
+    d.rad -= (2.2 + G.level*0.5)*dt*(MIN_DIM/700);
+    if(d.rad < G.radBase*0.32 || d.rad > ringRadius(G.rings-1)+150){ G.debris.splice(i,1); continue; }
+    d.x = CX + Math.cos(d.ang)*d.rad;
+    d.y = CY + Math.sin(d.ang)*d.rad;
+    // collision / near-miss
+    const dx = d.x - satX, dy = d.y - satY;
+    const dist = Math.hypot(dx,dy);
+    const hitDist = d.r + 9;
+    if(dist < hitDist && !d.hitFlag){
+      if(G.sat.inv>0) continue;
+      d.hitFlag=true;
+      if(G.sat.shield>0){
+        G.sat.shield=0; $('shield-indicator').classList.remove('active');
+        SFX.shieldBreak(); screenShake(9); G.flash=Math.max(G.flash,0.5);
+        G.sat.inv = 0.9; // brief grace so a same-frame second hit can't insta-kill
+        spawnSparkle(satX,satY,'150');
+        addFloater(satX, satY-18, 'SHIELD DOWN', '#4ade80');
+        d.nearFlag=true; d.nearFlagTimer=G.nearWindow;
+      } else {
+        damageHull('impact', satX, satY);
+        if(G.state===S.OVER) return;
+        d.nearFlag=true; d.nearFlagTimer=G.nearWindow;
+      }
+    } else if(!d.nearFlag && !d.hitFlag && dist < hitDist+22 &&
+              (d.dodged || physLane(d.rad) === G.sat.ring)){
+      // A near miss is only honest if the rock was on your orbit, or you switched away from it.
+      // Standing still in a different lane no longer farms "dodges".
+      d.nearFlag=true; d.nearFlagTimer=G.nearWindow;
+      G.nearMisses++;
+      G.chain = Math.min(20, G.chain+1);
+      if(G.chain > (G._maxChain||1)) G._maxChain = G.chain;
+      G.chainTimer = G.chainWindow;
+      const gained = 14*G.chain;
+      G.score += gained;
+      SFX.nearMiss(G.chain);
+      SFX.scoreChime(Math.min(G.chain,8));
+      if(G.chain>=2){ $('chain').classList.remove('pop'); void $('chain').offsetWidth; $('chain').classList.add('pop'); }
+      addFloater(satX + dx*0.3, satY + dy*0.3, '+'+gained, G.chain>=5?'#ffd166':'#94a3b8');
+      G.slowmo = Math.min(0.35, G.slowmo+0.2);
+      spawnSparkle((satX+d.x)/2, (satY+d.y)/2, '45');
+    }
+    if(d.nearFlag){ d.nearFlagTimer-=dt; if(d.nearFlagTimer<=0) d.nearFlag=false; }
+  }
+
+  // pickups update
+  for(let i=G.pickups.length-1;i>=0;i--){
+    const p = G.pickups[i];
+    p.bob += dt*3;
+    const px = CX + Math.cos(p.ang)*ringRadius(p.ring);
+    const py = CY + Math.sin(p.ang)*ringRadius(p.ring) + Math.sin(p.bob)*3;
+    p.x=px; p.y=py;
+    if(Math.hypot(px-satX, py-satY) < p.r+16){
+      G.pickups.splice(i,1);
+      if(p.type==='patch'){
+        G.hull = Math.min(G.hullMax, G.hull+1);
+        updateHud();
+        SFX.patchGet();
+        addFloater(px, py-14, 'HULL +1', '#ffd166');
+        spawnSparkle(px,py,'45');
+      } else {
+        G._shieldsCaught = (G._shieldsCaught||0)+1;
+        G.sat.shield = G.sat.shieldMax;
+        $('shield-indicator').classList.add('active');
+        SFX.shieldPickup();
+        addFloater(px, py-14, 'SHIELD UP', '#4ade80');
+        spawnSparkle(px,py,'150');
+      }
+    }
+  }
+
+  // chain decay
+  if(G.chainTimer>0){
+    G.chainTimer -= dt;
+    if(G.chainTimer<=0 && G.chain>1){ G.chain=1; $('chain').textContent='1'; }
+  }
+  $('chain').textContent = G.chain;
+  $('combo-timer-bar').style.width = (G.chain>1 ? (G.chainTimer/G.chainWindow*100) : 0)+'%';
+
+  checkDirectives();
+
+  // score: survival rate trimmed so chaining is the real engine
+  G.scoreFrac = (G.scoreFrac||0) + dt*(6+G.level*0.9);
+  if(G.scoreFrac>=1){ const whole=Math.floor(G.scoreFrac); G.score+=whole; G.scoreFrac-=whole; }
+  updateHud();
+}
+
+
+// ---------- render ----------
+// The planet's static layers (corona, body, bands, terminator, rim, haze) are baked once per size.
+// Only the lava cracks animate. This was ~6 gradients + ~400 path points per frame before.
+let planetCache = null;
+let nebulaCache = null;
+// baked orbit rings + tick marks: rebuilt only when the size or the orbit count changes
+let ringsCache = null;
+function buildRingsCache(){
+  const pad = Math.ceil(ringRadius(G.rings-1) + 14);
+  const size = pad*2;
+  const c = document.createElement('canvas');
+  c.width = Math.round(size*DPR); c.height = Math.round(size*DPR);
+  const x = c.getContext('2d');
+  x.setTransform(DPR,0,0,DPR,0,0);
+  x.translate(pad, pad);
+  for(let r=0;r<G.rings;r++){
+    const rad = ringRadius(r);
+    x.strokeStyle = 'rgba(96,165,250,0.30)'; x.lineWidth = 1.4;
+    x.beginPath(); x.arc(0,0,rad,0,Math.PI*2); x.stroke();
+    // all 24 ticks in one path, one stroke
+    x.strokeStyle = 'rgba(96,165,250,0.10)'; x.lineWidth = 1;
+    x.beginPath();
+    for(let t=0;t<24;t++){
+      const a = t/24*Math.PI*2;
+      x.moveTo(Math.cos(a)*(rad-3), Math.sin(a)*(rad-3));
+      x.lineTo(Math.cos(a)*(rad+3), Math.sin(a)*(rad+3));
+    }
+    x.stroke();
+  }
+  ringsCache = { c, pad, size, rings:G.rings, radBase:G.radBase, gap:G.radGap, dpr:DPR };
+}
+let grainPattern = null;
+let vignetteCache = null;
+function buildPlanetCache(){
+  const pr = G.radBase*1.06;
+  const pad = Math.ceil(pr*1.95);
+  const size = pad*2;
+  const c = document.createElement('canvas');
+  c.width = Math.round(size*DPR); c.height = Math.round(size*DPR);
+  const x = c.getContext('2d');
+  x.setTransform(DPR,0,0,DPR,0,0);
+  x.translate(pad, pad);
+  // corona (additive)
+  x.save();
+  x.globalCompositeOperation='lighter';
+  const cor = x.createRadialGradient(0,0,pr*0.9,0,0,pr*1.9);
+  cor.addColorStop(0,'rgba(255,120,60,0.20)');
+  cor.addColorStop(0.5,'rgba(255,80,40,0.08)');
+  cor.addColorStop(1,'rgba(255,60,30,0)');
+  x.fillStyle=cor;
+  x.beginPath(); x.arc(0,0,pr*1.9,0,Math.PI*2); x.fill();
+  x.restore();
+  // body
+  const body = x.createRadialGradient(-pr*0.35, -pr*0.35, pr*0.1, 0, 0, pr*1.05);
+  body.addColorStop(0,'#4a3020');
+  body.addColorStop(0.55,'#2b1a12');
+  body.addColorStop(1,'#120a08');
+  x.fillStyle=body;
+  x.beginPath(); x.arc(0,0,pr,0,Math.PI*2); x.fill();
+  // surface bands (clipped to the planet)
+  x.save();
+  x.beginPath(); x.arc(0,0,pr,0,Math.PI*2); x.clip();
+  for(const b of G.planet.bands){
+    const y = -pr + b.y*pr*2;
+    x.fillStyle = 'rgba(90,45,25,0.30)';
+    x.beginPath();
+    const bw = pr*1.4, amp = pr*0.05, phz = b.ph;
+    x.moveTo(-bw, y);
+    for(let px2=-bw;px2<=bw;px2+=8){ x.lineTo(px2, y + Math.sin(px2*0.02+phz)*amp); }
+    for(let px2=bw;px2>=-bw;px2-=8){ x.lineTo(px2, y+b.w*pr + Math.sin(px2*0.02+phz+1)*amp); }
+    x.closePath(); x.fill();
+  }
+  // terminator shading — hard dark side toward lower-right (sun is upper-left)
+  const term = x.createRadialGradient(-pr*0.6, -pr*0.6, pr*0.1, 0, 0, pr*1.35);
+  term.addColorStop(0,'rgba(0,0,0,0)');
+  term.addColorStop(0.45,'rgba(5,6,14,0.12)');
+  term.addColorStop(0.7,'rgba(5,6,14,0.55)');
+  term.addColorStop(1,'rgba(4,5,12,0.92)');
+  x.fillStyle=term;
+  x.beginPath(); x.arc(0,0,pr,0,Math.PI*2); x.fill();
+  // extra directional shade wedge (lower-right limb)
+  const wedge = x.createRadialGradient(pr*0.6, pr*0.6, pr*0.05, pr*0.6, pr*0.6, pr*1.05);
+  wedge.addColorStop(0,'rgba(2,3,8,0.78)');
+  wedge.addColorStop(0.5,'rgba(2,3,8,0.35)');
+  wedge.addColorStop(1,'rgba(2,3,8,0)');
+  x.fillStyle=wedge;
+  x.beginPath();
+  x.moveTo(0,0);
+  x.arc(0,0,pr, -0.25, 2.1);
+  x.closePath(); x.fill();
+  x.restore();
+  // rim light — only on the lit (upper-left) arc
+  x.strokeStyle='rgba(255,160,90,0.55)'; x.lineWidth=2;
+  x.beginPath(); x.arc(0,0,pr-0.8, Math.PI*0.85, Math.PI*1.75); x.stroke();
+  x.strokeStyle='rgba(255,120,60,0.2)'; x.lineWidth=1.2;
+  x.beginPath(); x.arc(0,0,pr-0.8, Math.PI*1.75, Math.PI*2.45); x.stroke();
+  // atmosphere haze
+  const atm = x.createRadialGradient(0,0,pr*0.92,0,0,pr*1.14);
+  atm.addColorStop(0,'rgba(255,100,50,0.14)');
+  atm.addColorStop(1,'rgba(255,100,50,0)');
+  x.fillStyle=atm;
+  x.beginPath(); x.arc(0,0,pr*1.14,0,Math.PI*2); x.fill();
+  planetCache = { c, pad, pr, size };
+}
+function drawPlanet(){
+  // the dying planet fills the core — huge, shaded, cracked with lava
+  // on WIN it swells to fill the frame: you made it to the surface
+  const wz = G.state===G.S.WIN ? (G.winZoom||0) : 0;
+  const pr = G.radBase*1.06;
+  if(!planetCache || Math.abs(planetCache.pr-pr) > 0.5) buildPlanetCache();
+  const zoom = 1 + wz*14;
+  ctx.save();
+  ctx.translate(CX, CY);
+  if(zoom !== 1) ctx.scale(zoom, zoom);
+  ctx.drawImage(planetCache.c, -planetCache.pad, -planetCache.pad, planetCache.size, planetCache.size);
+  // lava cracks — glowing veins that pulse (the one animated layer)
+  ctx.save();
+  ctx.beginPath(); ctx.arc(0,0,pr,0,Math.PI*2); ctx.clip();
+  ctx.globalCompositeOperation='lighter';
+  for(const c of G.planet.cracks){
+    const pulse = 0.55+0.45*Math.sin(G.time*1.4+c.ph);
+    const a0 = c.a0+G.planet.rot*0.3, rr = pr*(0.25+c.ph%0.6);
+    // soft bloom underlay
+    ctx.strokeStyle = `rgba(255,${100+pulse*40|0},30,${0.18+pulse*0.18})`;
+    ctx.lineWidth = pr*c.w*pulse*3.2;
+    ctx.beginPath(); ctx.arc(0,0,rr, a0, a0+c.span); ctx.stroke();
+    // bright core vein
+    ctx.strokeStyle = `rgba(255,${150+pulse*60|0},60,${0.55+pulse*0.35})`;
+    ctx.lineWidth = pr*c.w*pulse;
+    ctx.beginPath(); ctx.arc(0,0,rr, a0, a0+c.span); ctx.stroke();
+    // hot specks along the vein
+    for(let s=0;s<3;s++){
+      const aa = a0 + c.span*(0.2+0.3*s+pulse*0.05);
+      ctx.fillStyle=`rgba(255,230,160,${0.4+pulse*0.4})`;
+      ctx.beginPath(); ctx.arc(Math.cos(aa)*rr, Math.sin(aa)*rr, pr*c.w*pulse*0.8, 0, Math.PI*2); ctx.fill();
+    }
+  }
+  ctx.restore();
+  ctx.restore();
+}
+// One soft dark halo sprite, drawn behind every rock: separates it from the bright planet without
+// creating a gradient per rock per frame (that cost ~15 fps on a phone).
+let haloCache = null;
+function haloSprite(){
+  if(haloCache) return haloCache;
+  const s = 64, c = document.createElement('canvas'); c.width = c.height = s;
+  const x = c.getContext('2d');
+  const g = x.createRadialGradient(s/2,s/2,s*0.12,s/2,s/2,s/2);
+  g.addColorStop(0,'rgba(2,3,9,0.58)');
+  g.addColorStop(0.55,'rgba(2,3,9,0.28)');
+  g.addColorStop(1,'rgba(2,3,9,0)');
+  x.fillStyle = g; x.beginPath(); x.arc(s/2,s/2,s/2,0,Math.PI*2); x.fill();
+  haloCache = c; return c;
+}
+function drawDebrisPiece(d, threat){
+  ctx.save();
+  ctx.translate(d.x,d.y);
+  // dark halo first: it separates the rock from the bright planet behind it at phone size
+  const hs = d.r*3.1;
+  ctx.drawImage(haloSprite(), -hs/2, -hs/2, hs, hs);
+  ctx.rotate(d.rot);
+  const r=d.r, k=r*0.8;
+  // base rock: dark with a rim light toward screen "sun" (top-left)
+  const g = ctx.createRadialGradient(-r*0.4,-r*0.4, r*0.08, 0,0, r*1.2);
+  if(d.hunter){ g.addColorStop(0,'#c94b63'); g.addColorStop(0.55,'#7a2334'); g.addColorStop(1,'#1a070c'); }
+  else { g.addColorStop(0,'#d3dbe8'); g.addColorStop(0.5,'#77839b'); g.addColorStop(1,'#171d29'); }
+  ctx.fillStyle=g;
+  if(d.shape===0){ ctx.beginPath(); ctx.moveTo(r,0); ctx.lineTo(0,-r*0.7); ctx.lineTo(-r,0); ctx.lineTo(0,r*0.7); ctx.closePath(); ctx.fill(); }
+  else if(d.shape===1){ 
+    ctx.beginPath();
+    ctx.moveTo(-k*0.7,-k); ctx.lineTo(k*0.8,-k*0.85); ctx.lineTo(k,k*0.75); ctx.lineTo(-k*0.85,k*0.9); ctx.closePath(); ctx.fill();
+    // metal plate sheen: highlight facet + rivets
+    ctx.fillStyle = d.hunter? 'rgba(255,150,160,0.25)' : 'rgba(200,215,235,0.30)';
+    ctx.beginPath(); ctx.moveTo(-k*0.7,-k); ctx.lineTo(k*0.8,-k*0.85); ctx.lineTo(k*0.35,-k*0.25); ctx.lineTo(-k*0.5,-k*0.2); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = d.hunter? 'rgba(20,4,8,0.6)':'rgba(10,14,22,0.6)';
+    for(const [rx,ry] of [[-k*0.35,k*0.35],[k*0.3,k*0.25],[-k*0.05,-k*0.05]]){
+      ctx.beginPath(); ctx.arc(rx,ry, Math.max(1,r*0.09), 0, Math.PI*2); ctx.fill();
+    }
+  }
+  else { ctx.beginPath(); ctx.arc(0,0,r*0.85,0,Math.PI*2); ctx.fill(); }
+  // craters
+  for(const c of d.craters){
+    const cx2=Math.cos(c.a)*r*c.d, cy2=Math.sin(c.a)*r*c.d, cr=r*c.r;
+    ctx.fillStyle = d.hunter? 'rgba(30,6,10,0.75)':'rgba(12,16,26,0.7)';
+    ctx.beginPath(); ctx.arc(cx2,cy2,cr,0,Math.PI*2); ctx.fill();
+    // crater inner shadow rim
+    ctx.strokeStyle = d.hunter? 'rgba(255,120,130,0.25)':'rgba(210,225,245,0.3)';
+    ctx.lineWidth=0.8;
+    ctx.beginPath(); ctx.arc(cx2,cy2,cr,0.6,3.4); ctx.stroke();
+  }
+  // rim light
+  ctx.strokeStyle = d.hunter? 'rgba(255,130,130,0.95)':'rgba(235,245,255,0.9)';
+  ctx.lineWidth=1.6;
+  if(d.shape===0){ ctx.beginPath(); ctx.moveTo(r,0); ctx.lineTo(0,-r*0.7); ctx.lineTo(-r,0); ctx.stroke(); }
+  else if(d.shape===1){ ctx.beginPath(); ctx.moveTo(-k*0.7,-k); ctx.lineTo(k*0.8,-k*0.85); ctx.lineTo(k,k*0.75); ctx.stroke(); }
+  else { ctx.beginPath(); ctx.arc(0,0,r*0.85,-2.4,0.6); ctx.stroke(); }
+  if(d.hunter){
+    // threat glow ring
+    ctx.strokeStyle=`rgba(255,80,96,${0.45+0.35*Math.sin(G.time*8)})`;
+    ctx.lineWidth=1.8;
+    ctx.beginPath(); ctx.arc(0,0,r+5,0,Math.PI*2); ctx.stroke();
+    // four spikes: a hunter reads as a chaser, not just a red rock
+    ctx.strokeStyle=`rgba(255,120,130,${0.6+0.3*Math.sin(G.time*9)})`;
+    ctx.lineWidth=2;
+    for(let i=0;i<4;i++){
+      const a=i*Math.PI/2+0.45;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a)*(r+2), Math.sin(a)*(r+2));
+      ctx.lineTo(Math.cos(a)*(r+8), Math.sin(a)*(r+8));
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+function render(){
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  // zoom punch on death
+  const zp = G.zoomPunch*0.045;
+  if(zp>0.001){ ctx.translate(W/2,H/2); ctx.scale(1+zp,1+zp); ctx.translate(-W/2,-H/2); }
+  // background
+  ctx.fillStyle = '#05060e';
+  ctx.fillRect(0,0,W,H);
+  // nebula blobs: baked once per viewport size (they drift slower than a pixel a second)
+  if(!nebulaCache || nebulaCache.W!==W || nebulaCache.H!==H){
+    const c = document.createElement('canvas');
+    c.width = Math.round(W*DPR); c.height = Math.round(H*DPR);
+    const x = c.getContext('2d');
+    x.setTransform(DPR,0,0,DPR,0,0);
+    for(const n of G.nebula){
+      const bx = CX + Math.cos(n.a)*n.r*W;
+      const by = CY + Math.sin(n.a)*n.r*H;
+      const r = n.size*MIN_DIM*(1+Math.sin(n.ph)*0.08);
+      const grad = x.createRadialGradient(bx,by,0,bx,by,r);
+      grad.addColorStop(0,`hsla(${n.hue},70%,50%,${n.a})`);
+      grad.addColorStop(1,'hsla(0,0%,0%,0)');
+      x.fillStyle = grad;
+      x.fillRect(bx-r,by-r,r*2,r*2);
+    }
+    nebulaCache = { c, W, H };
+  }
+  ctx.drawImage(nebulaCache.c, 0, 0, W, H);
+  // 3-layer parallax stars (rotating, since we orbit)
+  for(const s of G.stars){
+    const rr = s.r*MIN_DIM*1.15;
+    const x = CX + Math.cos(s.a)*rr, y = CY + Math.sin(s.a)*rr;
+    const a = 0.25 + 0.55*s.z*(0.6+0.4*Math.sin(s.tw));
+    // color temperature: warm K-stars to hot blue O-stars based on z hash
+    const warm = (s.tw*7919)%1 < 0.3;
+    ctx.fillStyle = warm ? `rgba(255,224,178,${a})` : `rgba(190,215,255,${a})`;
+    const sz = s.z*1.9;
+    ctx.fillRect(x, y, sz, sz);
+    // big stars get a cross-glint
+    if(s.z>0.85 && a>0.6){
+      ctx.fillStyle=`rgba(220,230,255,${a*0.25})`;
+      ctx.fillRect(x-sz*2, y+sz/2-0.5, sz*5, 1);
+      ctx.fillRect(x+sz/2-0.5, y-sz*2, 1, sz*5);
+    }
+  }
+  // shooting star
+  if(shootStar){
+    const a = shootStar.life/shootStar.max;
+    ctx.save(); ctx.globalCompositeOperation='lighter';
+    const tl = 0.09;
+    const grad = ctx.createLinearGradient(shootStar.x, shootStar.y, shootStar.x-shootStar.vx*tl, shootStar.y-shootStar.vy*tl);
+    grad.addColorStop(0,`rgba(255,255,255,${a})`);
+    grad.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.strokeStyle=grad; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(shootStar.x, shootStar.y);
+    ctx.lineTo(shootStar.x-shootStar.vx*tl, shootStar.y-shootStar.vy*tl); ctx.stroke();
+    ctx.restore();
+  }
+
+  // shake offset
+  ctx.save();
+  if(G.shake>0.1){
+    ctx.translate(Math.cos(G.shakeAng)*G.shake*0.5, Math.sin(G.shakeAng)*G.shake*0.5);
+  }
+
+  drawPlanet();
+
+  // orbit rings: baked once per size and orbit count. Only the live overlays (my lane, the pulse,
+  // the decaying orbit) are drawn per frame — 24 ticks x up to 6 orbits was ~130 strokes a frame.
+  if(!ringsCache || ringsCache.rings!==G.rings || ringsCache.radBase!==G.radBase
+     || ringsCache.gap!==G.radGap || ringsCache.dpr!==DPR) buildRingsCache();
+  ctx.drawImage(ringsCache.c, CX-ringsCache.pad, CY-ringsCache.pad, ringsCache.size, ringsCache.size);
+  const mineR = (G.state===S.PLAY) ? G.sat.ring : -1;
+  if(mineR>=0 && mineR<G.rings){
+    const rad = ringRadius(mineR);
+    ctx.save(); ctx.globalCompositeOperation='lighter';
+    ctx.strokeStyle='rgba(110,180,255,0.5)'; ctx.lineWidth=2.2;
+    ctx.beginPath(); ctx.arc(CX,CY,rad,0,Math.PI*2); ctx.stroke();
+    ctx.strokeStyle='rgba(96,165,250,0.10)'; ctx.lineWidth=7;
+    ctx.beginPath(); ctx.arc(CX,CY,rad,0,Math.PI*2); ctx.stroke();
+    ctx.restore();
+  }
+  const rpLane = (G.ringPulse.active && G.ringPulse.lane>=0 && G.ringPulse.lane<G.rings) ? G.ringPulse.lane : -1;
+  if(rpLane>=0){
+    const bl = G.ringPulse.countdown<0.8 ? (0.3+0.5*Math.abs(Math.sin(G.time*18))) : 0.25+0.12*Math.sin(G.time*6);
+    ctx.strokeStyle=`rgba(255,90,70,${bl})`; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(CX,CY,ringRadius(rpLane),0,Math.PI*2); ctx.stroke();
+  }
+  // the orbit under a decay warning glows hot and its arc is visibly being eaten
+  if(G.decay.warnLane>=0 && G.decay.warnLane<G.rings){
+    const rad = ringRadius(G.decay.warnLane);
+    const k = 1 - Math.max(0, G.decay.warnT/2.8);   // 0 → 1 as the warning runs out
+    const hot = 0.35 + 0.5*Math.abs(Math.sin(G.time*10));
+    ctx.save();
+    ctx.strokeStyle = `rgba(255,110,60,${hot})`;
+    ctx.lineWidth = 3 + 3*k;
+    ctx.setLineDash([10,6]); ctx.lineDashOffset = -G.time*40;
+    ctx.beginPath(); ctx.arc(CX,CY,rad,0,Math.PI*2); ctx.stroke();
+    ctx.restore();
+    ctx.save(); ctx.globalCompositeOperation='lighter';
+    ctx.strokeStyle = `rgba(255,90,40,${0.16+0.26*k})`;
+    ctx.lineWidth = 8+10*k;
+    ctx.beginPath(); ctx.arc(CX,CY,rad,0,Math.PI*2); ctx.stroke();
+    ctx.restore();
+  }
+
+  // orbits that already burned away: a collapsing ember arc
+  for(const b of G.decay.burns){
+    const a = Math.max(0, b.t/b.max);          // 1 → 0
+    const rr = b.r*(1 - (1-a)*0.24);           // the arc falls inward as it dies
+    ctx.save();
+    ctx.globalCompositeOperation='lighter';
+    ctx.strokeStyle = `rgba(255,${90+120*a|0},40,${a*0.85})`;
+    ctx.lineWidth = 2 + 7*a;
+    ctx.setLineDash([14,10]); ctx.lineDashOffset = G.time*60;
+    ctx.beginPath(); ctx.arc(CX,CY,rr,0,Math.PI*2); ctx.stroke();
+    ctx.restore();
+  }
+
+  // debris — normal pass then threat glow (additive)
+  let anyThreat=false;
+  for(const d of G.debris){ if(!d.hitFlag){ anyThreat=true; drawDebrisPiece(d, true); } }
+  // pickups — green ◈ is a shield, amber ✚ is a hull patch
+  for(const p of G.pickups){
+    const isPatch = p.type==='patch';
+    const rgb = isPatch ? '255,209,102' : '74,222,128';
+    const ink = isPatch ? '#ffd166' : '#4ade80';
+    const glyph = isPatch ? '✚' : '◈';
+    ctx.save(); ctx.globalCompositeOperation='lighter';
+    ctx.translate(p.x,p.y);
+    const pulse = 1+Math.sin(p.bob)*0.12;
+    ctx.scale(pulse,pulse);
+    const pg = ctx.createRadialGradient(0,0,0,0,0,p.r*2.2);
+    pg.addColorStop(0,'rgba('+rgb+',0.5)'); pg.addColorStop(1,'rgba('+rgb+',0)');
+    ctx.fillStyle=pg;
+    ctx.beginPath(); ctx.arc(0,0,p.r*2.2,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.translate(p.x,p.y); ctx.scale(pulse,pulse);
+    ctx.strokeStyle=ink; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(0,0,p.r,0,Math.PI*2); ctx.stroke();
+    ctx.fillStyle='rgba('+rgb+',0.25)'; ctx.fill();
+    ctx.fillStyle=isPatch?'#ffe9a8':'#a7f3c0'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(glyph,0,1);
+    ctx.restore();
+  }
+
+  // satellite trail — additive glow ribbon
+  ctx.save(); ctx.globalCompositeOperation='lighter';
+  for(let i=0;i<G.sat.trail.length;i++){
+    const t=G.sat.trail[i];
+    const a = t.life/0.5;
+    const age = 1-a; // 0 = fresh
+    ctx.fillStyle = `rgba(110,175,255,${a*0.38})`;
+    ctx.beginPath(); ctx.arc(t.x,t.y, 2.0+5.5*a, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+
+  // wreck shards (after death)
+  for(const s of G.shards){
+    ctx.save();
+    ctx.translate(s.x,s.y); ctx.rotate(s.rot);
+    const a = Math.min(1, s.life/0.8);
+    ctx.globalAlpha=a;
+    if(s.kind==='panel'){
+      ctx.fillStyle='#60a5fa';
+      ctx.fillRect(-6,-2,12,4);
+      ctx.strokeStyle='rgba(226,232,240,0.7)'; ctx.lineWidth=0.8; ctx.strokeRect(-6,-2,12,4);
+    } else {
+      ctx.fillStyle='#e2e8f0';
+      ctx.fillRect(-3,-5,6,10);
+    }
+    ctx.restore();
+  }
+
+  // satellite
+  if(G.state!==G.S.OVER || G.shards.length===0){
+    const satX = CX + Math.cos(G.sat.angle)*G.sat.rad;
+    const satY = CY + Math.sin(G.sat.angle)*G.sat.rad;
+    // thruster glow (additive) behind the body
+    if(G.sat.thrust>0.02 || G.state===G.S.PLAY){
+      ctx.save(); ctx.globalCompositeOperation='lighter';
+      const th = Math.max(G.sat.thrust, 0.25);
+      const back = G.sat.angle + Math.PI;
+      const tx = satX+Math.cos(back)*12, ty=satY+Math.sin(back)*12;
+      const tg = ctx.createRadialGradient(tx,ty,0,tx,ty,14*th+4);
+      tg.addColorStop(0,`rgba(120,190,255,${0.5*th})`);
+      tg.addColorStop(1,'rgba(120,190,255,0)');
+      ctx.fillStyle=tg;
+      ctx.beginPath(); ctx.arc(tx,ty,14*th+4,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    if(G.sat.inv>0 && (G.time*20|0)%2===0) { ctx.restore(); }
+    else {
+    ctx.save();
+    ctx.translate(satX,satY);
+    ctx.rotate(G.sat.angle + Math.PI/2);
+    ctx.scale(1.45,1.45);
+    // gold foil (Kapton) body with gradient
+    const bodyG = ctx.createLinearGradient(0,-8,0,8);
+    bodyG.addColorStop(0,'#ffe9a8'); bodyG.addColorStop(0.35,'#f4d98c'); bodyG.addColorStop(0.7,'#c09044'); bodyG.addColorStop(1,'#77592a');
+    ctx.fillStyle=bodyG;
+    ctx.beginPath();
+    ctx.moveTo(-5,-8); ctx.lineTo(5,-8); ctx.lineTo(4,8); ctx.lineTo(-4,8); ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle='rgba(255,240,200,0.65)'; ctx.lineWidth=0.8; ctx.stroke();
+    // specular glint on the sun side
+    ctx.fillStyle='rgba(255,255,235,0.75)';
+    ctx.beginPath(); ctx.ellipse(-2.4,-4.5,1.6,2.6,-0.4,0,Math.PI*2); ctx.fill();
+    // foil crinkle lines
+    ctx.strokeStyle='rgba(120,85,30,0.4)'; ctx.lineWidth=0.5;
+    for(let yy=-6;yy<=6;yy+=3){ ctx.beginPath(); ctx.moveTo(-4,yy); ctx.lineTo(4,yy+0.6); ctx.stroke(); }
+    // panel yokes + solar panels with cell lines
+    ctx.fillStyle='#1b2f55';
+    ctx.fillRect(-15,-6,8,4); ctx.fillRect(7,-6,8,4);
+    ctx.fillRect(-15,2,8,4); ctx.fillRect(7,2,8,4);
+    ctx.fillStyle='rgba(120,175,255,0.85)';
+    ctx.fillRect(-15,-6,8,1.4); ctx.fillRect(7,-6,8,1.4);
+    ctx.fillRect(-15,2,8,1.4); ctx.fillRect(7,2,8,1.4);
+    ctx.strokeStyle='rgba(190,225,255,0.9)'; ctx.lineWidth=0.6;
+    for(let i=0;i<3;i++){
+      ctx.beginPath(); ctx.moveTo(-14+i*2.7,-6); ctx.lineTo(-14+i*2.7,-2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-14+i*2.7,2); ctx.lineTo(-14+i*2.7,6); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(8+i*2.7,-6); ctx.lineTo(8+i*2.7,-2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(8+i*2.7,2); ctx.lineTo(8+i*2.7,6); ctx.stroke();
+    }
+    // dish
+    ctx.fillStyle='#ffd166';
+    ctx.beginPath(); ctx.arc(0,-10,3,0,Math.PI*2); ctx.fill();
+    // nav strobes blink
+    const blink = (G.sat.strobe%1.2)<0.12;
+    if(blink){
+      ctx.fillStyle='rgba(255,90,90,0.95)';
+      ctx.beginPath(); ctx.arc(-14,-4,1.4,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(14,4,1.4,0,Math.PI*2); ctx.fill();
+      ctx.save(); ctx.globalCompositeOperation='lighter';
+      ctx.fillStyle='rgba(255,90,90,0.3)';
+      ctx.beginPath(); ctx.arc(-14,-4,4,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(14,4,4,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    // shield bubble
+    if(G.sat.shield>0){
+      const sa = 0.25 + 0.15*Math.sin(G.time*6);
+      if(G.sat.shield<3){ ctx.strokeStyle = `rgba(74,222,128,${sa*(0.4+0.6*Math.abs(Math.sin(G.time*10)))})`; }
+      else ctx.strokeStyle = `rgba(74,222,128,${sa})`;
+      ctx.lineWidth=2;
+      ctx.beginPath(); ctx.arc(0,0,19,0,Math.PI*2); ctx.stroke();
+      // hex shimmer on shield
+      ctx.save(); ctx.globalCompositeOperation='lighter';
+      ctx.strokeStyle=`rgba(74,222,128,${sa*0.35})`; ctx.lineWidth=0.7;
+      ctx.beginPath(); ctx.arc(0,0,15,0,Math.PI*2); ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
+    }
+  }
+
+  // particles — one additive pass, then the normal ones (was a save/restore per particle)
+  ctx.save();
+  ctx.globalCompositeOperation='lighter';
+  for(const p of G.particles){
+    if(!p.add) continue;
+    const a = p.life/p.max;
+    ctx.fillStyle = `hsla(${p.hue},95%,65%,${a})`;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.size*a+0.5,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+  for(const p of G.particles){
+    if(p.add) continue;
+    const a = p.life/p.max;
+    ctx.fillStyle = `hsla(${p.hue},90%,60%,${a})`;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.size*a,0,Math.PI*2); ctx.fill();
+  }
+  // floaters
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  for(const f of G.floaters){
+    ctx.font=`bold ${f.size||14}px sans-serif`;
+    ctx.fillStyle = f.color;
+    ctx.globalAlpha = Math.max(0,Math.min(1,f.life));
+    ctx.fillText(f.text, f.x, f.y);
+    ctx.globalAlpha=1;
+  }
+
+  // reentry heat: escalating orange glow + shake as you fall
+  if(G.reentry && G.state===G.S.PLAY){
+    const heat = Math.min(1, G.reentryT/20);
+    ctx.fillStyle=`rgba(255,${90+heat*80|0},40,${0.06+heat*0.10})`;
+    ctx.fillRect(0,0,W,H);
+    if(Math.random()<heat*0.3) screenShake(2+heat*6);
+  }
+  // decay-pulse screen tint
+  if(G.ringPulse.active){
+    ctx.fillStyle=`rgba(255,70,50,${0.05+0.03*Math.sin(G.time*12)})`;
+    ctx.fillRect(0,0,W,H);
+  }
+  // slowmo vignette pulse
+  if(G.slowmo>0.01){
+    ctx.fillStyle=`rgba(255,209,102,${G.slowmo*0.05})`;
+    ctx.fillRect(0,0,W,H);
+  }
+  ctx.restore(); // shake
+
+  // vignette: baked once per size into a canvas, then one drawImage. A full-screen radial-gradient
+  // fill every frame was the most expensive single pass in the frame (software compositing).
+  if(!vignetteCache || vignetteCache.W!==W || vignetteCache.H!==H){
+    const c = document.createElement('canvas');
+    c.width = Math.round(W*DPR); c.height = Math.round(H*DPR);
+    const x = c.getContext('2d');
+    x.setTransform(DPR,0,0,DPR,0,0);
+    const vg = x.createRadialGradient(CX,CY,MIN_DIM*0.42,CX,CY,Math.max(W,H)*0.72);
+    vg.addColorStop(0,'rgba(0,0,0,0)');
+    vg.addColorStop(1,'rgba(2,3,8,0.42)');
+    x.fillStyle = vg; x.fillRect(0,0,W,H);
+    vignetteCache = { c, W, H };
+  }
+  ctx.drawImage(vignetteCache.c, 0, 0, W, H);
+  // film grain: one pattern fill with a random offset, every other frame (it is noise; 30 fps of it
+  // looks identical and the full-screen blend was one of the three big per-frame fills)
+  G.frame = (G.frame||0)+1;
+  if(G.grain && (G.frame & 1)){
+    if(!grainPattern) grainPattern = ctx.createPattern(G.grain,'repeat');
+    ctx.save();
+    ctx.globalAlpha=0.5;
+    const ox = (Math.random()*128)|0, oy = (Math.random()*128)|0;
+    ctx.translate(ox, oy);
+    ctx.fillStyle = grainPattern;
+    ctx.fillRect(-ox,-oy,W,H);
+    ctx.restore();
+  }
+  // flash
+  if(G.flash>0.01){
+    ctx.fillStyle=`rgba(255,255,255,${G.flash*0.5})`;
+    ctx.fillRect(0,0,W,H);
+  }
+}
+
+// ---------- main loop ----------
+let padDir = 0;
+function handleFrame(f){
+  if(G.state===S.PLAY && !input.pause.paused){
+    if(f.pressed.ring_in) doSwitch(-1);
+    if(f.pressed.ring_out) doSwitch(1);
+    if(f.pressed.secondary) doSwitch(-1);
+    // pad left stick: one lane per push (an edge, not a hold-repeat). Skip it while the D-pad is
+    // held, because the template reports a D-pad push as both an action edge and a full stick tilt.
+    const dpad = f.held.ring_in || f.held.ring_out;
+    if(dpad){ padDir = 0; }
+    else {
+      const mag = Math.hypot(f.pad.x||0, f.pad.y||0);
+      if(padDir){ if(mag < 0.45) padDir = 0; }
+      else if(mag > 0.72){
+        padDir = Math.abs(f.pad.y) > Math.abs(f.pad.x) ? (f.pad.y>0?1:-1) : (f.pad.x>0?1:-1);
+        doSwitch(padDir);
+      }
+    }
+    if(f.pressed.primary) doBurn();
+  } else {
+    padDir = 0;
+  }
+  if((G.state===S.OVER || G.state===S.WIN) && performance.now()-(G.overAt||0) > 900){
+    if(f.pressed.confirm || f.pressed.primary) startGame(G.mode);
+  }
+}
+function loop(now){
+  if(!G.running) return;
+  const f = input.poll();
+  let dt = (now - G.lastFrame)/1000;
+  G.lastFrame = now;
+  dt = Math.min(dt, 1/20);
+  handleFrame(f);
+  if(G.state===S.PLAY && !G.hintFaded && performance.now() > (G.hintFadeAt||0)){
+    $('ingame-hint').classList.add('fade'); G.hintFaded = true;
+  }
+  if(G.hitStop>0){
+    G.hitStop = Math.max(0, G.hitStop - dt);
+    render();
+    requestAnimationFrame(loop);
+    return;
+  }
+  const scale = 1 - G.slowmo*0.6;
+  update(dt*scale);
+  render();
+  requestAnimationFrame(loop);
+}
+resize();
+goMenu();
+input.installHook({
+  getState: stateWord,
+  start: startGame,
+  restart: ()=>startGame(G.mode),
+  getScore: ()=>G.score,
+  getPlayer: satXY,
+  fields:{
+    ring:       ()=>G.sat.ring,
+    rings:      ()=>G.rings,
+    hull:       ()=>G.hull,
+    hullMax:    ()=>G.hullMax,
+    shield:     ()=>+G.sat.shield.toFixed(2),
+    chain:      ()=>G.chain,
+    nearMisses: ()=>G.nearMisses,
+    level:      ()=>G.level,
+    time:       ()=>+G.time.toFixed(2),
+    runMode:    ()=>G.mode,
+    missionLength: ()=>94,
+    burnReady:  ()=> G.burn.cd<=0 ? 1 : 0,
+    burnCharge: ()=> +Math.max(0, 1-G.burn.cd/G.burn.max).toFixed(3),
+    best:       ()=>G.best,
+    bestSurvival: ()=>+G.bestSurvival.toFixed(1),
+    reentry:    ()=>!!G.reentry,
+    menuFocus:  ()=> menu.items[menu.index] ? menu.items[menu.index].id : null,
+    deathCause: ()=>G.deathCause,
+    overlay:    ()=> ['menu-overlay','gameover-overlay','pause-overlay','win-overlay']
+                      .filter(o=>$(o) && !$(o).classList.contains('hidden')).join('') || '',
+    sat:        ()=>{ const p=satXY(); return { ring:G.sat.ring, ang:+G.sat.angle.toFixed(3), x:Math.round(p.x), y:Math.round(p.y), inv:+G.sat.inv.toFixed(2) }; },
+    debris:     ()=> G.debris.map(d=>({ ring:d.ring,
+                    lane: Math.max(0, Math.min(G.rings-1, Math.round((d.rad - G.radBase)/G.radGap))),
+                    ang:+d.ang.toFixed(3), rad:Math.round(d.rad), x:Math.round(d.x||0), y:Math.round(d.y||0),
+                    r:Math.round(d.r), hunter:!!d.hunter })),
+    geometry:   ()=>({ cx:CX, cy:CY, radBase:G.radBase, radGap:G.radGap }),
+    pickups:    ()=> G.pickups.map(p=>({ ring:p.ring, type:p.type, x:Math.round(p.x||0), y:Math.round(p.y||0) })),
+    pulse:      ()=>({ active:!!G.ringPulse.active, lane:G.ringPulse.lane, countdown:+G.ringPulse.countdown.toFixed(2) }),
+    decayWarn:  ()=>({ lane:G.decay.warnLane, t:+G.decay.warnT.toFixed(2) }),
+    hullLog:    ()=> G.hullLog.slice(-8),
+    bestRank:   ()=>G.bestRank,
+    winStars:   ()=> G.state===S.WIN ? G.hull : 0,
+    hint:       ()=> $('ingame-hint').textContent
+  }
+});
+G.running=true;
+requestAnimationFrame(loop);
+
+</script>
+<script>if(location.pathname.indexOf("/g/")>=0){var s=document.createElement("script");s.src="/arcade/_arcade.js";s.defer=1;document.head.appendChild(s);}</script>
+</body>
+</html>

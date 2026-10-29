@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1b0a2e">
+  <title>Phone Blackjack</title>
+  <link rel="stylesheet" href="css/iphone-frame.css">
+  <link rel="stylesheet" href="css/table.css">
+</head>
+<body>
+  <div class="iphone-app table" id="app">
+    <header class="hud">
+      <div class="hud-left">
+        <div class="bank-label">BANK</div>
+        <div id="bank" class="bank">$100</div>
+        <div id="bestLine" class="best">BEST $100</div>
+      </div>
+      <div class="hud-right">
+        <div id="wl" class="wl">W 0 · L 0 · P 0</div>
+        <div id="streak" class="streak">no streak</div>
+        <div class="hud-btns">
+          <button type="button" id="btnSound" class="touch-target icon" aria-label="Sound off">♪</button>
+          <button type="button" id="btnReset" class="touch-target ghost">Reset</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="felt">
+      <section class="seat dealer">
+        <div class="seat-head">
+          <span class="seat-name">DEALER</span>
+          <span id="dealerScore" class="total"></span>
+        </div>
+        <div id="dealerFan" class="fan"></div>
+      </section>
+
+      <div class="mid">
+        <div id="pot" class="pot" hidden>
+          <div id="potChip" class="pot-chip">$5</div>
+          <div class="pot-label">WAGER</div>
+        </div>
+        <div id="banner" class="banner">PLACE YOUR BET</div>
+        <p id="msg" class="msg">Tap a chip, then Deal.</p>
+      </div>
+
+      <section class="seat you">
+        <div class="seat-head">
+          <span class="seat-name">YOU</span>
+          <span id="playerScore" class="total"></span>
+        </div>
+        <div id="playerWrap"></div>
+      </section>
+    </main>
+
+    <footer class="dock" id="dock">
+      <div id="insureRow" class="insure-row" hidden>
+        <button type="button" id="btnInsure" class="touch-target large insure">Insure</button>
+        <button type="button" id="btnDecline" class="touch-target large">No thanks</button>
+      </div>
+      <div class="bets">
+        <button type="button" id="bet5" class="touch-target chip"><span class="chip-face">$5</span></button>
+        <button type="button" id="bet10" class="touch-target chip"><span class="chip-face">$10</span></button>
+        <button type="button" id="bet25" class="touch-target chip"><span class="chip-face">$25</span></button>
+        <div class="bet-read">BET <b id="betLabel">$5</b></div>
+      </div>
+      <div class="verbs">
+        <button type="button" id="btnDeal" class="touch-target large primary">DEAL</button>
+        <button type="button" id="btnHit" class="touch-target large" disabled>HIT</button>
+        <button type="button" id="btnStand" class="touch-target large" disabled>STAND</button>
+        <button type="button" id="btnDouble" class="touch-target large" disabled>DOUBLE</button>
+        <button type="button" id="btnSplit" class="touch-target large" disabled>SPLIT</button>
+      </div>
+      <div id="hint" class="hint">Tap a chip, then Deal.</div>
+    </footer>
+  </div>
+  <script src="js/engine.js"></script>
+  <script src="js/sfx.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/ui.js"></script>
+<script>if(location.pathname.indexOf("/g/")>=0){var s=document.createElement("script");s.src="/arcade/_arcade.js";s.defer=1;document.head.appendChild(s);}</script>
+</body>
+</html>

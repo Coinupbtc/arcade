@@ -1,0 +1,59 @@
+{
+ "frames": {
+  "static_S_000": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 360,
+    "h": 360
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 360,
+    "h": 360
+   },
+   "sourceSize": {
+    "w": 360,
+    "h": 360
+   }
+  }
+ },
+ "animations": {
+  "static_S": {
+   "frames": [
+    "static_S_000"
+   ],
+   "fps": 12,
+   "loop": false
+  }
+ },
+ "meta": {
+  "image": "p_crypt.png",
+  "size": {
+   "w": 360,
+   "h": 360
+  },
+  "format": "RGBA8888",
+  "scale": "1",
+  "cell": 360,
+  "pivot": {
+   "x": 180.0,
+   "y": 287.1
+  },
+  "dirs": [
+   "S"
+  ],
+  "pixel_art": false,
+  "source": "kenney/kaykit-halloween/addons/kaykit_halloween_bits/Assets/gltf/crypt.gltf",
+  "elevation": 30,
+  "ortho": 11.1948,
+  "target": [
+   0.0,
+   3.3308
+  ],
+  "world_per_px": 0.0311
+ }
+}

@@ -1,0 +1,222 @@
+{
+  "id": "bubble-bay",
+  "title": "Bubble Bay",
+  "tagline": "Aim the launcher, match three, keep the wall off the line.",
+  "description": "Drag anywhere to aim the launcher and release to fire. Every bubble sticks where it lands, so three of a colour in a row pops and the bubbles above them fall away. If you miss the wall it grows a new row: eight shots per row at the start, fewer as the rounds go up, and the danger line creeps closer. A round ends when the wall is empty; a run ends when a bubble crosses the line. Score and best score stay on the device.",
+  "genre": "Bubble shooter",
+  "tags": [
+    "puzzle",
+    "arcade"
+  ],
+  "orientation": "any",
+  "realtime": true,
+  "session": "5 min",
+  "controls": {
+    "desktop": [
+      [
+        "Mouse",
+        "Aim"
+      ],
+      [
+        "LMB",
+        "Shoot"
+      ],
+      [
+        "Space",
+        "Shoot"
+      ],
+      [
+        "S",
+        "Swap next"
+      ],
+      [
+        "Esc",
+        "Pause"
+      ]
+    ],
+    "touch": [
+      [
+        "Drag",
+        "Aim"
+      ],
+      [
+        "Release",
+        "Shoot"
+      ],
+      [
+        "Button",
+        "Swap"
+      ],
+      [
+        "Tap",
+        "Pause"
+      ]
+    ],
+    "gamepad": [
+      [
+        "LS",
+        "Aim"
+      ],
+      [
+        "A",
+        "Shoot"
+      ],
+      [
+        "DPad",
+        "Aim"
+      ],
+      [
+        "Start",
+        "Pause"
+      ]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Enter",
+      "click": [
+        0.5,
+        0.62
+      ],
+      "tap": {
+        "portrait": [
+          0.5,
+          0.62
+        ],
+        "landscape": [
+          0.5,
+          0.66
+        ]
+      }
+    },
+    "pause": {
+      "key": "Escape",
+      "tap": {
+        "portrait": [
+          0.91,
+          0.037
+        ],
+        "landscape": [
+          0.958,
+          0.079
+        ]
+      },
+      "resume_tap": null
+    },
+    "keyboard": [
+      {
+        "name": "Space fires a bubble",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Space",
+            "ms": 250
+          }
+        ],
+        "expect": [
+          "extra.shots up 1"
+        ]
+      }
+    ],
+    "mouse": [
+      {
+        "name": "click fires a bubble",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 2200
+          },
+          {
+            "do": "click",
+            "at": [
+              0.5,
+              0.6
+            ]
+          }
+        ],
+        "expect": [
+          "extra.shots up 1"
+        ]
+      }
+    ],
+    "touch": [
+      {
+        "name": "drag right aims east",
+        "steps": [
+          {
+            "do": "drag",
+            "from": [
+              0.5,
+              0.75
+            ],
+            "to": [
+              0.8,
+              0.55
+            ],
+            "ms": 500
+          }
+        ],
+        "expect": [
+          "player.x up 20"
+        ]
+      },
+      {
+        "name": "tap fires a bubble",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 2200
+          },
+          {
+            "do": "tap",
+            "at": [
+              0.5,
+              0.55
+            ]
+          }
+        ],
+        "expect": [
+          "extra.shots up 1"
+        ]
+      }
+    ],
+    "gamepad": [
+      {
+        "name": "left stick aims east",
+        "steps": [
+          {
+            "do": "pad",
+            "axes": [
+              1,
+              0
+            ],
+            "ms": 400
+          }
+        ],
+        "expect": [
+          "player.x up 20"
+        ]
+      },
+      {
+        "name": "A fires a bubble",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 2200
+          },
+          {
+            "do": "pad",
+            "buttons": [
+              "A"
+            ],
+            "ms": 200
+          }
+        ],
+        "expect": [
+          "extra.shots up 1"
+        ]
+      }
+    ]
+  },
+  "na": {}
+}

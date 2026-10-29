@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0e1526">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Tank Duel — five-sortie artillery duel</title>
+<link rel="stylesheet" href="css/style.css?v=3">
+</head>
+<body>
+<div id="app" class="app-shell">
+  <canvas id="cv" width="390" height="844"></canvas>
+
+  <!-- HUD (playing) -->
+  <div id="hud" class="hidden">
+    <button id="btn-pause" class="touch-target pause-btn" aria-label="Pause">❚❚</button>
+    <div id="hud-top" class="iphone-top">
+      <div id="hp-wrap">
+        <div class="hp-side"><span class="hp-name you">YOU</span>
+          <div class="hp-bar"><div id="hp-p" class="hp-fill p"></div></div>
+          <span id="hp-p-num" class="hp-num">100</span></div>
+        <div id="turn-banner">YOUR TURN</div>
+        <div class="hp-side right"><span class="hp-name foe">AI</span>
+          <div class="hp-bar"><div id="hp-e" class="hp-fill e"></div></div>
+          <span id="hp-e-num" class="hp-num">100</span></div>
+      </div>
+      <div id="hud-mid">
+        <div id="wind-hud"><span id="wind-arrow">&larr;</span> WIND <span id="wind-val">0.0</span></div>
+        <div id="stage-hud">S1 · <span id="score-val">0</span> PTS</div>
+        <div id="shot-line"><span id="sight-val">SIGHT FULL</span> · <span id="miss-val">NO SHOT YET</span></div>
+      </div>
+      <div id="clock-wrap"><div id="clock-bar"></div></div>
+    </div>
+
+    <div id="hud-bottom" class="iphone-bottom">
+      <div id="power-wrap"><div id="power-bar"><div id="power-fill"></div></div>
+        <span id="power-num">42%</span></div>
+      <div id="ctrl-row">
+        <div id="ammo-row"></div>
+        <button id="btn-fire" class="touch-target" aria-label="Fire">FIRE</button>
+      </div>
+    </div>
+    <div id="aim-hint">Drag anywhere to aim &middot; then FIRE</div>
+  </div>
+
+  <!-- Menu -->
+  <div id="menu">
+    <div class="menu-inner">
+      <h1>TANK<span> DUEL</span></h1>
+      <p class="tag">Five sorties. One tank. Your arc against the AI.</p>
+      <div class="stage-label">SORTIE <span id="stage-name">FIRST CONTACT</span></div>
+      <div id="stage-row"></div>
+      <button id="btn-play" class="touch-target large primary">PLAY</button>
+      <div id="menu-controls" class="hint-row"></div>
+      <p class="hint" id="menu-best">No sortie won yet — the first one is yours to take.</p>
+    </div>
+  </div>
+
+  <!-- Pause -->
+  <div id="pause-panel" class="hidden">
+    <div class="panel">
+      <h2>PAUSED</h2>
+      <p id="pause-sub">The clock is stopped.</p>
+      <button id="btn-resume" class="touch-target large primary">RESUME</button>
+      <button id="btn-restart" class="touch-target wide secondary">RESTART SORTIE</button>
+      <button id="btn-quit" class="touch-target wide secondary">MENU</button>
+    </div>
+  </div>
+
+  <!-- Verdict -->
+  <div id="verdict" class="hidden">
+    <div class="panel">
+      <h2 id="verdict-title">VICTORY</h2>
+      <div id="verdict-stars">★★☆</div>
+      <p id="verdict-sub">Enemy tank destroyed</p>
+      <div id="verdict-stats"></div>
+      <button id="btn-next" class="touch-target large primary">NEXT SORTIE</button>
+      <button id="btn-rematch" class="touch-target wide secondary">RETRY SORTIE</button>
+      <button id="btn-menu" class="touch-target wide secondary">MENU</button>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden"></div>
+  <div id="fatal" class="hidden"><h2>Startup error</h2><pre id="fatal-msg"></pre></div>
+</div>
+
+<script>
+window.__errs = [];
+window.addEventListener('error', function(e){
+  window.__errs.push(String(e.message||e));
+  var f = document.getElementById('fatal'), m = document.getElementById('fatal-msg');
+  if (f && m && f.classList.contains('hidden')) {
+    f.classList.remove('hidden'); m.textContent = String(e.message||e);
+  }
+});
+</script>
+<script src="js/config.js?v=3"></script>
+<script src="js/utils.js?v=3"></script>
+<script src="js/terrain.js?v=3"></script>
+<script src="js/physics.js?v=3"></script>
+<script src="js/projectile.js?v=3"></script>
+<script src="js/fx.js?v=3"></script>
+<script src="js/entities.js?v=3"></script>
+<script src="js/ai.js?v=3"></script>
+<script src="js/input.js?v=3"></script>
+<script src="js/ui.js?v=3"></script>
+<script src="js/game.js?v=3"></script>
+<script>if(location.pathname.indexOf("/g/")>=0){var s=document.createElement("script");s.src="/arcade/_arcade.js";s.defer=1;document.head.appendChild(s);}</script>
+</body>
+</html>

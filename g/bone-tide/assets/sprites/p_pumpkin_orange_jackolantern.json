@@ -1,0 +1,59 @@
+{
+ "frames": {
+  "static_S_000": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 72,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 72,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 72,
+    "h": 72
+   }
+  }
+ },
+ "animations": {
+  "static_S": {
+   "frames": [
+    "static_S_000"
+   ],
+   "fps": 12,
+   "loop": false
+  }
+ },
+ "meta": {
+  "image": "p_pumpkin_orange_jackolantern.png",
+  "size": {
+   "w": 72,
+   "h": 72
+  },
+  "format": "RGBA8888",
+  "scale": "1",
+  "cell": 72,
+  "pivot": {
+   "x": 36.0,
+   "y": 58.2
+  },
+  "dirs": [
+   "S"
+  ],
+  "pixel_art": false,
+  "source": "kenney/kaykit-halloween/addons/kaykit_halloween_bits/Assets/gltf/pumpkin_orange_jackolantern.gltf",
+  "elevation": 30,
+  "ortho": 1.575,
+  "target": [
+   0.0,
+   0.4837
+  ],
+  "world_per_px": 0.02187
+ }
+}

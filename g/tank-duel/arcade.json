@@ -1,0 +1,364 @@
+{
+  "id": "tank-duel",
+  "title": "Tank Duel",
+  "tagline": "Five artillery duels. Wind, cover, five shells, one tank.",
+  "description": "A turn-based artillery duel: you against an AI tank on a fresh hillside. Drag the lower screen to set angle and power, watch the sight arc, pick a shell and fire. Wind pushes every round, buildings are hard cover, and a ridge can block the flat shot, so a drill shell or a high lob is sometimes the only answer. After each shot a spotter reports how far you missed, so you can walk the next round in. The AI does the same to you, and it shoots first from sortie four. Five sorties, each with a tougher hull and a sharper gunner, three stars for a clean win, and your best score kept per sortie.",
+  "genre": "Turn-based artillery",
+  "tags": [
+    "artillery",
+    "turn-based",
+    "versus-ai",
+    "tanks"
+  ],
+  "orientation": "any",
+  "realtime": false,
+  "session": "2-4 min per sortie",
+  "controls": {
+    "desktop": [
+      [
+        "\u2190 \u2192 / A D",
+        "Aim angle"
+      ],
+      [
+        "\u2191 \u2193 / W S",
+        "Power"
+      ],
+      [
+        "Space",
+        "Fire"
+      ],
+      [
+        "1 2 3 4 5 / Q E",
+        "Pick a shell"
+      ],
+      [
+        "Enter / Space",
+        "Start a sortie"
+      ],
+      [
+        "Esc / P",
+        "Pause"
+      ]
+    ],
+    "touch": [
+      [
+        "Drag",
+        "Aim angle and power"
+      ],
+      [
+        "Tap FIRE",
+        "Fire"
+      ],
+      [
+        "Tap a shell",
+        "Pick a shell"
+      ],
+      [
+        "Tap \u275a\u275a",
+        "Pause / resume"
+      ],
+      [
+        "Tap a sortie chip",
+        "Choose the sortie"
+      ]
+    ],
+    "gamepad": [
+      [
+        "LS / DPad",
+        "Aim angle and power"
+      ],
+      [
+        "A",
+        "Fire \u00b7 start"
+      ],
+      [
+        "X / Y",
+        "Next / previous shell"
+      ],
+      [
+        "Start",
+        "Pause"
+      ],
+      [
+        "B",
+        "Back"
+      ]
+    ]
+  },
+  "qa": {
+    "start": {
+      "key": "Enter",
+      "click": [
+        0.5,
+        0.556
+      ],
+      "tap": {
+        "portrait": [
+          0.5,
+          0.556
+        ],
+        "landscape": [
+          0.5,
+          0.635
+        ]
+      }
+    },
+    "pause": {
+      "key": "Escape",
+      "tap": {
+        "portrait": [
+          0.913,
+          0.038
+        ],
+        "landscape": [
+          0.96,
+          0.082
+        ]
+      },
+      "resume_tap": {
+        "portrait": [
+          0.913,
+          0.038
+        ],
+        "landscape": [
+          0.96,
+          0.082
+        ]
+      }
+    },
+    "keyboard": [
+      {
+        "name": "ArrowLeft lowers the barrel",
+        "steps": [
+          {
+            "do": "key",
+            "key": "ArrowLeft",
+            "ms": 600
+          }
+        ],
+        "expect": [
+          "angle down 5"
+        ]
+      },
+      {
+        "name": "ArrowUp raises power",
+        "steps": [
+          {
+            "do": "key",
+            "key": "ArrowUp",
+            "ms": 600
+          }
+        ],
+        "expect": [
+          "power up 5"
+        ]
+      },
+      {
+        "name": "Digit2 picks the heavy shell",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Digit2",
+            "ms": 80
+          }
+        ],
+        "expect": [
+          "ammo == \"heavy\""
+        ]
+      },
+      {
+        "name": "Space fires",
+        "steps": [
+          {
+            "do": "key",
+            "key": "Space",
+            "ms": 90
+          },
+          {
+            "do": "wait",
+            "ms": 250
+          }
+        ],
+        "expect": [
+          "fired up 1"
+        ]
+      }
+    ],
+    "mouse": [
+      {
+        "name": "drag left lowers the barrel",
+        "steps": [
+          {
+            "do": "wait",
+            "ms": 7000
+          },
+          {
+            "do": "mousedrag",
+            "from": [
+              0.5,
+              0.55
+            ],
+            "to": [
+              0.44,
+              0.55
+            ],
+            "ms": 500
+          }
+        ],
+        "settle": 300,
+        "expect": [
+          "angle down 5"
+        ]
+      }
+    ],
+    "touch": [
+      {
+        "name": "drag right raises the barrel",
+        "steps": [
+          {
+            "do": "drag",
+            "from": {
+              "portrait": [
+                0.45,
+                0.62
+              ],
+              "landscape": [
+                0.45,
+                0.62
+              ]
+            },
+            "to": {
+              "portrait": [
+                0.6,
+                0.62
+              ],
+              "landscape": [
+                0.6,
+                0.62
+              ]
+            },
+            "ms": 600
+          }
+        ],
+        "expect": [
+          "angle up 5"
+        ]
+      },
+      {
+        "name": "drag up adds power",
+        "steps": [
+          {
+            "do": "drag",
+            "from": {
+              "portrait": [
+                0.5,
+                0.62
+              ],
+              "landscape": [
+                0.5,
+                0.62
+              ]
+            },
+            "to": {
+              "portrait": [
+                0.5,
+                0.5
+              ],
+              "landscape": [
+                0.5,
+                0.48
+              ]
+            },
+            "ms": 600
+          }
+        ],
+        "expect": [
+          "power up 5"
+        ]
+      },
+      {
+        "name": "tap FIRE fires",
+        "steps": [
+          {
+            "do": "tap",
+            "at": {
+              "portrait": [
+                0.874,
+                0.951
+              ],
+              "landscape": [
+                0.942,
+                0.895
+              ]
+            }
+          },
+          {
+            "do": "wait",
+            "ms": 250
+          }
+        ],
+        "expect": [
+          "fired up 1"
+        ]
+      }
+    ],
+    "gamepad": [
+      {
+        "name": "LS right raises the barrel",
+        "steps": [
+          {
+            "do": "pad",
+            "axes": [
+              0.9,
+              0,
+              0,
+              0
+            ],
+            "ms": 600
+          }
+        ],
+        "expect": [
+          "angle up 5"
+        ]
+      },
+      {
+        "name": "LS up adds power",
+        "steps": [
+          {
+            "do": "pad",
+            "axes": [
+              0,
+              -0.9,
+              0,
+              0
+            ],
+            "ms": 600
+          }
+        ],
+        "expect": [
+          "power up 5"
+        ]
+      },
+      {
+        "name": "A fires",
+        "steps": [
+          {
+            "do": "pad",
+            "buttons": [
+              "A"
+            ],
+            "ms": 160
+          },
+          {
+            "do": "wait",
+            "ms": 250
+          }
+        ],
+        "expect": [
+          "fired up 1"
+        ]
+      }
+    ]
+  },
+  "na": {}
+}
