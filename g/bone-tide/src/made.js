@@ -15,7 +15,7 @@ BT.MADE = [
   { pic: "assets/ui/floor.jpg", tool: "game-assets.py", title: "CC0 library",
     text: "Poly Haven flagstone for the crypt plaza, Kenney mobile-control art and fonts, all from the local 19,400-entry CC0 catalog." },
   { icon: "⚙", tool: "Phaser 4.2 + web-game-proof.py", title: "Engine and proof",
-    text: "Phaser 4 from the house web-libs (no CDN). Tested in a phone-shaped Chromium with real touch, in portrait and landscape, for frame rate and errors. Served over Tailscale HTTPS by game-serve.sh." }
+    text: "Phaser 4, self-hosted (no CDN). Tested in a phone-shaped Chromium with real touch, in portrait and landscape, for frame rate and errors." }
 ];
 BT.MADE_STATS = { frames: "1,561", sheets: 9 };
 
