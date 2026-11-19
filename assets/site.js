@@ -96,19 +96,85 @@
     });
   }
 
+  // ---- search ranking (2026-11-19, owner: "if i type L i should get all games with letter L first, if i spell Lamp
+  // i should get all games with lamp in it"). Lower = better; 9 = no match. One letter matches titles only, so "L"
+  // lists every game with an L in its name (names that START with L first); 2+ letters also search genre and blurb.
+  var esc = function (x) { return String(x).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); };
+  var matchRank = function (term, title, text) {
+    if (!term) return 0;
+    title = (title || '').toLowerCase(); text = (text || '').toLowerCase();
+    if (title.indexOf(term) === 0) return 0;
+    if ((' ' + title).indexOf(' ' + term) >= 0) return 1;
+    if (title.indexOf(term) >= 0) return 2;
+    if (term.length < 2) return 9;
+    if ((' ' + text).indexOf(' ' + term) >= 0) return 3;
+    if (text.indexOf(term) >= 0) return 4;
+    return 9;
+  };
+  var markHit = function (title, term) {
+    var i = title.toLowerCase().indexOf(term);
+    if (!term || i < 0) return esc(title);
+    return esc(title.slice(0, i)) + '<mark>' + esc(title.slice(i, i + term.length)) + '</mark>' + esc(title.slice(i + term.length));
+  };
+
+  // ---- live results under the search bar on every page except the home grid (which filters itself)
+  var sq = $('#q');
+  if (sq && !$('#grid')) {
+    var box = document.createElement('div'), games = null, selI = -1, items = [];
+    box.className = 'qdrop'; box.hidden = true; box.setAttribute('role', 'listbox');
+    sq.closest('form').appendChild(box);
+    var load = function (cb) {
+      if (games) return cb();
+      fetch('/arcade/data/games.json').then(function (r) { return r.json(); })
+        .then(function (d) { games = d; cb(); }).catch(function () { games = []; cb(); });
+    };
+    var render = function () {
+      var term = sq.value.trim().toLowerCase();
+      if (!term) { box.hidden = true; items = []; return; }
+      items = games.map(function (g) {
+        return { g: g, r: matchRank(term, g.title, [g.title, g.genre, g.engine, g.tagline].join(' ')) };
+      }).filter(function (x) { return x.r < 9; })
+        .sort(function (a, b) { return a.r - b.r || (a.g.title < b.g.title ? -1 : 1); }).slice(0, 8);
+      selI = items.length ? 0 : -1;
+      box.innerHTML = items.length ? items.map(function (x, i) {
+        return '<a role="option" href="' + '/arcade/game/' + x.g.id + '/' + '" class="qopt' + (i === selI ? ' on' : '') + '">'
+          + '<img src="' + '/arcade/media/' + x.g.id + '/cover.webp' + '" alt="" loading="lazy" onerror="this.style.visibility=&quot;hidden&quot;">'
+          + '<span><b>' + markHit(x.g.title, term) + '</b><small>' + esc(x.g.genre || '') + '</small></span></a>';
+      }).join('') : '<p class="qnone">No games match &ldquo;' + esc(term) + '&rdquo;</p>';
+      box.hidden = false;
+    };
+    sq.addEventListener('input', function () { load(render); });
+    sq.addEventListener('focus', function () { if (sq.value.trim()) load(render); });
+    sq.addEventListener('keydown', function (e) {
+      if (box.hidden || !items.length) { if (e.key === 'Escape') box.hidden = true; return; }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        selI = (selI + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length;
+        $$('.qopt', box).forEach(function (o, i) { o.classList.toggle('on', i === selI); });
+      } else if (e.key === 'Enter' && selI >= 0) {
+        e.preventDefault(); location.href = $$('.qopt', box)[selI].href;
+      } else if (e.key === 'Escape') { box.hidden = true; }
+    });
+    document.addEventListener('click', function (e) { if (!e.target.closest || !e.target.closest('form.search')) box.hidden = true; });
+  }
+
   // ---- library: search, category chips, sort
   var grid = $('#grid');
   if (grid) {
     var tiles = $$('.tile', grid), q = $('#q'), sel = $('#sort'), cat = 'all', empty = $('#empty');
+    var head = $('#games .sec-head h2'), headHTML = head ? head.innerHTML : '';
     var apply = function () {
       var term = (q && q.value || '').trim().toLowerCase(), shown = 0;
       tiles.forEach(function (t) {
-        var hit = (cat === 'all' || (' ' + t.dataset.cats + ' ').indexOf(' ' + cat + ' ') >= 0) &&
-          (!term || t.dataset.text.indexOf(term) >= 0);
+        t._rank = matchRank(term, t.dataset.title, t.dataset.text);
+        var hit = (cat === 'all' || (' ' + t.dataset.cats + ' ').indexOf(' ' + cat + ' ') >= 0) && t._rank < 9;
         t.hidden = !hit;
         if (hit) shown++;
       });
       if (empty) empty.hidden = shown > 0;
+      // while typing on the home page, the results are the page: everything above the grid folds away
+      document.body.classList.toggle('searching', !!term);
+      if (head) head.innerHTML = term ? shown + (shown === 1 ? ' game' : ' games') + ' match &ldquo;' + esc(term) + '&rdquo;' : headHTML;
       var by = sel ? sel.value : 'featured';
       var key = {
         featured: function (t) { return +t.dataset.order; },
@@ -116,8 +182,10 @@
         quality: function (t) { return -(+t.dataset.score); },
         updated: function (t) { return -(+t.dataset.updated); }
       }[by];
-      tiles.slice().sort(function (a, b) { var x = key(a), y = key(b); return x < y ? -1 : x > y ? 1 : 0; })
-        .forEach(function (t) { grid.appendChild(t); });
+      tiles.slice().sort(function (a, b) {
+        if (term && a._rank !== b._rank) return a._rank - b._rank;   // best match first, then the chosen sort
+        var x = key(a), y = key(b); return x < y ? -1 : x > y ? 1 : 0;
+      }).forEach(function (t) { grid.appendChild(t); });
     };
     $$('.chip[data-cat]').forEach(function (c) {
       c.addEventListener('click', function () {
@@ -127,7 +195,14 @@
       });
     });
     if (q) {
-      q.addEventListener('input', apply);
+      var first = true;
+      q.addEventListener('input', function () {
+        apply();
+        if (first && q.value.trim()) { first = false; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        if (!q.value.trim()) first = true;
+      });
+      q.closest('form').addEventListener('submit', function (e) { e.preventDefault(); q.blur(); });
+      q.addEventListener('keydown', function (e) { if (e.key === 'Escape') { q.value = ''; apply(); } });
       var p = new URLSearchParams(location.search).get('q');
       if (p) { q.value = p; }
     }
