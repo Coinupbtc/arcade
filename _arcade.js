@@ -5,7 +5,7 @@
    - When the game is paused, on its menu or on game over (window.__game.state), it unfolds into a big
      "◀ BACK TO ARCADE" button, so leaving is always one tap from the game's own pause/menu screens.
    - During play the folded tab needs a second tap within 3 s ("TAP AGAIN TO LEAVE"), so a stray thumb can't end a run.
-   - Goes to the arcade's game select screen: /arcade/#games on the public site, /#games on the tailnet arcade.
+   - Goes to the arcade's game select screen: /arcade/#games on the public site, /#games on the private one.
    2026-11-19: owner asked for "a way to exit a game back to arcade main game select screen, not just main menu". */
 (function () {
   'use strict';
