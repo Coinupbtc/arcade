@@ -1,0 +1,24 @@
+# --- house git sweep (2026-11-10): kept out of git; files stay on disk ---
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.cache/
+.next/
+.parcel-cache/
+.turbo/
+site-packages/
+Thumbs.db
+.DS_Store
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+id_rsa*

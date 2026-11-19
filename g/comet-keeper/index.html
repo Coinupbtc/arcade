@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a1e">
+<title>Comet Keeper</title>
+<link rel="icon" href="assets/icon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="game"><canvas id="cv"></canvas></div>
+
+<div id="hud" aria-hidden="true">
+  <div class="hl"><div id="score">0</div><div class="lbl">SCORE</div></div>
+  <div class="hc"><div id="wave">WAVE 1</div><div class="tbar"><i id="tfill"></i></div></div>
+  <div class="hr"><div id="best">BEST 0</div><button id="mute" aria-label="Mute sound" title="Mute">&#9835;</button></div>
+</div>
+
+<div id="banner"></div>
+
+<div id="title" class="panel">
+  <div class="crest"><canvas id="crest" width="120" height="120"></canvas></div>
+  <h1>COMET<br><span>KEEPER</span></h1>
+  <p class="sub">You are the moon that guards a small living world.<br>Comets come out of the dark. Knock them away.</p>
+  <button id="play" class="big">PLAY</button>
+  <p class="keys">
+    <span class="kb"><img src="prompts/touch_hand_open.png" alt=""><i>DRAG: ORBIT</i>
+      <img src="prompts/keyboard_arrows.png" alt=""><i>TURN</i>
+      <img src="prompts/keyboard_space.png" alt=""><i>PULSE</i>
+      <img src="prompts/keyboard_escape.png" alt=""><i>PAUSE</i></span>
+    <span class="tp"><img src="prompts/touch_hand_open.png" alt=""><i>DRAG ANYWHERE: ORBIT</i>
+      <img src="prompts/touch_tap.png" alt=""><i>TAP PULSE</i></span>
+    <span class="pd"><img src="prompts/xbox_stick_l.png" alt=""><i>ORBIT</i>
+      <img src="prompts/xbox_button_a.png" alt=""><i>PULSE</i>
+      <img src="prompts/xbox_button_start.png" alt=""><i>PAUSE</i></span>
+  </p>
+  <p id="bestline" class="bestline"></p>
+</div>
+
+<div id="upgrade" class="panel">
+  <h2>WAVE <span id="upwave">2</span></h2>
+  <p class="sub">Pick one. The next wave starts at once.</p>
+  <div id="cards"></div>
+</div>
+
+<div id="pause" class="panel">
+  <h2>PAUSED</h2>
+  <p class="sub">The world is holding its breath.</p>
+  <button id="resume" class="big">RESUME</button>
+  <button id="quit">QUIT TO TITLE</button>
+</div>
+
+<div id="over" class="panel">
+  <h2 id="overtitle">THE WORLD CRACKED</h2>
+  <p class="sub" id="oversub"></p>
+  <div class="stats">
+    <div><b id="oscore">0</b><span>SCORE</span></div>
+    <div><b id="obest">0</b><span>BEST</span></div>
+    <div><b id="owave">1</b><span>WAVE</span></div>
+  </div>
+  <button id="again" class="big">PLAY AGAIN</button>
+  <button id="menu">TITLE</button>
+</div>
+
+<script src="arcade-input.js"></script>
+<script src="src/const.js?v=1"></script>
+<script src="src/audio.js?v=1"></script>
+<script src="src/draw.js?v=1"></script>
+<script src="src/ui.js?v=1"></script>
+<script src="src/main.js?v=1"></script>
+</body>
+</html>

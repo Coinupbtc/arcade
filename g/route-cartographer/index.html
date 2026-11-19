@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<link rel="icon" href="data:,">
+<meta name="theme-color" content="#080b10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Route Cartographer</title>
+<style>
+  :root {
+    --st: env(safe-area-inset-top, 0px);
+    --sr: env(safe-area-inset-right, 0px);
+    --sb: env(safe-area-inset-bottom, 0px);
+    --sl: env(safe-area-inset-left, 0px);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: #080b10; color: #eaf1f8;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    touch-action: none; -webkit-user-select: none; user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #app { position: fixed; inset: 0; }
+  #world { display: block; width: 100%; height: 100%; }
+
+  #hud {
+    position: absolute; inset: 0; pointer-events: none;
+    padding: calc(var(--st) + 8px) calc(var(--sr) + 10px) calc(var(--sb) + 8px) calc(var(--sl) + 10px);
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  #topbar { display: flex; gap: 8px; align-items: flex-start; }
+  .cluster {
+    background: rgba(10,16,24,.66);
+    border: 1px solid rgba(120,150,180,.22);
+    border-radius: 12px; padding: 6px 10px;
+    backdrop-filter: blur(6px);
+  }
+  .label { font-size: 9px; letter-spacing: .16em; color: #8fa6bd; font-weight: 700; }
+  .big { font-size: clamp(20px, 6vw, 30px); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.05; }
+  .grow { flex: 1; min-width: 90px; }
+  .barwrap { height: 6px; background: #1c2733; border-radius: 4px; overflow: hidden; margin: 7px 0 5px; }
+  #bar { height: 100%; width: 0%; background: linear-gradient(90deg, #39d98a, #e8c24a, #ff6b5e); }
+  .sub { display: flex; justify-content: space-between; gap: 8px; font-size: 10px; color: #9fb3c8; font-variant-numeric: tabular-nums; }
+  #minimap {
+    width: clamp(78px, 23vw, 128px); height: clamp(58px, 17vw, 96px);
+    border-radius: 10px; border: 1px solid rgba(120,150,180,.28);
+    background: rgba(8,12,18,.72); flex: none;
+  }
+  #warn {
+    position: absolute; left: 50%; top: calc(var(--st) + 74px);
+    transform: translateX(-50%); font-size: 13px; font-weight: 800;
+    letter-spacing: .1em; color: #ff6a58; opacity: 0; transition: opacity .15s;
+    text-shadow: 0 2px 8px rgba(0,0,0,.9);
+  }
+  #toast {
+    position: absolute; left: 50%; top: 24%; transform: translate(-50%, -50%);
+    font-size: clamp(22px, 7vw, 34px); font-weight: 800; letter-spacing: .12em;
+    color: #fff; text-shadow: 0 3px 18px rgba(0,0,0,.85); white-space: nowrap;
+  }
+  #controls { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
+  .pad { display: flex; gap: 8px; }
+  .btn {
+    pointer-events: auto; min-width: 68px; min-height: 68px;
+    border-radius: 16px; border: 1px solid rgba(150,180,210,.3);
+    background: rgba(18,26,36,.78); color: #eaf1f8;
+    font-size: 15px; font-weight: 800; letter-spacing: .04em;
+    touch-action: none; -webkit-user-select: none; user-select: none;
+  }
+  .btn:active { background: rgba(70,100,130,.9); }
+  .gas { background: rgba(24,104,68,.85); border-color: rgba(80,220,150,.55); }
+  .gas:active { background: rgba(36,150,98,.95); }
+  .brake { background: rgba(112,38,34,.85); border-color: rgba(255,120,100,.5); }
+  .brake:active { background: rgba(150,54,48,.95); }
+
+  #pausebtn, #mapbtn {
+    pointer-events: auto; position: absolute; right: calc(var(--sr) + 10px);
+    width: 44px; height: 44px; border-radius: 12px;
+    border: 1px solid rgba(120,150,180,.3); background: rgba(12,18,26,.8);
+    color: #dce8f5; font-size: 16px; font-weight: 700;
+  }
+  #pausebtn { top: calc(var(--st) + 8px + clamp(58px, 17vw, 96px) + 8px); }
+  #mapbtn { top: calc(var(--st) + 8px + clamp(58px, 17vw, 96px) + 58px); }
+
+  .screen {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px; text-align: center;
+    padding: calc(var(--st) + 18px) 20px calc(var(--sb) + 18px);
+    background:
+      radial-gradient(ellipse at 50% 32%, rgba(24,44,66,.94), rgba(6,9,14,.98) 70%);
+    pointer-events: auto; overflow-y: auto;
+  }
+  .hidden { display: none !important; }
+  .title { font-size: clamp(22px, 7vw, 40px); font-weight: 800; letter-spacing: .16em; margin: 0; }
+  .lede { margin: 0; font-size: 14px; color: #a9bed2; max-width: 34ch; line-height: 1.5; }
+  .card {
+    border: 1px solid rgba(120,150,180,.25); border-radius: 12px;
+    padding: 10px 16px; background: rgba(12,20,30,.6);
+    font-size: 13px; color: #cfe0ef; font-variant-numeric: tabular-nums;
+  }
+  .cta {
+    margin-top: 6px; min-width: 200px; min-height: 56px; padding: 0 28px;
+    border-radius: 14px; border: 1px solid rgba(90,230,160,.5);
+    background: linear-gradient(180deg, #2fb573, #1d8b56);
+    color: #04120c; font-size: 18px; font-weight: 900; letter-spacing: .1em;
+  }
+  .cta:active { background: linear-gradient(180deg, #3ccb85, #229a61); }
+  .ghost {
+    min-width: 150px; min-height: 48px; padding: 0 20px; border-radius: 12px;
+    border: 1px solid rgba(140,170,200,.35); background: rgba(14,22,32,.75);
+    color: #dfeaf5; font-size: 14px; font-weight: 700;
+  }
+  .hint { font-size: 11px; color: #7f94a8; margin: 0; line-height: 1.6; }
+  .hint.tiny { font-size: 10px; color: #66798c; max-width: 36ch; }
+  .levels { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .chip {
+    min-height: 44px; padding: 0 16px; border-radius: 22px;
+    border: 1px solid rgba(140,170,200,.35); background: rgba(14,22,32,.75);
+    color: #cfdcea; font-size: 13px; font-weight: 700;
+  }
+  .chip.on {
+    border-color: rgba(90,230,160,.75);
+    background: rgba(30,110,76,.85); color: #eafff5;
+  }
+  #rTitle { font-size: clamp(20px, 6vw, 32px); font-weight: 800; letter-spacing: .14em; margin: 0; }
+  #rTime { font-size: clamp(34px, 11vw, 56px); font-weight: 800; font-variant-numeric: tabular-nums; }
+  #rGrade { font-size: clamp(16px, 5vw, 22px); font-weight: 800; letter-spacing: .12em; color: #f5c846; }
+  #rBest { font-size: 13px; color: #9fb3c8; font-variant-numeric: tabular-nums; }
+
+  /* landscape phones: keep the chrome thin so the world stays >60% of screen */
+  @media (max-height: 480px) {
+    .big { font-size: 20px; }
+    .btn { min-width: 58px; min-height: 58px; font-size: 13px; }
+    #minimap { width: 84px; height: 63px; }
+    #pausebtn { top: calc(var(--st) + 8px + 63px + 8px); }
+    #mapbtn { top: calc(var(--st) + 8px + 63px + 56px); }
+    #toast { top: 30%; }
+    .screen { gap: 8px; }
+    .cta { min-height: 48px; }
+    .title { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="world"></canvas>
+
+  <div id="hud">
+    <div id="topbar">
+      <div class="cluster">
+        <div class="label">TIME</div>
+        <div id="time" class="big">0.00</div>
+      </div>
+      <div class="cluster grow">
+        <div class="sub"><span id="cpcount">CP 1/5</span><span id="nextcp">0 left</span></div>
+        <div class="barwrap"><div id="bar"></div></div>
+        <div class="sub"><span id="speed">0 mph</span><span id="parline"></span></div>
+      </div>
+      <canvas id="minimap"></canvas>
+    </div>
+    <div id="warn"></div>
+    <div id="toast" class="hidden"></div>
+    <div id="controls">
+      <div class="pad">
+        <button class="btn" data-act="left" aria-label="Steer left">◀</button>
+        <button class="btn" data-act="right" aria-label="Steer right">▶</button>
+      </div>
+      <div class="pad">
+        <button class="btn brake" data-act="brake" aria-label="Brake">BRAKE</button>
+        <button class="btn gas" data-act="gas" aria-label="Accelerate">GAS</button>
+      </div>
+    </div>
+  </div>
+
+  <button id="pausebtn" aria-label="Pause">❚❚</button>
+  <button id="mapbtn" aria-label="Whole map">MAP</button>
+
+  <div id="menu" class="screen">
+    <h1 class="title">ROUTE CARTOGRAPHER</h1>
+    <p class="lede">Your own route, drawn on a printed map, driven as a game.</p>
+    <div id="levels" class="levels"></div>
+    <div class="card"><div id="menuSub">Route</div><div id="menuMeta">loading…</div></div>
+    <button id="driveBtn" class="cta">DRIVE</button>
+    <p class="hint">Follow the road. Take the yellow rings in order. Off the road for 9 seconds ends the run.</p>
+    <p class="hint">Keys: ↑ gas · ↓ brake · ← → steer · P pause · R restart · M whole map</p>
+    <p class="hint">Phone: hold GAS, steer with ◀ ▶</p>
+    <p class="hint tiny">Demo map is a test street grid. Your own map: draw on a printed map, photograph it, run README tools.</p>
+  </div>
+
+  <div id="pause" class="screen hidden">
+    <h1 class="title">PAUSED</h1>
+    <button id="resumeBtn" class="cta">RESUME</button>
+    <button id="restartBtn" class="ghost">RESTART</button>
+  </div>
+
+  <div id="result" class="screen hidden">
+    <h1 id="rTitle">FINISHED</h1>
+    <div id="rTime" class="big">0.00s</div>
+    <div id="rGrade">GRADE A</div>
+    <div id="rBest">BEST 0.00s</div>
+    <button id="againBtn" class="cta">DRIVE AGAIN</button>
+    <button id="menuBtn2" class="ghost">MENU</button>
+  </div>
+</div>
+
+<script type="module" src="src/game.js"></script>
+</body>
+</html>

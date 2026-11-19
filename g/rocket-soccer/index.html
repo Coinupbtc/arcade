@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#05070f">
+<title>ROCKET SOCCER</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --cy:#4de2ff; --hot:#ff2d78; --gold:#ffd166; --bg:#05070f;
+    --safe-t:env(safe-area-inset-top); --safe-b:env(safe-area-inset-bottom);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;color:#eaf4ff;
+    -webkit-user-select:none;user-select:none;touch-action:none}
+  #c{display:block;width:100%;height:100%}
+
+  /* ── scoreboard ── */
+  #board{position:fixed;top:calc(8px + var(--safe-t));left:50%;transform:translateX(-50%);
+    display:flex;align-items:center;gap:10px;padding:7px 14px;border-radius:12px;
+    background:rgba(6,12,24,.72);border:1px solid rgba(77,226,255,.28);
+    backdrop-filter:blur(10px);font-size:13px;letter-spacing:.08em;z-index:10}
+  #board .side{display:flex;align-items:center;gap:7px}
+  #board .dot{width:8px;height:8px;border-radius:50%}
+  #board b{font-size:19px;font-weight:700}
+  #you{color:var(--cy)} #ai{color:var(--hot)}
+  #clock{color:#9fb6d4;font-size:13px;min-width:44px;text-align:center}
+
+  /* ── boost gauge: a ring around the BOOST button (reference-accurate, thumb-friendly) ── */
+
+
+
+  /* ── joystick ── */
+  #joy{position:fixed;left:calc(16px + env(safe-area-inset-left));bottom:calc(24px + var(--safe-b));
+    width:min(34vw,150px);aspect-ratio:1;border-radius:50%;
+    background:radial-gradient(circle,rgba(77,226,255,.10),rgba(6,12,24,.55) 70%);
+    border:2px solid rgba(77,226,255,.30);z-index:11;touch-action:none}
+  #knob{position:absolute;left:50%;top:50%;width:42%;aspect-ratio:1;margin:-21% 0 0 -21%;
+    border-radius:50%;background:radial-gradient(circle at 35% 30%,#9ff0ff,#2f9fd0 70%);
+    box-shadow:0 0 18px rgba(77,226,255,.55);transition:transform .04s linear}
+
+  /* ── action buttons ── */
+  .act{position:fixed;right:calc(16px + env(safe-area-inset-right));z-index:11;
+    border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;letter-spacing:.1em;border:2px solid;touch-action:none;
+    min-width:64px;min-height:64px;overflow:visible}
+  #boostring{position:absolute;inset:-7px;width:calc(100% + 14px);height:calc(100% + 14px);
+    transform:rotate(-90deg);pointer-events:none}
+  #boostring circle{fill:none;stroke-width:7;stroke-linecap:round}
+  #boostring .ring-bg{stroke:rgba(255,255,255,.10)}
+  #boostring .ring-fg{stroke:#4de2ff;transition:stroke-dashoffset .05s linear, stroke .2s}
+  #boostnum{position:relative;font-size:15px;font-weight:700;color:#eaf4ff;
+    text-shadow:0 0 10px rgba(77,226,255,.8)}
+  #btnjump{bottom:calc(152px + var(--safe-b));width:min(19vw,88px);height:min(19vw,88px);
+    color:var(--gold);border-color:rgba(255,209,102,.75);
+    background:radial-gradient(circle,rgba(255,209,102,.22),rgba(6,12,24,.6) 72%)}
+  #btnboost{bottom:calc(22px + var(--safe-b));width:min(23vw,104px);height:min(23vw,104px);
+    color:var(--cy);border-color:rgba(77,226,255,.35);
+    background:radial-gradient(circle,rgba(77,226,255,.16),rgba(6,12,24,.7) 72%)}
+  .act:active{filter:brightness(1.5)}
+
+  /* ── small buttons ── */
+  #btncam{position:fixed;top:calc(8px + var(--safe-t));right:calc(12px + env(safe-area-inset-right));
+    z-index:12;padding:9px 12px;border-radius:9px;font-size:10px;letter-spacing:.12em;
+    background:rgba(6,12,24,.7);border:1px solid rgba(77,226,255,.3);color:#9fd8ff;min-height:44px}
+
+  /* ── speed ── */
+  #spdwrap{position:fixed;right:calc(14px + env(safe-area-inset-right));
+    top:calc(58px + var(--safe-t));text-align:right;z-index:10;opacity:.75}
+  #spd{font-size:20px;font-weight:700;color:var(--cy)}
+  #spdwrap small{font-size:9px;letter-spacing:.14em;color:#7f97b5}
+
+  #btnpause{position:fixed;top:calc(10px + var(--safe-t));left:calc(10px + env(safe-area-inset-left));
+    z-index:22;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.25);
+    background:rgba(6,12,24,.6);color:#cfe6ff;font-size:13px;font-weight:700;letter-spacing:.05em;
+    display:none;align-items:center;justify-content:center;touch-action:manipulation}
+  body.playing #btnpause{display:flex}
+  #pausecard{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    flex-direction:column;gap:16px;background:rgba(3,6,14,.86);z-index:30;backdrop-filter:blur(3px)}
+  #pausecard.show{display:flex}
+  #pausecard h2{font-size:22px;letter-spacing:.22em;color:#eaf4ff;margin:0}
+  #pausecard button{padding:14px 30px;border-radius:999px;border:2px solid var(--cy);
+    background:rgba(77,226,255,.16);color:#eaf4ff;font-size:14px;font-weight:700;letter-spacing:.12em;
+    min-height:48px;min-width:160px}
+  #countdown{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:clamp(70px,22vw,160px);font-weight:700;color:#fff;z-index:20;pointer-events:none;
+    text-shadow:0 0 40px rgba(77,226,255,.9),0 0 90px rgba(77,226,255,.5)}
+  #countdown.hide{display:none}
+
+  /* off-screen ball marker */
+  #ballmark{position:fixed;left:0;top:0;width:30px;height:30px;margin:-15px 0 0 -15px;z-index:9;
+    border-radius:50%;border:2px solid var(--cy);background:rgba(77,226,255,.25);
+    box-shadow:0 0 14px rgba(77,226,255,.7);pointer-events:none;transition:opacity .15s}
+  #ballmark.hide{opacity:0}
+  #ballmark::after{content:'';position:absolute;inset:9px;border-radius:50%;background:var(--cy)}
+
+  /* ── overlays ── */
+  .overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:16px;z-index:30;padding:24px;text-align:center;
+    background:radial-gradient(circle at 50% 40%,rgba(6,14,30,.86),rgba(3,5,12,.97))}
+  .overlay.hide{display:none}
+  h1{margin:0;font-size:clamp(26px,7vw,46px);letter-spacing:.14em;
+    background:linear-gradient(90deg,var(--cy),var(--gold));-webkit-background-clip:text;
+    background-clip:text;color:transparent}
+  .hint{font-size:11px;line-height:1.5;color:#8fb4d8;margin:6px 0 2px;max-width:30ch}
+  .howto{font-size:12px;line-height:1.9;color:#a8c0dc;max-width:340px}
+  .howto b{color:#eaf4ff}
+  button.go{margin-top:8px;padding:16px 44px;border-radius:12px;font-size:15px;font-weight:700;
+    letter-spacing:.16em;color:#04121c;background:linear-gradient(90deg,var(--cy),#a5f3ff);
+    border:0;cursor:pointer;min-height:52px}
+  #btnrestart{position:fixed;bottom:calc(20px + var(--safe-b));left:50%;transform:translateX(-50%);
+    z-index:31;padding:13px 30px;border-radius:10px;font-size:12px;letter-spacing:.14em;
+    background:rgba(77,226,255,.14);border:1px solid var(--cy);color:var(--cy);min-height:48px}
+  #btnrestart.hide{display:none}
+  #overscore{font-size:34px;font-weight:700;letter-spacing:.1em}
+  #overtitle{font-size:clamp(28px,8vw,54px);letter-spacing:.16em;font-weight:700}
+
+  /* landscape: move HUD out of the play area */
+  @media (orientation:landscape) and (min-aspect-ratio:4/3){
+    #joy{width:min(22vh,130px);bottom:calc(16px + var(--safe-b))}
+    #btnjump{width:min(13vh,80px);height:min(13vh,80px);bottom:calc(128px + var(--safe-b))}
+    #btnboost{width:min(16vh,96px);height:min(16vh,96px);bottom:calc(14px + var(--safe-b))}
+    #boostwrap{width:min(16vh,96px);height:min(16vh,96px);bottom:calc(14px + var(--safe-b))}
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<button id="btnpause" aria-label="Pause">II</button>
+<div id="countdown" class="hide">3</div>
+<div id="pausecard">
+  <h2>PAUSED</h2>
+  <button id="btnresume">RESUME</button>
+  <button id="btnquit">RESTART</button>
+</div>
+<div id="board">
+  <div class="side"><span class="dot" style="background:#4de2ff"></span><b id="you">0</b></div>
+  <span id="clock">2:30</span>
+  <div class="side"><b id="ai">0</b><span class="dot" style="background:#ff2d78"></span></div>
+</div>
+
+<div id="ballmark" class="hide"></div>
+<div id="spdwrap"><div id="spd">0</div><small>KM/H</small></div>
+<button id="btncam">BALL CAM</button>
+
+
+
+<div id="joy"><div id="knob"></div></div>
+<div class="act" id="btnjump">JUMP</div>
+<div class="act" id="btnboost">
+  <svg id="boostring" viewBox="0 0 100 100">
+    <circle class="ring-bg" cx="50" cy="50" r="44"></circle>
+    <circle class="ring-fg" id="boostarc" cx="50" cy="50" r="44"></circle>
+  </svg>
+  <span id="boostnum">100</span>
+</div>
+
+<div class="overlay" id="title">
+  <h1>ROCKET SOCCER</h1>
+  <div class="howto">
+    <b>Left thumb</b> — drag to drive and steer<br>
+    <b>JUMP</b> — tap twice for a flip<br>
+    <b>BOOST</b> — hold to burn, refills on pads<br>
+    Put the ball in the <b style="color:#ff2d78">pink</b> goal. Defend the <b style="color:#4de2ff">blue</b>.
+  </div>
+  <button class="go" id="btnstart">KICK OFF</button>
+</div>
+
+<div class="overlay hide" id="over">
+  <div id="overtitle">YOU WIN</div>
+  <div id="overscore">0 — 0</div>
+</div>
+<button id="btnrestart" class="hide">PLAY AGAIN</button>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./lib/three.module.js",
+    "three/core": "./lib/three.core.js",
+    "./three.core.js": "./lib/three.core.js"
+  }
+}
+</script>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

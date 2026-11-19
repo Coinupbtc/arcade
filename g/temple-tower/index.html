@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a1220">
+<title>Temple Tower</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="game"></canvas>
+
+  <div id="hud">
+    <div id="height-wrap">
+      <div id="height">0<span class="unit">m</span></div>
+      <div id="best">best 0 m</div>
+    </div>
+    <div id="tier-badge">STONE</div>
+    <div id="tier-next">weight varies at 3 m</div>
+    <div id="lives" class="lives"></div>
+  </div>
+
+  <div id="combo" class="hidden"></div>
+  <div id="toast" class="hidden"></div>
+
+  <div id="menu" class="screen">
+    <h1>TEMPLE TOWER</h1>
+    <p class="tag">Drop the stone. Keep it standing.</p>
+    <button id="play-btn" class="big-btn">BUILD</button>
+    <p class="hint">tap to start</p>
+    <p class="best-line">best <span id="menu-best">0</span> m</p>
+  </div>
+
+  <div id="over" class="screen hidden">
+    <h2 id="over-title">THE TOWER FELL</h2>
+    <div class="score-label" id="final-label">HEIGHT</div>
+    <div class="score-big"><span id="final-height">0</span><span class="unit">m</span></div>
+    <p id="over-best" class="best-line"></p>
+    <button id="again-btn" class="big-btn">BUILD AGAIN</button>
+  </div>
+
+  <div id="tap-hint" class="hidden">TAP TO DROP</div>
+</div>
+
+<script src="lib/matter/matter.js"></script>
+<script src="src/game.js?v=15"></script>
+</body>
+</html>

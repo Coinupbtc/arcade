@@ -9,6 +9,40 @@
   };
   var coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
 
+  // ---- motion covers (cluster B loops). Off for reduced motion, Save-Data and 2G.
+  var motionOK = function () {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+    var c = navigator.connection || {};
+    if (c.saveData) return false;
+    if (/(^|-)2g$/.test(c.effectiveType || '')) return false;
+    return true;
+  };
+  var codecProbe = document.createElement('video');
+  var pickSrc = function (el) {
+    var webm = el.getAttribute('data-webm'), mp4 = el.getAttribute('data-mp4');
+    if (webm && codecProbe.canPlayType('video/webm; codecs="vp9"')) return webm;
+    if (mp4 && codecProbe.canPlayType('video/mp4; codecs="avc1.42E01E"')) return mp4;
+    if (mp4 && codecProbe.canPlayType('video/mp4')) return mp4;
+    return null;
+  };
+  var playMotion = function (el) {
+    if (!el || !motionOK()) return;
+    if (!el.getAttribute('src')) {
+      var s = pickSrc(el);
+      if (!s) return;
+      el.src = s;
+    }
+    var p = el.play();
+    el.classList.add('on');
+    if (p && p.catch) p.catch(function () { el.classList.remove('on'); });
+  };
+  var stopMotion = function (el) {
+    if (!el) return;
+    el.pause();
+    el.classList.remove('on');
+  };
+
+
   function remember(id) {
     var r = store.get('arcade.recent', []).filter(function (x) { return x !== id; });
     r.unshift(id);
@@ -27,6 +61,11 @@
       var i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
       cur = i;
       dots.forEach(function (d, j) { if (j === i) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); });
+      slides.forEach(function (s, j) {
+        var mv = $('.mv', s);
+        if (!mv) return;
+        if (j === i) playMotion(mv); else stopMotion(mv);
+      });
     };
     dots.forEach(function (d, i) { d.addEventListener('click', function () { go(i); restart(); }); });
     track.addEventListener('scroll', function () { window.requestAnimationFrame(mark); }, { passive: true });
@@ -36,17 +75,24 @@
       timer = setInterval(function () { if (!document.hidden) go(cur + 1); }, 7000);
     };
     track.addEventListener('pointerdown', function () { clearInterval(timer); });
+    mark();
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) slides.forEach(function (s) { stopMotion($('.mv', s)); });
+      else mark();
+    });
     restart();
   }
 
   // ---- hover previews (desktop only; loaded on first hover)
   if (!coarse) {
     $$('.tile').forEach(function (t) {
-      var pv = $('.pv', t);
-      if (!pv) return;
+      var pv = $('.pv', t), mv = $('.mv', t);
+      if (!pv && !mv) return;
       t.addEventListener('mouseenter', function () {
-        if (!pv.src) { pv.onload = function () { pv.classList.add('ready'); }; pv.src = pv.getAttribute('data-src'); }
+        if (pv && !pv.src) { pv.onload = function () { pv.classList.add('ready'); }; pv.src = pv.getAttribute('data-src'); }
+        playMotion(mv);
       });
+      t.addEventListener('mouseleave', function () { stopMotion(mv); });
     });
   }
 

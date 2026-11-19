@@ -1,0 +1,47 @@
+{
+  "id": "comet-keeper",
+  "title": "Comet Keeper",
+  "tagline": "You are the moon that guards a small living world. Knock the comets away.",
+  "description": "One thumb drags anywhere to swing a silver moon around a fixed orbit. Comets stream in from the dark: a comet that touches the moon is deflected, and a deflected comet that hits another comet destroys both for a chain. A comet that reaches the world cracks it, and three cracks end the run. Four short waves of forty-five seconds, then endless, with new comet types each wave and one upgrade of three between waves. PULSE is a ring blast that pushes nearby comets away and recharges in twelve seconds. Best score is saved.",
+  "genre": "Arcade survival",
+  "tags": ["arcade", "one-thumb", "survival", "space"],
+  "orientation": "any",
+  "realtime": true,
+  "session": "3–4 min",
+  "controls": {
+    "desktop": [
+      ["Drag the mouse", "Swing the moon to the cursor's angle around the world"],
+      ["Left / Right (A / D)", "Turn the moon"],
+      ["Space / Enter", "PULSE"],
+      ["Esc / P", "Pause"],
+      ["Arrow keys + Enter", "Move and press menu buttons"]
+    ],
+    "touch": [
+      ["Drag anywhere", "Swing the moon to your thumb's angle around the world"],
+      ["Tap PULSE", "Ring blast that pushes nearby comets outward"],
+      ["Tap ⏸", "Pause"],
+      ["Tap", "Start, pick an upgrade, play again"]
+    ],
+    "gamepad": [
+      ["Left stick / D-pad", "Point the stick where the moon should go"],
+      ["A", "PULSE"],
+      ["Start", "Pause, or start from the title"],
+      ["Stick + A", "Move and press menu buttons"]
+    ]
+  },
+  "qa": {
+    "start": { "key": "Enter", "click": [0.5, 0.62], "tap": { "portrait": [0.5, 0.62], "landscape": [0.5, 0.62] }, "pad": "A" },
+    "pause": { "key": "Escape", "tap": { "portrait": [0.94, 0.04], "landscape": [0.97, 0.08] }, "resume_tap": { "portrait": [0.5, 0.55], "landscape": [0.5, 0.55] } },
+    "keyboard": [
+      { "name": "turn right", "steps": [{ "do": "key", "key": "ArrowRight", "ms": 700 }], "expect": ["player.x up 5"] },
+      { "name": "turn left", "steps": [{ "do": "key", "key": "ArrowLeft", "ms": 700 }], "expect": ["player.x down 5"] }
+    ],
+    "touch": [
+      { "name": "drag right", "steps": [{ "do": "drag", "from": [0.5, 0.5], "to": [0.85, 0.5], "ms": 700 }], "expect": ["player.x up 5"] }
+    ],
+    "gamepad": [
+      { "name": "stick right", "steps": [{ "do": "pad", "axes": [1, 0], "ms": 700 }], "expect": ["player.x up 5"] }
+    ]
+  },
+  "na": {}
+}

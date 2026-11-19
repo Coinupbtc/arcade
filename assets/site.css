@@ -58,6 +58,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .dots button[aria-current]::before{width:22px;background:var(--accent)}
 @media (max-width:720px){.slide{aspect-ratio:4/5;min-height:0}.slide::after{background:linear-gradient(0deg,rgba(8,9,12,.97) 8%,rgba(8,9,12,.55) 52%,rgba(8,9,12,.05) 80%)}.slide .copy{padding:20px}}
 
+/* motion covers — short loops rendered on cluster B from each game's own hero frame */
+.slide .mv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;opacity:0;transition:opacity .8s ease}
+.slide .mv.on{opacity:1}
+.art .mv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s ease}
+.art .mv.on{opacity:1}
+.mvbadge{position:absolute;right:12px;top:12px;z-index:2;font:600 10px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.7);background:rgba(8,9,12,.55);border:1px solid rgba(255,255,255,.16);padding:5px 8px;border-radius:999px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+@media (prefers-reduced-motion:reduce){.slide .mv,.art .mv{display:none}}
+@media (max-width:720px){.mvbadge{right:8px;top:8px;font-size:9px;padding:4px 7px}}
+
 /* sections */
 .sec{padding-top:30px;padding-bottom:6px}
 .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}

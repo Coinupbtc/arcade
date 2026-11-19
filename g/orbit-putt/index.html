@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#04070f">
+<title>Orbit Putt</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%2304070f'/%3E%3Ccircle cx='26' cy='26' r='9' fill='%235fe3d0'/%3E%3Ccircle cx='44' cy='42' r='5' fill='%23eaf2ff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body class="portrait">
+<canvas id="game"></canvas>
+
+<div id="hud" aria-live="polite">
+  <div class="hl">
+    <div id="hHole">HOLE 1/6</div>
+    <div id="hName">FIRST LIGHT</div>
+    <div class="sub"><span id="hPar">PAR 2</span><span class="sep">·</span><span id="hTotal" class="vs">E</span></div>
+  </div>
+  <div class="hc">
+    <div id="hStrokes">0</div>
+    <div class="lbl">STROKES</div>
+  </div>
+</div>
+
+<button id="mute" aria-label="Mute">🔊</button>
+<button id="reset">RESET</button>
+<div id="hint" aria-hidden="true"></div>
+
+<div id="title" class="panel">
+  <div class="mark"><span class="o">ORBIT</span><span class="p">PUTT</span></div>
+  <p class="tag">Six holes. One wormhole each. Every planet bends the ball.</p>
+  <button id="play" class="big">PLAY</button>
+  <button id="howbtn">HOW TO PLAY</button>
+  <p class="best" id="titleBest"></p>
+</div>
+
+<div id="how" class="panel">
+  <h2>HOW TO PLAY</h2>
+  <div class="howrow"><b>1</b><span>Drag back from the ball, then let go. Longer drag = more power.</span></div>
+  <div class="howrow"><b>2</b><span>Planets pull the ball inside their faint ring. Aim away and let gravity curve it in.</span></div>
+  <div class="howrow"><b>3</b><span>The cup only holds a slow ball. Too fast and it lips out.</span></div>
+  <div class="howrow"><b>4</b><span>Out of the field is +1. A black hole is +2. Par is the score to beat.</span></div>
+  <div class="howrow"><b>5</b><span>Keys: arrows aim, hold SPACE, release. Pad: stick aims, hold A. P pauses.</span></div>
+  <button id="howback">BACK</button>
+</div>
+
+<div id="pause" class="panel">
+  <h2>PAUSED</h2>
+  <p class="tag">The tab hides, the round waits.</p>
+  <button id="resume" class="big">RESUME</button>
+  <button id="quit">QUIT TO TITLE</button>
+</div>
+
+<div id="card" class="panel">
+  <div id="cardHole">HOLE 1 · FIRST LIGHT</div>
+  <div id="cardScore">2 STROKES · PAR 2</div>
+  <div id="cardStars">★★☆</div>
+  <div id="cardVs" class="vsline">ON PAR</div>
+  <div id="cardBest" class="best"></div>
+  <button id="cardNext" class="big">NEXT HOLE</button>
+</div>
+
+<div id="over" class="panel">
+  <h2>ROUND COMPLETE</h2>
+  <div class="bigscore"><span id="overScore">0</span><small>STROKES</small></div>
+  <div id="overPar">PAR 17</div>
+  <div id="overStars">☆☆☆</div>
+  <div id="overRows" class="rows"></div>
+  <div id="overBest" class="best"></div>
+  <div id="overNew" class="newbest">NEW BEST ROUND</div>
+  <button id="again" class="big">PLAY AGAIN</button>
+  <button id="totitle">TITLE</button>
+</div>
+
+<script src="arcade-input.js"></script>
+<script src="src/constants.js?v=1"></script>
+<script src="src/physics.js?v=1"></script>
+<script src="src/render.js?v=1"></script>
+<script src="src/audio.js?v=1"></script>
+<script src="src/game.js?v=1"></script>
+</body>
+</html>

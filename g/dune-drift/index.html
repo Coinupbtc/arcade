@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a0f22">
+<title>Dune Drift — canyon relay</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="hud">
+  <div id="hud-tl">
+    <div id="pos"><b id="posn">4</b><i id="poss">th</i></div>
+    <div id="lapbox"><em>LAP</em> <b id="lapn">1</b><span>/3</span></div>
+  </div>
+
+  <div id="hud-bc">
+    <div id="spd"><b id="speed">0</b><i>km/h</i></div>
+    <div id="heat"><i id="heatfill"></i><em id="heatlabel">HEAT</em></div>
+    <div id="warn">ENGINE CUT</div>
+  </div>
+
+  <div id="stickring"><span></span></div>
+  <button id="mute" aria-label="Sound on or off">SOUND</button>
+</div>
+
+<div id="count"></div>
+<div id="hint"></div>
+<div id="flash"></div>
+<div id="cutflash"></div>
+
+<div id="boot" class="screen on">
+  <div class="boot-inner">
+    <h1 class="title small">DUNE<span>DRIFT</span></h1>
+    <div class="bar"><i id="bootbar"></i></div>
+    <p id="bootmsg">loading the canyon…</p>
+  </div>
+</div>
+
+<div id="menu" class="screen">
+  <div class="menu-wrap">
+    <div class="eyebrow">CANYON RELAY &middot; 3 LAPS &middot; 3 RIVALS</div>
+    <h1 class="title">DUNE<span>DRIFT</span></h1>
+    <p class="tag">Skim the sunset canyon on one cushion of air.<br>Beat three rivals to the relay station.</p>
+    <button id="playbtn" class="big">RACE</button>
+    <div id="menucontrols" class="controls"></div>
+    <div id="menumeta" class="meta"></div>
+  </div>
+</div>
+
+<div id="pausescreen" class="screen">
+  <div class="panel-wrap">
+    <h2>PAUSED</h2>
+    <div id="pausecontrols" class="controls"></div>
+    <button id="resumebtn" class="big">RESUME</button>
+    <button id="restartbtn" class="ghost">RESTART RACE</button>
+    <button id="quitbtn" class="ghost">TITLE</button>
+  </div>
+</div>
+
+<div id="over" class="screen">
+  <div class="panel-wrap">
+    <div class="eyebrow" id="overeyebrow">RACE OVER</div>
+    <h2 id="overplace" class="place">2nd</h2>
+    <div class="stats">
+      <div><label>TIME</label><b id="overtime">0:00.00</b></div>
+      <div><label>BEST LAP</label><b id="overlap">0:00.00</b></div>
+      <div><label>MEDAL</label><b id="overmedal">—</b></div>
+    </div>
+    <div id="overbest" class="best"></div>
+    <button id="againbtn" class="big">PLAY AGAIN</button>
+    <button id="titlebtn" class="ghost">TITLE</button>
+  </div>
+</div>
+
+<script src="lib/howler.min.js"></script>
+<script src="arcade-input.js"></script>
+<script type="importmap">{ "imports": { "three": "./lib/three.module.js" } }</script>
+<script type="module" src="./src/main.js?v=1"></script>
+</body>
+</html>

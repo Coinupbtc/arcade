@@ -1,0 +1,8 @@
+[
+  {"name": "HOME", "px": [120, 1040], "snap": false},
+  {"name": "DEPOT", "px": [420, 800], "snap": false},
+  {"name": "MAIN ST", "px": [150, 268], "snap": false},
+  {"name": "OAK AVE", "px": [700, 430], "snap": false},
+  {"name": "I-70", "px": [1180, 520], "snap": false},
+  {"name": "RIVER RD", "px": [860, 700], "snap": false}
+]

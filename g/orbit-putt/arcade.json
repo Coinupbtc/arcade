@@ -1,0 +1,42 @@
+{
+  "id": "orbit-putt",
+  "title": "Orbit Putt",
+  "tagline": "Six holes in deep space. Every planet bends the ball.",
+  "description": "You are a tiny astronaut golfer on six wormhole greens. Drag back from the ball and let go to putt. Planets pull the ball inside their faint influence ring, so the winning line usually starts pointing away from the cup and bends in. The wormhole only holds a slow ball: too fast and it lips out. Out of the field costs a stroke, a black hole costs two. Six holes, par 2 to 4, about five minutes a round, with a per-hole best and a best round saved.",
+  "genre": "Physics mini-golf",
+  "tags": ["physics", "golf", "space", "puzzle", "precision"],
+  "orientation": "any",
+  "realtime": true,
+  "session": "3–6 min",
+  "controls": {
+    "desktop": [
+      ["Drag from the ball", "Pull back and release to putt (drag length = power)"],
+      ["Arrows / W A S D", "Aim"],
+      ["Hold Space / Enter", "Charge power, release to putt"],
+      ["Esc / P", "Pause"],
+      ["Enter / Space", "Start, next hole, play again"]
+    ],
+    "touch": [
+      ["Drag back from the ball", "Aim and power in one gesture, release to putt"],
+      ["Tap and hold PUTT", "Charge power with the thumb button"],
+      ["Tap RESET", "Re-putt from the last resting spot (+1 stroke)"],
+      ["Tap ⏸", "Pause"],
+      ["Tap", "Start, next hole, play again"]
+    ],
+    "gamepad": [
+      ["Left stick / D-pad", "Aim"],
+      ["Hold A", "Charge power, release to putt"],
+      ["Start", "Pause"]
+    ]
+  },
+  "qa": {
+    "start": { "key": "Enter", "pad": "A" },
+    "pause": { "key": "Escape" },
+    "keyboard": [
+      { "name": "aim right", "steps": [{ "do": "key", "key": "ArrowRight", "ms": 200 }], "expect": ["aim.x up 0.1"] }
+    ],
+    "na": {
+      "note": "The ball only moves on release, so movement probes must drag and release. The phone proof drives the real drag pad (#aimstick) and reads window.__game.player during the pull."
+    }
+  }
+}

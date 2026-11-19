@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#05060c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>SIGNAL</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  :root { --neon: #4de2ff; --hot: #ff3366; --gold: #ffd166; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; overflow:hidden; background:#05060c; }
+  body {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    color:#cfefff; touch-action:none; user-select:none; -webkit-user-select:none;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  #app { position:fixed; inset:0; }
+  canvas { display:block; width:100%; height:100%; }
+
+  /* ── HUD ─────────────────────────────────────────────── */
+  #hud { position:fixed; inset:0; pointer-events:none; z-index:10; }
+  .bar { position:absolute; letter-spacing:.14em; font-size:11px; text-transform:uppercase; }
+  #topbar { top:calc(10px + env(safe-area-inset-top)); left:0; right:0; display:flex; justify-content:space-between; padding:0 14px; }
+  #score { color:#eafcff; font-size:16px; letter-spacing:.08em; text-shadow:0 0 12px rgba(77,226,255,.6); }
+  #mult { color:var(--gold); margin-left:8px; font-size:13px; }
+  #lives { display:flex; gap:6px; align-items:center; }
+  .pip { width:12px; height:12px; border:1.5px solid var(--neon); border-radius:50%; box-shadow:0 0 8px rgba(77,226,255,.7); }
+  .pip.gone { border-color:#243040; box-shadow:none; opacity:.4; }
+
+  #wave { bottom:calc(6px + env(safe-area-inset-bottom)); left:0; right:0; text-align:center; color:#5d8b9e; font-size:10px; letter-spacing:.3em; }
+
+  #odwrap { position:absolute; bottom:calc(20px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:min(62vw,340px); opacity:.92; }
+  #odlabel { font-size:9px; letter-spacing:.28em; color:#6f9bb0; text-align:center; margin-bottom:5px; }
+  #odtrack { height:5px; background:#111a24; border:1px solid #1d2c3a; border-radius:3px; overflow:hidden; }
+  #odfill { height:100%; width:0%; background:linear-gradient(90deg,#4de2ff,#ff2d78); box-shadow:0 0 14px rgba(255,45,120,.8); transition:width .12s linear; }
+  #odwrap.ready #odlabel { color:var(--gold); text-shadow:0 0 10px rgba(255,209,102,.8); }
+
+  /* lock ring drawn in DOM so it is crisp on any DPR */
+  #reticle { position:fixed; width:64px; height:64px; margin:-32px 0 0 -32px; z-index:9; pointer-events:none; opacity:0; transition:opacity .12s; }
+  #reticle.on { opacity:1; }
+  #reticle svg { width:100%; height:100%; overflow:visible; }
+
+  /* ── screens ─────────────────────────────────────────── */
+  .screen { position:fixed; inset:0; z-index:20; display:flex; flex-direction:column; align-items:center; justify-content:center;
+            background:radial-gradient(ellipse at 50% 45%, rgba(10,26,40,.72), rgba(3,4,9,.94) 70%); backdrop-filter:blur(2px); padding:24px; text-align:center; }
+  .screen.hide { display:none; }
+  h1 { font-size:clamp(30px,9vw,64px); letter-spacing:.42em; margin-left:.42em; color:#eafcff;
+       text-shadow:0 0 30px rgba(77,226,255,.75), 0 0 70px rgba(255,45,120,.35); font-weight:400; }
+  .sub { margin-top:10px; color:#6f9bb0; font-size:12px; letter-spacing:.22em; text-transform:uppercase; }
+  .howto { margin-top:26px; color:#9fc4d4; font-size:13px; line-height:2; letter-spacing:.06em; max-width:34ch; }
+  .howto b { color:var(--neon); font-weight:400; }
+  button.go {
+    margin-top:30px; padding:15px 40px; font:inherit; font-size:14px; letter-spacing:.28em; text-transform:uppercase;
+    color:#031018; background:linear-gradient(180deg,#7df0ff,#37c8ea); border:0; border-radius:999px; cursor:pointer;
+    box-shadow:0 0 28px rgba(77,226,255,.55); min-width:200px; min-height:52px;
+  }
+  button.go:active { transform:scale(.97); }
+  button.ghost { background:transparent; color:#7fb6cc; border:1px solid #26404f; box-shadow:none; margin-top:14px; min-height:48px; padding:12px 26px; font-size:12px; }
+  #final { font-size:13px; color:#9fc4d4; line-height:2.1; letter-spacing:.1em; }
+  #final .big { font-size:clamp(26px,7vw,44px); color:#eafcff; letter-spacing:.14em; display:block; margin:6px 0 16px; }
+  .hint { position:fixed; bottom:calc(10px + env(safe-area-inset-bottom)); left:0; right:0; text-align:center; font-size:10px; color:#3d5666; letter-spacing:.2em; z-index:11; }
+
+  /* landscape 844x390: HUD moves to the side rails, clear of the ship */
+  @media (orientation: landscape) and (min-aspect-ratio: 4/3) {
+    #hud-top { padding: calc(6px + env(safe-area-inset-top)) 12px 0; font-size: 13px; }
+    #odwrap { bottom: auto; top: 50%; transform: translateY(-50%); left: auto;
+              right: calc(10px + env(safe-area-inset-right)); width: 150px; }
+    #wave { bottom: calc(8px + env(safe-area-inset-bottom)); font-size: 11px; }
+    #shiphint { display: none; }
+  }
+  #bosshint { position:absolute; top:calc(46px + env(safe-area-inset-top)); left:50%; transform:translateX(-50%);
+              width:min(92vw,560px); text-align:center; color:var(--gold); font-size:11px; letter-spacing:.14em;
+              line-height:1.5; text-shadow:0 0 12px rgba(255,209,102,.55); transition:opacity .5s; }
+  #bosshint.hide { opacity:0; pointer-events:none; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div id="hud">
+  <div id="topbar" class="bar">
+    <div><span id="score">0</span><span id="mult"></span></div>
+    <div id="lives"></div>
+  </div>
+  <div id="wave" class="bar"></div>
+  <div id="bosshint" class="hide">HIT THE CORE DEAD-CENTRE &nbsp;·&nbsp; TAP OVERDRIVE WHEN THE RING CHARGES</div>
+  <div id="odwrap">
+    <div id="odlabel">OVERDRIVE</div>
+    <div id="odtrack"><div id="odfill"></div></div>
+  </div>
+</div>
+
+<div id="reticle">
+  <svg viewBox="-32 -32 64 64">
+    <circle id="rlock" cx="0" cy="0" r="9" fill="none" stroke="#4de2ff" stroke-width="1.4" opacity=".95"/>
+    <circle cx="0" cy="0" r="20" fill="none" stroke="#4de2ff" stroke-width=".6" opacity=".35" stroke-dasharray="2 5"/>
+    <path d="M-15 0h-7M15 0h7M0 -15v-7M0 15v7" stroke="#4de2ff" stroke-width="1.2" opacity=".85"/>
+    <path id="rarc" d="" fill="none" stroke="#ffd166" stroke-width="2.4" stroke-linecap="round" opacity="0"/>
+  </svg>
+</div>
+
+<div id="screen-title" class="screen">
+  <h1>SIGNAL</h1>
+  <div class="sub">a rail through the machine</div>
+  <div class="howto">
+    <b>Put your thumb ON a target</b>, then hold — the ring fills gold<br>
+    <b>Release</b> to fire everything you locked. More locks, more score<br>
+    <b>Tap OVERDRIVE</b> when the bar is full — you need it on the boss<br>
+    Every hit is a note. Wave 5 ends with a boss: hit its core dead-centre.
+  </div>
+  <button class="go" id="btn-start">Enter</button>
+</div>
+
+<div id="screen-over" class="screen hide">
+  <div id="final"></div>
+  <button class="go" id="btn-again">Again</button>
+  <button class="ghost" id="btn-menu">Menu</button>
+</div>
+
+<div class="hint" id="hint"></div>
+
+<script type="importmap">
+{ "imports": {
+    "three": "./lib/three.module.js",
+    "three/core": "./lib/three.core.js",
+    "./three.core.js": "./lib/three.core.js"
+} }
+</script>
+<script src="./lib/howler.min.js"></script>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

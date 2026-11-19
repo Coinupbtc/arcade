@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#05080f">
+<title>CARBALL — rocket soccer</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --blue:#2f7bff; --blue-glow:#59d8ff; --orange:#ff7a1a; --orange-glow:#ffb347;
+    --ink:#eaf4ff; --dim:#8fa8c4; --bg:#05080f;
+    --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+    --safe-l:env(safe-area-inset-left,0px); --safe-r:env(safe-area-inset-right,0px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+    font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-user-select:none;user-select:none;touch-action:none;overscroll-behavior:none}
+  #c{position:fixed;inset:0;display:block;width:100%;height:100%}
+  .hidden{display:none !important}
+
+  /* ── HUD ─────────────────────────────────────────────────────────────── */
+  #hud{position:fixed;inset:0;pointer-events:none;z-index:5}
+  #scoreboard{position:absolute;top:calc(var(--safe-t) + 10px);left:50%;transform:translateX(-50%);
+    display:flex;align-items:center;gap:14px;padding:6px 16px;border-radius:14px;
+    background:rgba(6,12,22,.62);border:1px solid rgba(120,170,230,.22);
+    backdrop-filter:blur(6px);font-variant-numeric:tabular-nums}
+  .team{display:flex;align-items:center;gap:8px;font-weight:800;font-size:22px;letter-spacing:.06em}
+  .team .dot{width:10px;height:10px;border-radius:50%}
+  #team-blue .dot{background:var(--blue-glow);box-shadow:0 0 10px var(--blue-glow)}
+  #team-orange .dot{background:var(--orange-glow);box-shadow:0 0 10px var(--orange-glow)}
+  #team-blue .num{color:#bfe0ff} #team-orange .num{color:#ffd9b0}
+  #clock{font-size:22px;font-weight:800;min-width:76px;text-align:center;letter-spacing:.04em}
+  #clock.ot{color:#ffd166}
+
+  #cam-label{position:absolute;top:calc(var(--safe-t) + 62px);left:50%;transform:translateX(-50%);
+    font-size:11px;letter-spacing:.22em;color:var(--dim);opacity:.85}
+  #cup-label{position:absolute;top:calc(var(--safe-t) + 78px);left:50%;transform:translateX(-50%);
+    font-size:11px;letter-spacing:.16em;color:#ffd166;opacity:.92;white-space:nowrap}
+  #cup-label.hidden{display:none}
+  .cta.cup{background:linear-gradient(180deg,#ffd98a,#ff9a3c);color:#1b0e02;
+    box-shadow:0 8px 30px rgba(255,150,60,.35);margin-top:2px}
+  .seg-btn{min-width:150px;min-height:46px;padding:0 22px;border-radius:999px;cursor:pointer;
+    border:1px solid rgba(140,190,240,.32);background:rgba(12,22,38,.6);color:#a9c2da;
+    font-size:12px;font-weight:800;letter-spacing:.16em}
+
+  #speed{position:absolute;right:calc(var(--safe-r) + 22px);bottom:calc(var(--safe-b) + 214px);
+    font-size:13px;letter-spacing:.12em;color:var(--dim);font-variant-numeric:tabular-nums;text-align:right}
+  @media (max-aspect-ratio: 1/1){
+    #speed{right:auto;left:calc(var(--safe-l) + 18px);bottom:auto;top:calc(var(--safe-t) + 76px);text-align:left}
+  }
+
+  #boost-wrap{position:absolute;right:calc(var(--safe-r) + 18px);bottom:calc(var(--safe-b) + 118px);
+    width:92px;height:92px;border-radius:50%;
+    background:conic-gradient(from -90deg,#ffd166 0 var(--p,0%),rgba(120,150,190,.18) var(--p,0%) 100%);
+    padding:7px;box-shadow:0 0 26px rgba(255,209,102,.20)}
+  #boost-fill{width:100%;height:100%;border-radius:50%;background:#070d17;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    border:1px solid rgba(255,209,102,.25)}
+  #boost-num{font-size:26px;font-weight:800;line-height:1;color:#ffe6a8}
+  #boost-label{font-size:9px;letter-spacing:.24em;color:var(--dim);margin-top:3px}
+
+  /* touch controls */
+  #stick{position:absolute;left:calc(var(--safe-l) + 20px);bottom:calc(var(--safe-b) + 22px);
+    width:148px;height:148px;border-radius:50%;pointer-events:auto;touch-action:none;
+    background:radial-gradient(circle at 50% 45%,rgba(90,140,200,.16),rgba(20,34,54,.30));
+    border:2px solid rgba(130,180,240,.30);box-shadow:inset 0 0 30px rgba(70,120,190,.14)}
+  #stick.active{border-color:rgba(150,210,255,.55)}
+  #stick-knob{position:absolute;left:50%;top:50%;width:66px;height:66px;margin:-33px 0 0 -33px;
+    border-radius:50%;background:radial-gradient(circle at 40% 35%,#dff1ff,#4b8fd8 65%,#255a96);
+    box-shadow:0 6px 18px rgba(0,0,0,.45),0 0 18px rgba(90,200,255,.35);pointer-events:none;
+    transition:transform .05s linear}
+  .btn{position:absolute;pointer-events:auto;touch-action:none;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-weight:800;letter-spacing:.08em;
+    color:#eaf4ff;border:2px solid rgba(150,200,255,.32);background:rgba(18,30,48,.55);
+    backdrop-filter:blur(4px);user-select:none}
+  .btn.down{transform:scale(.94);filter:brightness(1.25)}
+  #btn-boost{right:calc(var(--safe-r) + 24px);bottom:calc(var(--safe-b) + 26px);width:86px;height:86px;font-size:13px;
+    border-color:rgba(255,190,80,.55);background:radial-gradient(circle at 50% 35%,rgba(255,170,60,.35),rgba(50,28,6,.65))}
+  #btn-jump{right:calc(var(--safe-r) + 122px);bottom:calc(var(--safe-b) + 34px);width:72px;height:72px;font-size:12px}
+  #btn-cam{right:calc(var(--safe-r) + 16px);top:calc(var(--safe-t) + 12px);bottom:auto;width:52px;height:52px;font-size:9px;letter-spacing:.1em}
+
+  #btn-pause{position:absolute;left:calc(var(--safe-l) + 16px);top:calc(var(--safe-t) + 12px);
+    width:54px;height:54px;border-radius:14px;font-size:16px;pointer-events:auto;color:#cfe2f6;
+    border:1px solid rgba(140,180,230,.25);background:rgba(10,18,30,.55)}
+
+  #banner{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%) scale(.92);
+    font-size:clamp(34px,9vw,74px);font-weight:900;letter-spacing:.12em;opacity:0;
+    transition:opacity .18s ease,transform .18s ease;text-shadow:0 0 30px rgba(0,0,0,.6)}
+  #banner.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  #banner.goal{color:#eaf4ff;text-shadow:0 0 36px rgba(120,220,255,.8)}
+  #banner.go{color:#9fdcff}
+  #banner.ot{color:#ffd166}
+  #banner.blue{color:#8fd8ff} #banner.orange{color:#ffc27a}
+
+  #hint{position:absolute;left:50%;top:calc(var(--safe-t) + 96px);transform:translateX(-50%);
+    max-width:min(92vw,520px);padding:8px 14px;border-radius:12px;text-align:center;
+    background:rgba(6,12,22,.66);border:1px solid rgba(120,170,230,.22);
+    color:#cfe2f6;font-size:12px;line-height:1.45;letter-spacing:.02em;opacity:0;
+    transition:opacity .35s ease;pointer-events:none}
+  #hint.show{opacity:1}
+
+  /* ── overlays ────────────────────────────────────────────────────────── */
+  .screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:18px;text-align:center;padding:24px;pointer-events:auto;overflow-y:auto;
+    background:radial-gradient(ellipse at 50% 30%,rgba(24,58,110,.55),rgba(4,8,14,.92) 70%)}
+  .kicker{font-size:12px;letter-spacing:.38em;color:#7fb6e8;text-transform:uppercase}
+  h1{margin:0;font-size:clamp(52px,16vw,120px);line-height:.9;letter-spacing:.06em;font-weight:900;
+    background:linear-gradient(180deg,#ffffff 0%,#9fd6ff 48%,#2f7bff 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 26px rgba(60,150,255,.45))}
+  .tag{margin:-4px 0 6px;font-size:13px;letter-spacing:.30em;color:#ffb347;text-transform:uppercase}
+  .sub{max-width:440px;color:#a9c2da;font-size:14px;line-height:1.55}
+  .cta{margin-top:6px;min-width:210px;min-height:58px;padding:0 34px;border-radius:999px;border:0;
+    font-size:17px;font-weight:900;letter-spacing:.16em;color:#04101f;cursor:pointer;
+    background:linear-gradient(180deg,#a8e2ff,#3f9bff);box-shadow:0 8px 30px rgba(50,140,255,.45)}
+  .cta:active{transform:translateY(1px)}
+  .keys{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:center;color:#7f99b5;font-size:12px;
+    letter-spacing:.06em;max-width:520px}
+  .keys b{color:#cfe2f6;font-weight:700}
+  .badge{font-size:11px;letter-spacing:.18em;color:#6f8aa6}
+  .seg{display:flex;gap:10px;margin:2px 0}
+  .seg button{min-width:112px;min-height:44px;padding:0 18px;border-radius:999px;cursor:pointer;
+    border:1px solid rgba(140,190,240,.32);background:rgba(12,22,38,.6);color:#a9c2da;
+    font-size:12px;font-weight:800;letter-spacing:.16em}
+  .seg button.on{border-color:rgba(150,215,255,.8);background:rgba(47,123,255,.24);color:#eaf4ff;
+    box-shadow:0 0 18px rgba(60,150,255,.28)}
+  #over-title{font-size:clamp(40px,11vw,72px);font-weight:900;letter-spacing:.08em;margin:0;
+    background:linear-gradient(180deg,#fff,#9fd6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #over-score{font-size:30px;font-weight:800;letter-spacing:.2em;color:#cfe2f6}
+  #pause{background:rgba(4,8,14,.78)}
+
+  @media (max-height:520px){
+    #scoreboard{top:calc(var(--safe-t) + 6px);padding:4px 12px;gap:10px}
+    .team{font-size:18px} #clock{font-size:18px;min-width:62px}
+    #cam-label{display:none}
+    #stick{width:118px;height:118px}
+    #stick-knob{width:54px;height:54px;margin:-27px 0 0 -27px}
+    #boost-wrap{width:76px;height:76px;bottom:calc(var(--safe-b) + 14px);right:calc(var(--safe-r) + 12px)}
+    #boost-num{font-size:21px}
+    #btn-boost{width:72px;height:72px;right:calc(var(--safe-r) + 16px);bottom:calc(var(--safe-b) + 98px)}
+    #btn-jump{width:62px;height:62px;right:calc(var(--safe-r) + 100px);bottom:calc(var(--safe-b) + 16px)}
+    #btn-cam{width:46px;height:46px;right:calc(var(--safe-r) + 12px);top:calc(var(--safe-t) + 8px);bottom:auto}
+    #speed{display:none}
+    .screen{gap:8px;padding:10px 18px;justify-content:center}
+    .kicker{font-size:10px;letter-spacing:.28em}
+    h1{font-size:clamp(34px,11vh,52px)}
+    .tag{font-size:11px;letter-spacing:.22em;margin:0}
+    .sub{font-size:12px;line-height:1.4;max-width:520px}
+    .cta{min-height:46px;font-size:15px;padding:0 26px;margin-top:0}
+    .keys{display:none}
+    .badge{font-size:10px;letter-spacing:.12em}
+    .seg button{min-height:38px;font-size:11px}
+    #hint{display:none}
+  }
+  @media (max-width:430px){
+    #btn-jump{right:calc(var(--safe-r) + 116px)}
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="hud" class="hidden">
+  <div id="scoreboard">
+    <div class="team" id="team-blue"><span class="dot"></span><span class="num" id="score-blue">0</span></div>
+    <div id="clock">2:00</div>
+    <div class="team" id="team-orange"><span class="num" id="score-orange">0</span><span class="dot"></span></div>
+  </div>
+  <div id="cam-label">BALL CAM</div>
+  <div id="cup-label" class="hidden">QUICK MATCH</div>
+  <div id="speed">0 KM/H</div>
+  <div id="boost-wrap"><div id="boost-fill"><span id="boost-num">34</span><span id="boost-label">BOOST</span></div></div>
+
+  <div id="stick" class="stick"><div id="stick-knob"></div></div>
+  <button id="btn-boost" class="btn" aria-label="Boost">BOOST</button>
+  <button id="btn-jump" class="btn" aria-label="Jump">JUMP</button>
+  <button id="btn-cam" class="btn" aria-label="Ball camera">CAM</button>
+  <button id="btn-pause" aria-label="Pause">II</button>
+
+  <div id="banner" class="banner"></div>
+  <div id="hint"></div>
+</div>
+
+<div id="menu" class="screen">
+  <div class="kicker">1 v 1 · rocket soccer</div>
+  <h1>CARBALL</h1>
+  <div class="tag">drive · boost · flip · score</div>
+  <div class="sub">You are blue. Put the ball in the orange goal. Gold pads refill boost;
+    tap JUMP twice while steering to flip, and get back before the AI punishes you.</div>
+  <div class="seg" id="diff">
+    <button type="button" data-diff="rookie" class="on">ROOKIE AI</button>
+    <button type="button" data-diff="pro">PRO AI</button>
+  </div>
+  <button id="btn-play" class="cta">QUICK MATCH</button>
+  <button id="btn-cup" class="cta cup">CUP · 5 ROUNDS</button>
+  <div id="cup-best" class="badge">BEST · not started</div>
+  <div class="keys">
+    <span><b>WASD</b> drive</span><span><b>SHIFT</b> boost</span><span><b>SPACE</b> jump / double-tap to flip</span>
+    <span><b>C</b> camera</span><span><b>P</b> pause</span><span><b>R</b> restart</span>
+  </div>
+  <div class="badge">TOUCH: LEFT STICK DRIVES · BOOST AND JUMP ON THE RIGHT · TAP JUMP TWICE TO FLIP</div>
+</div>
+
+<div id="over" class="screen hidden">
+  <div class="kicker">full time</div>
+  <h1 id="over-title">YOU WIN</h1>
+  <div id="over-score">0 — 0</div>
+  <button id="btn-again" class="cta">PLAY AGAIN</button>
+  <button id="btn-menu" class="seg-btn">MENU</button>
+</div>
+
+<div id="pause" class="screen hidden">
+  <h1 style="font-size:clamp(38px,10vw,64px)">PAUSED</h1>
+  <button id="btn-resume" class="cta">RESUME</button>
+  <div class="badge">P OR ESC TO RESUME</div>
+</div>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

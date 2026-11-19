@@ -1,0 +1,13 @@
+{
+  "name": "CARBALL — rocket soccer",
+  "short_name": "CARBALL",
+  "description": "1v1 rocket car soccer. Drive, boost, flip, score.",
+  "start_url": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#05080f",
+  "theme_color": "#05080f",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

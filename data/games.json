@@ -167,5 +167,104 @@
   "cats": [
    "action"
   ]
+ },
+ {
+  "id": "comet-keeper",
+  "title": "Comet Keeper",
+  "genre": "Arcade survival",
+  "engine": "Canvas 2D",
+  "tagline": "You are the moon that guards a small living world. Swing around your orbit and knock the comets away.",
+  "status": "untested",
+  "score": 0,
+  "cats": [
+   "action"
+  ]
+ },
+ {
+  "id": "orbit-putt",
+  "title": "Orbit Putt",
+  "genre": "Physics mini-golf",
+  "engine": "Canvas 2D",
+  "tagline": "Six holes in deep space. Every planet bends the ball, and the wormhole only holds a slow one.",
+  "status": "untested",
+  "score": 0,
+  "cats": [
+   "puzzle"
+  ]
+ },
+ {
+  "id": "dune-drift",
+  "title": "Dune Drift",
+  "genre": "Hover racer",
+  "engine": "three.js",
+  "tagline": "Skim a hovercraft through a sunset canyon against three rivals. Boost is a gamble: push too long and the engine cuts out.",
+  "status": "untested",
+  "score": 0,
+  "cats": [
+   "racing",
+   "3d"
+  ]
+ },
+ {
+  "id": "signal",
+  "title": "Signal",
+  "genre": "Rail shooter",
+  "engine": "three.js",
+  "tagline": "Ride a rail through the machine and lock targets. Every hit plays a note, and the level is the music.",
+  "status": "untested",
+  "score": 0,
+  "cats": [
+   "action",
+   "3d"
+  ]
+ },
+ {
+  "id": "rocket-soccer",
+  "title": "Rocket Soccer",
+  "genre": "Car soccer",
+  "engine": "three.js",
+  "tagline": "Drive a car into a big bouncing ball and score. Jump, boost and fly.",
+  "status": "untested",
+  "score": 0,
+  "cats": [
+   "action",
+   "3d"
+  ]
+ },
+ {
+  "id": "route-cartographer",
+  "title": "Route Cartographer",
+  "genre": "Top-down racing",
+  "engine": "Canvas 2D",
+  "tagline": "Race a route drawn from a real map: two streets, a clock and your best line.",
+  "status": "untested",
+  "score": 0,
+  "cats": [
+   "racing"
+  ]
+ },
+ {
+  "id": "carball",
+  "title": "Carball",
+  "genre": "Car soccer",
+  "engine": "Canvas 2D",
+  "tagline": "1v1 rocket car soccer for the phone, with real car-and-ball physics.",
+  "status": "untested",
+  "score": 0,
+  "cats": [
+   "action"
+  ]
+ },
+ {
+  "id": "temple-tower",
+  "title": "Temple Tower",
+  "genre": "Physics stacker",
+  "engine": "Canvas 2D",
+  "tagline": "Stack falling stone blocks into the tallest temple you can before it topples. Three lives.",
+  "status": "untested",
+  "score": 0,
+  "cats": [
+   "puzzle"
+  ]
  }
 ]
